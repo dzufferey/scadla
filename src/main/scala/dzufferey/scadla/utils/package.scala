@@ -62,6 +62,22 @@ package object utils {
     )
   }
   
+  def traverse(f: Solid => Unit, s: Solid): Unit = s match {
+    case Translate(x, y, z, s2) => traverse(f, s2); f(s)
+    case Rotate(x, y, z, s2) => traverse(f, s2); f(s)
+    case Scale(x, y, z, s2) => traverse(f, s2); f(s)
+    case Mirror(x, y, z, s2) => traverse(f, s2); f(s)
+    case Multiply(m, s2) => traverse(f, s2); f(s)
+
+    case Union(lst @ _*) => lst.foreach(traverse(f, _)); f(s)
+    case Intersection(lst @ _*) => lst.foreach(traverse(f, _)); f(s)
+    case Difference(s2, lst @ _*) => traverse(f, s2); lst.foreach(traverse(f, _)); f(s)
+    case Minkowski(lst @ _*) => lst.foreach(traverse(f, _)); f(s)
+    case Hull(lst @ _*) => lst.foreach(traverse(f, _)); f(s)
+
+    case other => f(other)
+  }
+  
   def map(f: Solid => Solid, s: Solid): Solid = s match {
     case Translate(x, y, z, s2) => f(Translate(x, y, z, map(f, s2)))
     case Rotate(x, y, z, s2) => f(Rotate(x, y, z, map(f, s2)))

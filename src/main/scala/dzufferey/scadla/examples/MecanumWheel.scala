@@ -34,8 +34,9 @@ class Roller(height: Double, maxOuterRadius: Double,minOuterRadius: Double, inne
           Cylinder(minOuterRadius, minOuterRadius, height),
           Scale(0.8, 0.8, 1, solid)))
     val angle = math.Pi / 8
-    val grooveDepth = max(minOuterRadius - 3, (minOuterRadius + innerRadius) / 2)
-    val slice = pieSlice(maxOuterRadius, grooveDepth, angle, h).moveZ(axis)
+    val grooveDepth = max(maxOuterRadius - minOuterRadius, 2)
+    val inner = max(maxOuterRadius - grooveDepth, (minOuterRadius + innerRadius) / 2)
+    val slice = pieSlice(maxOuterRadius, inner, angle, h).moveZ(axis)
     (0 until 8).foldLeft(base)( (acc, i) => {
       val rotated = Rotate(0, 0,i*2*angle, slice)
       Difference(acc, rotated)
@@ -43,6 +44,7 @@ class Roller(height: Double, maxOuterRadius: Double,minOuterRadius: Double, inne
   }
 
   //mold for k*l roller
+  //TODO put some grove to let the additional oogoo escape
   def mold(k: Int, l: Int) = {
     val wall = 2
     val distToWall = wall + maxOuterRadius
@@ -69,10 +71,11 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
   //some more parameters
   val centerAxleRadius = 2.5
   var rollerAxleRadius1 = 1.75/2
-  var rollerAxleRadius2 = 1
-  var rollerGap = 0.5
-  var mountThickness = 2
-  var tolerance = 0.1
+  var rollerAxleRadius2 = 1.0
+  var rollerGap = 0.0
+  var mountThickness = 1.0
+  var mountDepth= 1.0
+  var rollerRimGap = 0.5
 
   //the rollers' dimensions
   //  innerR + maxR == radius
@@ -96,8 +99,9 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     Console.println("  rollerAxleRadius1: " + rollerAxleRadius1)
     Console.println("  rollerAxleRadius2: " + rollerAxleRadius2)
     Console.println("  rollerGap: " + rollerGap)
+    Console.println("  rollerRimGap: " + rollerRimGap)
     Console.println("  mountThickness: " + mountThickness)
-    Console.println("  tolerance: " + tolerance)
+    Console.println("  mountDepth: " + mountDepth)
     Console.println("derived parameters:")
     Console.println("  maxR: " + maxR)
     Console.println("  innerR: " + innerR)
@@ -106,8 +110,6 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
   }
 
   def roller = new Roller(rollerHeight, maxR, minR, rollerAxleRadius2)
-
-  //TODO for the diff you use some hull
 
   //assumes it is centered at (0,0,0)
   protected def placeOnRim(s: Solid) = {
@@ -120,7 +122,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
   
   protected def rollersForCarving = {
     val r1 = Hull(roller.solid, roller.solid.moveX(2*maxR))
-    val r2 = bigger(r1, 0.5).moveZ(-rollerHeight/2)
+    val r2 = bigger(r1, rollerRimGap).moveZ(-rollerHeight/2)
     val c = Cylinder(rollerAxleRadius1, rollerAxleRadius1, axleHeight).moveZ(-axleHeight/2)
     placeOnRim(r2 + c)
   }
@@ -131,8 +133,9 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     placeOnRim(r) //+ c)
   }
 
-  def rim = tube(innerR+minR, centerAxleRadius, width)
+  def rim = tube(innerR+minR+mountDepth, centerAxleRadius, width)
 
+  //TODO redesign the hub to be easier to print
   def hub = Difference(rim, rollersForCarving)
 
   def assembled = Union(hub, rollers)
@@ -143,14 +146,19 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
 object Main {
 
   def main(args: Array[String]) {
-    val wheel = new MecanumWheel(20, 15, Pi/4, 8)
-    //val wheel = new MecanumWheel(20, 15, -Pi/4, 8)
+    val wheel = new MecanumWheel(20, 15, Pi/6, 12)
+    //val wheel = new MecanumWheel(30, 20, Pi/4, 12)
+    //val wheel = new MecanumWheel(30, 20, -Pi/4, 12)
+    wheel.rollerAxleRadius1 = 1
+    wheel.rollerAxleRadius2 = 1.15
+    wheel.rollerRimGap = 1.0
     wheel.printParameters
     //val obj = wheel.hub
     //val obj = wheel.roller.solid
     //val obj = wheel.roller.skeleton
     //val obj = wheel.roller.mold(4, 2)
     val obj = wheel.assembled
+    //backends.OpenSCAD.view(obj, Nil, Nil, Nil)
     backends.OpenSCAD.view(obj)
   }
 
