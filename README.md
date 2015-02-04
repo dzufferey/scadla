@@ -31,11 +31,11 @@ For the moment, scadla uses
 
 ## Examples
 
-For examples, please look in the [example](src/main/scala/dzuffere/scadla/examples) folder.
+For examples, please look in the [example](src/main/scala/dzufferey/scadla/examples) folder.
 
 For a complete example, you can head to [MecanumWheel.scala](src/main/scala/dzufferey/scadla/examples/MecanumWheel.scala) for a parametric design of an omnidirectional wheel.
 
-The primitives and CSG operations are defined in [Solid.scala](src/main/scala/dzuffere/scadla/Solid.scala).
+The primitives and CSG operations are defined in [Solid.scala](src/main/scala/dzufferey/scadla/Solid.scala).
 This gives you a basic verbose syntax.
 For instance, a cube written `cube([1,2,1])` in OpenSCAD is written `Cube(1,2,1)` in scadla.
 
@@ -77,6 +77,8 @@ We can do a few things:
 
 By default, scadla will run openscad with `$fa=4; $fs=0.5;`, so complex designs can take a while to render.
 You can change that by giving the appropriate arguments to the different methods (see `OpenSCAD.scala` for the details)
+
+The `sbt run` xommand will run this example.
 
 
 ## Compiling and Using it
