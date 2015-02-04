@@ -22,21 +22,64 @@ The main points on which we try to improve are:
 * all the angles are in _radians_, not in degrees. Because ... math! If you still prefer degrees you can write `math.toRadians(α)`.
 
 
-## Examples
-
-For examples, please look in the `src/main/scala/dzuffere/scadla/examples` folder.
-
-TODO more complete description ... the different syntaxes
-
-
 ## Dependencies
 
 For the moment, scadla uses
- * required: [OpenSCAD](http://www.openscad.org/) for the CSG operations
- * optional: [Meshlab](http://meshlab.sourceforge.net/) to display the models
+* required: [OpenSCAD](http://www.openscad.org/) for the CSG operations
+* optional: [Meshlab](http://meshlab.sourceforge.net/) to display the models
 
 
-## Compiling
+## Examples
+
+For examples, please look in the [example](src/main/scala/dzuffere/scadla/examples) folder.
+
+For a complete example, you can head to [MecanumWheel.scala](src/main/scala/dzufferey/scadla/examples/MecanumWheel.scala) for a parametric design of an omnidirectional wheel.
+
+The primitives and CSG operations are defined in [Solid.scala](src/main/scala/dzuffere/scadla/Solid.scala).
+This gives you a basic verbose syntax.
+For instance, a cube written `cube([1,2,1])` in OpenSCAD is written `Cube(1,2,1)` in scadla.
+
+Let us consider the following example:
+```scala
+Intersection(
+  Union(
+    Cube(1,1,1),
+    Translate( -0.5, -0.5, 0, Cube(1,1,1))
+  ),
+  Sphere(1.5)
+)
+```
+In the most verbose form, it corresponds to the full CSG tree.
+However, we can make it prettier.
+First, we can store `Solid`s in variables and reuse them:
+```scala
+val c = Cube(1,1,1)
+val s = Sphere(1.5)
+val u = Union(c, Translate( -0.5, -0.5, 0, c))
+Intersection(u, s)
+```
+Next, we can replace the operation with a less verbose syntax using `import InlineOps._`
+```scala
+val c = Cube(1,1,1)
+val s = Sphere(1.5)
+(c + c.move( -0.5, -0.5, 0)) * s
+```
+
+Once, we have the descprition of the object we want to make, we need to evaluate the CSG tree to get a 3D model.
+We currently use OpenSCAD for that.
+See [OpenSCAD.scala](src/main/scala/dzufferey/scadla/backends/OpenSCAD.scala) for the details.
+
+Assuming that we the object we are interested in is stored in the `obj` variable.
+We can do a few things:
+* evaluate the tree and save the result in a .stl file with `OpenSCAD.toSTL(obj, file_name)`
+* view the result `OpenSCAD.view(obj)` (this requires meshlab)
+* evaluate the tree and get back a Polyhedron with `OpenSCAD.getResult(obj)`
+
+By default, scadla will run openscad with `$fa=4; $fs=0.5;`, so complex designs can take a while to render.
+You can change that by giving the appropriate arguments to the different methods (see `OpenSCAD.scala` for the details)
+
+
+## Compiling and Using it
 
 You can build scadla using [sbt](http://www.scala-sbt.org/).
 To install sbt follow the instructions at [http://www.scala-sbt.org/release/tutorial/Setup.html](http://www.scala-sbt.org/release/tutorial/Setup.html).
@@ -47,9 +90,10 @@ $ sbt
 > compile
 ```
 
-## Using it
+`sbt run` will executes the omniwheel example.
 
-TODO ...
+Currently scadla is not yet published in an online maven repository.
+If you want to use it in another project, run `sbt publishLocal` to make it available to other projects on the same machine. You can include it in your projects by adding `libraryDependencies += "io.github.dzufferey" %% "scadla" % "0.1-SNAPSHOT"` in your `build.sbt`.
 
 
 ## TODO
