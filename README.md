@@ -98,15 +98,27 @@ Currently scadla is not yet published in an online maven repository.
 If you want to use it in another project, run `sbt publishLocal` to make it available to other projects on the same machine. You can include it in your projects by adding `libraryDependencies += "io.github.dzufferey" %% "scadla" % "0.1-SNAPSHOT"` in your `build.sbt`.
 
 
-## TODO
+## ToDo
 
 Features that may (or may not) be implemented, depending on time and motivation:
 
-* making object smaller: instead of adding some tolerance to all dimension, design your object at the right size, the make them a bit smaller so they fit together. The goal is to move the face parallel to their normal by some amount while keeping the mesh well-formed.
-* geometry shader (similar to computer graphics) to modify the surface of objects, e.g., adding a pattern to a flat surface.
-* holes and parts like in SolidPython
-* directly do the CSG operation without requiring OpenSCAD
-* 2D primitives, extrusions, and projections
+* features
+ - 2D primitives + extrusions and projections (also of 3D)
+  - geometry shader (similar to computer graphics) to modify the surface of objects, e.g., adding a pattern to a flat surface.
+  - holes and parts like in SolidPython
+  - more complex primitives, e.g. parametric surfaces, bezier, nurbs, metaballs
+  - more operations
+    * chamfer
+    * making object smaller (negative minkowski sum): instead of adding some tolerance to all dimension, design your object at the right size, the make them a bit smaller so they fit together. The goal is to move the face parallel to their normal by some amount while keeping the mesh well-formed.
+
+
+* implementation
+  - direct implementation of the CSG operation without requiring OpenSCAD
+  - for more complex surface look at marchine cube:
+    * [marching cubes](https://en.wikipedia.org/wiki/Marching_cubes), http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7139, http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html, http://link.springer.com/article/10.1007%2FBF01900830
+    * It could be fun to try to implement that in OpenCL using [JavaCL](https://code.google.com/p/javacl/)
+  - Could we build a simple 3D viewer ? so we could remove the meshlab dependence.
+
 * ...
 
 Also, pull requests are welcome.
