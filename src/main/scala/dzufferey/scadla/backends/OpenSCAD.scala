@@ -176,12 +176,22 @@ object OpenSCAD {
   
   val defaultHeader = List("$fa=4;", "$fs=0.5;")
 
-  protected def toTmpFile(obj: Solid, header: Iterable[String]) = {
-    val tmpFile = java.io.File.createTempFile("scadlaModel", ".scad")
-    val writer = new BufferedWriter(new PrintWriter(tmpFile))
+
+  protected def writeInFile(file: java.io.File, obj: Solid, header: Iterable[String] = defaultHeader) = {
+    val writer = new BufferedWriter(new PrintWriter(file))
     print(obj, writer, header)
     writer.close
+  }
+
+  protected def toTmpFile(obj: Solid, header: Iterable[String]) = {
+    val tmpFile = java.io.File.createTempFile("scadlaModel", ".scad")
+    writeInFile(tmpFile, obj, header)
     tmpFile
+  }
+
+  def saveFile(fileName: String, obj: Solid, header: Iterable[String] = defaultHeader) = {
+    val file = new java.io.File(fileName)
+    writeInFile(file, obj, header)
   }
 
   def toSTL(obj: Solid, outputFile: String, header: Iterable[String] = defaultHeader, options: Iterable[String] = Nil) = {

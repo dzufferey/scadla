@@ -186,7 +186,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
   //TODO a list of parts in a printable position
 }
 
-object Main {
+object MecanumWheel {
 
   def main(args: Array[String]) {
     //a small version

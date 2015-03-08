@@ -61,6 +61,29 @@ package object utils {
       Translate(-xBottom, 0, 0, Rotate(0,-a, 0, blocking))
     )
   }
+
+  def roundedCube(x: Double, y: Double, z: Double, r: Double) = {
+    if (r > 0) {
+      val d = 2*r
+      assert(d < x && d < y && d < z, "roundedCube, radius should be less than x/2, y/2, z/2.")
+      val c = Translate(r, r, r, Cube(x - d, y - d, z - d))
+      Minkowski(c, Sphere(r))
+    } else {
+      Cube(x,y,z)
+    }
+  }
+
+  def roundedCubeH(x: Double, y: Double, z: Double, r: Double) = {
+    if (r > 0) {
+      val h = z/2
+      val d = 2*r
+      assert(d < x && d < y, "roundedCube, radius should be less than x/2, y/2.")
+      val c = Translate(r, r, 0, Cube(x - d, y - d, h))
+      Minkowski(c, Cylinder(r, r, h))
+    } else {
+      Cube(x,y,z)
+    }
+  }
   
   def traverse(f: Solid => Unit, s: Solid): Unit = s match {
     case Translate(x, y, z, s2) => traverse(f, s2); f(s)

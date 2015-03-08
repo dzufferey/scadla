@@ -78,7 +78,7 @@ We can do a few things:
 By default, scadla will run openscad with `$fa=4; $fs=0.5;`, so complex designs can take a while to render.
 You can change that by giving the appropriate arguments to the different methods (see `OpenSCAD.scala` for the details)
 
-The `sbt run` xommand will run this example.
+To run this example execute `sbt run` and select `dzufferey.scadla.examples.MecanumWheel`.
 
 
 ## Compiling and Using it
@@ -92,7 +92,7 @@ $ sbt
 > compile
 ```
 
-`sbt run` will executes the omniwheel example.
+To try some examples execute `sbt run` and select one example.
 
 Currently scadla is not yet published in an online maven repository.
 If you want to use it in another project, run `sbt publishLocal` to make it available to other projects on the same machine. You can include it in your projects by adding `libraryDependencies += "io.github.dzufferey" %% "scadla" % "0.1-SNAPSHOT"` in your `build.sbt`.
@@ -113,10 +113,12 @@ Features that may (or may not) be implemented, depending on time and motivation:
 
 
 * implementation
+  - OpenSCAD backend: use the module decomposition as a DAG and do the rendering in parallel
   - direct implementation of the CSG operation without requiring OpenSCAD
   - for more complex surface look at marchine cube:
     * [marching cubes](https://en.wikipedia.org/wiki/Marching_cubes), http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7139, http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html, http://link.springer.com/article/10.1007%2FBF01900830
     * It could be fun to try to implement that in OpenCL using [JavaCL](https://code.google.com/p/javacl/)
+    * use adaptative sampling instead of a fix grid
   - Could we build a simple 3D viewer ? so we could remove the meshlab dependence.
 
 * ...
