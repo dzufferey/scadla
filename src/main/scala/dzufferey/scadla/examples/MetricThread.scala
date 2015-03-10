@@ -1,6 +1,7 @@
 package dzufferey.scadla.examples
 
 import dzufferey.scadla._
+import dzufferey.scadla.utils._
 import math._
 import InlineOps._
 
@@ -184,32 +185,8 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
   def hexHead(hg: Double, df: Double) = {
-
-    val rd0 = df/2/sin(Pi/3)
-    
-    val pts = for (i <- 0 until 6; j <- 0 to 1) yield
-      Point(rd0 * cos(i * Pi/3), rd0 * sin(i * Pi/3), hg * j)
-    def face(a: Int, b: Int, c: Int) = Face(pts(a % 12), pts(b % 12), pts(c % 12))
-
-    val side1 = for (i <- 0 until 6) yield face(  2*i, 2*i+2, 2*i+3)
-    val side2 = for (i <- 0 until 6) yield face(2*i+1,   2*i, 2*i+3)
-    val bottom = Array(
-      face(0, 4, 2),
-      face(4, 8, 6),
-      face(8, 0, 10),
-      face(0, 8, 4)
-    )
-    val top = Array(
-      face(1, 3, 5),
-      face(5, 7, 9),
-      face(9, 11, 1),
-      face(1, 5, 9)
-    )
-    val faces = side1 ++ side2 ++ bottom ++ top
-    val hex = Polyhedron(faces)
-
     Intersection(
-      hex,
+      Hexagon(df, hg),
       Cylinder(df/2 + hg, df/2, hg),
       Cylinder(df/2, df/2 + hg, hg)
     )
@@ -364,7 +341,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    * the fillet in the valleys is not round but a flat.
    * it has the same depht as the lowest part of the round would have.
    *
-   * @param d    ISO diameter M<od>
+   * @param d    ISO diameter M[od] (not radius!)
    * @param lt   length of thread
    * @param cs   create cone-cut at the end of thread (for easier handling)
    *             --   -2  not even flat ends
@@ -404,7 +381,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    * 
    * it must be cut out of a solid
    *
-   * @param d    ISO diameter M<od>
+   * @param d    ISO diameter M[od] (not radius!)
    * @param lt   length of thread
    *
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
@@ -437,7 +414,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    * the fillet in the valleys is not round but a flat.
    * it has the same depht as the lowest part of the round would have.
    *
-   * @param d    ISO diameter M<od>
+   * @param d    ISO diameter M[od] (not radius!)
    *             using values between the standardised diameters
    *             may result in strange measures for the width across flat (tool size)
    * @param lt   length of thread
@@ -487,7 +464,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    * the fillet in the valleys is not round but a flat.
    * it has the same depht as the lowest part of the round would have.
    *
-   * @param d    ISO diameter M<od>
+   * @param d    ISO diameter M[od] (not radius!)
    *             using values between the standardised diameters
    *             may result in strange measures for the width across flat (tool size)
    * @param hg   height of the head

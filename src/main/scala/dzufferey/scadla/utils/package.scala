@@ -3,64 +3,14 @@ package dzufferey.scadla
 package object utils {
 
   import dzufferey.scadla._
+  
+  def inch2mm(i: Double) = i * 25.4
 
   def centeredCube(x: Double, y: Double, z:Double) = Translate(-x/2, -y/2, -z/2, Cube(x,y,z))
 
   def biggerS(obj: Solid, s: Double) = Minkowski(obj, Sphere(s))
 
   def bigger(obj: Solid, s: Double) = Minkowski(obj, centeredCube(s,s,s))
-
-  def tube(outerRadius: Double, innerRadius: Double, height: Double) = {
-    Difference(
-      Cylinder(outerRadius, outerRadius, height),
-      Translate( 0, 0, -1, Cylinder(innerRadius, innerRadius, height + 2))
-    )
-  }
-
-  def pieSlice(outerRadius: Double, innerRadius: Double, angle: Double, height: Double) = {
-    val o1 = outerRadius + 1
-    val t = tube(outerRadius, innerRadius, height)
-    val blocking_half = Translate(-o1, -o1, -0.5, Cube(2* o1, o1, height + 1))
-    val blocking_quarter = Translate(0, 0, -0.5, Cube(o1, o1, height + 1))
-    if (angle <= 0) {
-      Empty
-    } else {
-      val block =
-        if (angle <= math.Pi/2) {
-          Union(
-            blocking_half,
-            Translate(-o1, -0.5, 0, blocking_quarter),
-            Rotate(0, 0, angle, blocking_quarter))
-        } else if (angle <= math.Pi) {
-          Union(
-            blocking_half,
-            Rotate(0, 0, angle, blocking_quarter))
-        } else if (angle <= 3*math.Pi/2) {
-          Union(
-            Translate(0, -o1, 0, blocking_quarter),
-            Rotate(0, 0, angle, blocking_quarter))
-        } else if (angle <= 2*math.Pi) {
-          Intersection(
-            Translate(0, -o1, 0, blocking_quarter),
-            Rotate(0, 0, angle, blocking_quarter))
-        } else {
-          Empty
-        }
-      Difference(t, block)
-    }
-  }
-
-  def trapeze(xTop: Double, xBottom: Double, y: Double, z: Double) = {
-    val x = math.max(xTop, xBottom)
-    val cube = Cube(x, y, z)
-    val blocking = Cube(x, y, 2*z)
-    val a = math.atan2(z, (xBottom-xTop)/2)
-    Difference(
-      cube,
-      Rotate(0, a, 0, Translate( xBottom, 0, 0, blocking)),
-      Translate(-xBottom, 0, 0, Rotate(0,-a, 0, blocking))
-    )
-  }
 
   def roundedCube(x: Double, y: Double, z: Double, r: Double) = {
     if (r > 0) {

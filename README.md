@@ -1,4 +1,4 @@
-# Scadla: scala library for constructive solid geometry
+# Scadla: a scala library for constructive solid geometry
 
 Scadla is a small library to create 3D models.
 Those model can then, for instance, be 3D printed.
@@ -21,6 +21,7 @@ The main points on which we try to improve are:
 
 * all the angles are in _radians_, not in degrees. Because ... math! If you still prefer degrees you can write `math.toRadians(α)`.
 
+* a small caveat: OpenSCAD does has only floating points number but scala makes the distinction between integers and floating points. For instance, `1/2` is the integer division and returns `0`, not `0.5`. If you want floating point numbers write `1/2.0` or `1.0/2`.
 
 ## Dependencies
 
@@ -103,7 +104,6 @@ If you want to use it in another project, run `sbt publishLocal` to make it avai
 Features that may (or may not) be implemented, depending on time and motivation:
 
 * features
- - 2D primitives + extrusions and projections (also of 3D)
   - geometry shader (similar to computer graphics) to modify the surface of objects, e.g., adding a pattern to a flat surface.
   - holes and parts like in SolidPython
   - more complex primitives, e.g. parametric surfaces, bezier, nurbs, metaballs

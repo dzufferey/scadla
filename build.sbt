@@ -4,7 +4,7 @@ organization := "io.github.dzufferey"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.6"
 
 libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.3",

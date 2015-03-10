@@ -39,7 +39,7 @@ class Roller(height: Double, maxOuterRadius: Double,minOuterRadius: Double, inne
     val angle = math.Pi / 8
     val grooveDepth = max(maxOuterRadius - minOuterRadius, 2)
     val inner = max(maxOuterRadius - grooveDepth, (minOuterRadius + innerRadius) / 2)
-    val slice = pieSlice(maxOuterRadius, inner, angle, h).moveZ(axis)
+    val slice = PieSlice(maxOuterRadius, inner, angle, h).moveZ(axis)
     (0 until 8).foldLeft(base)( (acc, i) => acc - slice.rotateZ(i*2*angle) )
   }
 
@@ -139,7 +139,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
   }
 
   def rim = {
-    val base = tube(innerR-maxR-rollerRimGap, centerAxleRadius, width)
+    val base = Tube(innerR-maxR-rollerRimGap, centerAxleRadius, width)
     val shaft = Translate(centerAxleRadius - shaftFlat, -centerAxleRadius/2, 0, Cube(2*centerAxleRadius, centerAxleRadius, width))
 
     val op = tan(angle.abs) * width / 2
@@ -147,7 +147,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     val hyp = sqrt(op*op + ad*ad)
     val rth = 2*minR*sin(angle.abs) + mountThickness
 
-    val lowerRing = tube(hyp + rollerAxleRadius1 + mountThickness, centerAxleRadius, rth) 
+    val lowerRing = Tube(hyp + rollerAxleRadius1 + mountThickness, centerAxleRadius, rth) 
     val upperRing = lowerRing.moveZ(width - rth)
 
     base + shaft + lowerRing + upperRing
