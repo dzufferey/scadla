@@ -222,7 +222,7 @@ object OpenSCAD {
   def getResult(obj: Solid, outputFile: String, header: Iterable[String] = defaultHeader, options: Iterable[String] = Nil) = {
     val tmpFile = java.io.File.createTempFile("scadlaModel", ".stl")
     toSTL(obj, tmpFile.getPath, header, options)
-    val parsed = StlParser(tmpFile.getPath)
+    val parsed = stl.Parser(tmpFile.getPath)
     tmpFile.delete
     parsed
   }

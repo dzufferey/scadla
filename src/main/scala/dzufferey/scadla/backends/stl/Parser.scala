@@ -1,4 +1,4 @@
-package dzufferey.scadla.backends
+package dzufferey.scadla.backends.stl
 
 import dzufferey.scadla._
 import scala.util.parsing.combinator._
@@ -7,7 +7,7 @@ import dzufferey.utils.LogLevel._
 import java.io._
 
 
-object AsciiStlParser extends JavaTokenParsers {
+object AsciiParser extends JavaTokenParsers {
   
   def parseVertex: Parser[Point] =
     "vertex" ~> repN(3, floatingPointNumber) ^^ {
@@ -27,7 +27,7 @@ object AsciiStlParser extends JavaTokenParsers {
     if (result.successful) {
       result.get
     } else {
-      Logger.logAndThrow("AsciiStlParser", dzufferey.utils.LogLevel.Error, "parsing error: " + result.toString)
+      Logger.logAndThrow("AsciiParser", dzufferey.utils.LogLevel.Error, "parsing error: " + result.toString)
     }
   }
 
@@ -39,7 +39,7 @@ object AsciiStlParser extends JavaTokenParsers {
 
 }
 
-object BinaryStlParser {
+object BinaryParser {
 
   import java.nio.file.FileSystems
   import java.nio.channels.FileChannel
@@ -72,7 +72,7 @@ object BinaryStlParser {
 
 }
 
-object StlParser {
+object Parser {
 
   val txtHeader = "solid"
   val bytesHeader = txtHeader.getBytes("US-ASCII")
@@ -87,9 +87,9 @@ object StlParser {
 
   def apply(fileName: String): Polyhedron = {
     if (isTxt(fileName)) {
-      AsciiStlParser(fileName)
+      AsciiParser(fileName)
     } else {
-      BinaryStlParser(fileName)
+      BinaryParser(fileName)
     }
   }
 

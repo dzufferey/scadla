@@ -1,4 +1,4 @@
-package dzufferey.scadla.examples
+package dzufferey.scadla.examples.fastener
 
 import dzufferey.scadla._
 import dzufferey.scadla.utils._

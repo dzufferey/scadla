@@ -6,7 +6,7 @@ sealed abstract class Solid
 case class Cube(width: Double, depth: Double, height: Double) extends Solid
 case class Sphere(radius: Double) extends Solid
 case class Cylinder(radiusBot: Double, radiusTop: Double, height: Double) extends Solid
-case class Polyhedron(triangles: Iterable[Face]) extends Solid
+case class Polyhedron(faces: Iterable[Face]) extends Solid
 case class FromFile(path: String, format: String = "stl") extends Solid
 case object Empty extends Solid
 

@@ -7,27 +7,27 @@ object Thread {
   
   /* Radius of ISO metric sizes. _x_y stands of x.y mm. */
   object ISO {
-    val _1   = 1    / 2.0
-    val _1_2 = 1.2  / 2.0
-    val _1_6 = 1.6  / 2.0
-    val _2   = 2    / 2.0
-    val _2_5 = 2.5  / 2.0
-    val _3   = 3    / 2.0
-    val _4   = 4    / 2.0
-    val _5   = 5    / 2.0
-    val _6   = 6    / 2.0
-    val _8   = 8    / 2.0
-    val _10  = 10   / 2.0
-    val _12  = 12   / 2.0
-    val _16  = 16   / 2.0
-    val _20  = 20   / 2.0
-    val _24  = 24   / 2.0
-    val _30  = 30   / 2.0
-    val _36  = 36   / 2.0
-    val _42  = 42   / 2.0
-    val _48  = 48   / 2.0
-    val _56  = 56   / 2.0
-    val _64  = 64   / 2.0
+    val M1   = 1    / 2.0
+    val M1_2 = 1.2  / 2.0
+    val M1_6 = 1.6  / 2.0
+    val M2   = 2    / 2.0
+    val M2_5 = 2.5  / 2.0
+    val M3   = 3    / 2.0
+    val M4   = 4    / 2.0
+    val M5   = 5    / 2.0
+    val M6   = 6    / 2.0
+    val M8   = 8    / 2.0
+    val M10  = 10   / 2.0
+    val M12  = 12   / 2.0
+    val M16  = 16   / 2.0
+    val M20  = 20   / 2.0
+    val M24  = 24   / 2.0
+    val M30  = 30   / 2.0
+    val M36  = 36   / 2.0
+    val M42  = 42   / 2.0
+    val M48  = 48   / 2.0
+    val M56  = 56   / 2.0
+    val M64  = 64   / 2.0
   }
 
   /* Radius of UTS imperial sizes. _x_y stands of x/y inches.*/
