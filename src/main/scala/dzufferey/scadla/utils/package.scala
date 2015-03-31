@@ -6,6 +6,8 @@ package object utils {
   
   def inch2mm(i: Double) = i * 25.4
 
+  def polarCoordinates(x: Double, y: Double) = (math.sqrt(x*x + y*y), math.atan2(y,x))
+
   def centeredCube(x: Double, y: Double, z:Double) = Translate(-x/2, -y/2, -z/2, Cube(x,y,z))
 
   def biggerS(obj: Solid, s: Double) = Minkowski(obj, Sphere(s))
@@ -36,17 +38,17 @@ package object utils {
   }
   
   def traverse(f: Solid => Unit, s: Solid): Unit = s match {
-    case Translate(x, y, z, s2) => traverse(f, s2); f(s)
-    case Rotate(x, y, z, s2) => traverse(f, s2); f(s)
-    case Scale(x, y, z, s2) => traverse(f, s2); f(s)
-    case Mirror(x, y, z, s2) => traverse(f, s2); f(s)
-    case Multiply(m, s2) => traverse(f, s2); f(s)
+    case Translate(x, y, z, s2) =>  traverse(f, s2); f(s)
+    case Rotate(x, y, z, s2) =>     traverse(f, s2); f(s)
+    case Scale(x, y, z, s2) =>      traverse(f, s2); f(s)
+    case Mirror(x, y, z, s2) =>     traverse(f, s2); f(s)
+    case Multiply(m, s2) =>         traverse(f, s2); f(s)
 
-    case Union(lst @ _*) => lst.foreach(traverse(f, _)); f(s)
-    case Intersection(lst @ _*) => lst.foreach(traverse(f, _)); f(s)
+    case Union(lst @ _*) =>         lst.foreach(traverse(f, _)); f(s)
+    case Intersection(lst @ _*) =>  lst.foreach(traverse(f, _)); f(s)
     case Difference(s2, lst @ _*) => traverse(f, s2); lst.foreach(traverse(f, _)); f(s)
-    case Minkowski(lst @ _*) => lst.foreach(traverse(f, _)); f(s)
-    case Hull(lst @ _*) => lst.foreach(traverse(f, _)); f(s)
+    case Minkowski(lst @ _*) =>     lst.foreach(traverse(f, _)); f(s)
+    case Hull(lst @ _*) =>          lst.foreach(traverse(f, _)); f(s)
 
     case other => f(other)
   }
@@ -65,6 +67,22 @@ package object utils {
     case Hull(lst @ _*) => f(Hull(lst.map(map(f, _)):_*))
 
     case other => f(other)
+  }
+
+  def fold[A](f: (A, Solid) => A, acc: A, s: Solid): A = s match {
+    case Translate(x, y, z, s2) =>  f(fold(f, acc, s2), s)
+    case Rotate(x, y, z, s2) =>     f(fold(f, acc, s2), s)
+    case Scale(x, y, z, s2) =>      f(fold(f, acc, s2), s)
+    case Mirror(x, y, z, s2) =>     f(fold(f, acc, s2), s)
+    case Multiply(m, s2) =>         f(fold(f, acc, s2), s)
+
+    case Union(lst @ _*) =>         f(lst.foldLeft(acc)( (acc, s2) => fold(f, acc, s2) ), s)
+    case Intersection(lst @ _*) =>  f(lst.foldLeft(acc)( (acc, s2) => fold(f, acc, s2) ), s)
+    case Difference(s2, lst @ _*) => f(lst.foldLeft(fold(f, acc, s2))( (acc, s3) => fold(f, acc, s3) ), s)
+    case Minkowski(lst @ _*) =>    f(lst.foldLeft(acc)( (acc, s2) => fold(f, acc, s2) ), s)
+    case Hull(lst @ _*) =>         f(lst.foldLeft(acc)( (acc, s2) => fold(f, acc, s2) ), s)
+
+    case other => f(acc, other)
   }
 
   def simplify(s: Solid): Solid = {

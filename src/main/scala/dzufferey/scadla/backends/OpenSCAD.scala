@@ -7,28 +7,27 @@ import java.io._
 object OpenSCAD {
 
   protected def getMultiplicity(s: Solid): Map[Solid, Int] = {
-    var map = Map[Solid, Int]()
-    def incr(s: Solid) {
+    def incr(map: Map[Solid, Int], s: Solid) = {
       val mult = map.getOrElse(s, 0) + 1
-      map += (s -> mult)
+      map + (s -> mult)
     }
-    utils.traverse(incr, s)
-    map
+    utils.fold(incr, Map[Solid, Int](), s)
   }
   
-  protected def decreaseMultiplicity(_map: Map[Solid, Int], s: Solid, n: Int): Map[Solid, Int] = {
-    var map = _map
-    def decr(s: Solid) {
-      val mult = map(s) - n
-      assert(mult >= 0)
-      map += (s -> mult)
+  protected def decreaseMultiplicity(map: Map[Solid, Int], s: Solid, n: Int): Map[Solid, Int] = {
+    def decr(map: Map[Solid, Int], s2: Solid) = {
+      val mult = map(s2) - n
+      //TODO get to -1, something funny is going on ...
+      //assert(mult >= 0, "new mult = " + mult + " should be ≥ 0\nn = " + n + "\ns2 = "+s2+"\ns = "+s+").")
+      map + (s2 -> mult)
     }
-    utils.traverse(decr, s)
-    map
+    utils.fold(decr, map, s)
   }
 
   protected def printWithModules(obj: Solid, writer: BufferedWriter) {
     var mult = getMultiplicity(obj)
+    //println(mult.mkString("\n"))
+    //utils.traverse( s => mult(s) > 0, obj)
     var modules = Map[Solid, String]()
     var cnt = 0
     def prnt(obj: Solid, indent: Int): Unit = {
@@ -82,12 +81,14 @@ object OpenSCAD {
           writer.write("union(){")
           writer.newLine
           objs.foreach(prnt(_, indent+2))
+          spaces(indent)(writer)
           writer.write("}")
           writer.newLine
         case Intersection(objs @ _*) =>
           writer.write("intersection(){")
           writer.newLine
           objs.foreach(prnt(_, indent+2))
+          spaces(indent)(writer)
           writer.write("}")
           writer.newLine
         case Difference(pos, negs @ _*) =>
@@ -95,18 +96,21 @@ object OpenSCAD {
           writer.newLine
           prnt(pos, indent+2)
           negs.foreach(prnt(_, indent+2))
+          spaces(indent)(writer)
           writer.write("}")
           writer.newLine
         case Minkowski(objs @ _*) =>
           writer.write("minkowski(){")
           writer.newLine
           objs.foreach(prnt(_, indent+2))
+          spaces(indent)(writer)
           writer.write("}")
           writer.newLine
         case Hull(objs @ _*) =>
           writer.write("hull(){")
           writer.newLine
           objs.foreach(prnt(_, indent+2))
+          spaces(indent)(writer)
           writer.write("}")
           writer.newLine
         //transforms
@@ -219,7 +223,7 @@ object OpenSCAD {
     res
   }
 
-  def getResult(obj: Solid, outputFile: String, header: Iterable[String] = defaultHeader, options: Iterable[String] = Nil) = {
+  def getResult(obj: Solid, header: Iterable[String] = defaultHeader, options: Iterable[String] = Nil) = {
     val tmpFile = java.io.File.createTempFile("scadlaModel", ".stl")
     toSTL(obj, tmpFile.getPath, header, options)
     val parsed = stl.Parser(tmpFile.getPath)

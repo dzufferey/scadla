@@ -8,7 +8,8 @@ case class Face(p1: Point, p2: Point, p3: Point) {
   def normal = {
     val v1 = p1 to p2
     val v2 = p1 to p3
-    v1 cross v2
+    val n1 = v1 cross v2
+    n1 / n1.norm
   }
 }
 
@@ -21,7 +22,9 @@ case class Vector(x: Double, y: Double, z: Double) {
   def +(v: Vector): Vector = Vector(x+v.x, y+v.y, z+v.z)
   def -(v: Vector): Vector = Vector(x-v.x, y-v.y, z-v.z)
   def *(c: Double): Vector = Vector(c*x, c*y, c*z)
+  def /(c: Double): Vector = Vector(x/c, y/c, z/c)
   def dot(v: Vector): Double = x*v.x + y*v.y + z*v.z
   def cross(v: Vector): Vector = Vector(y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x)
+  def norm: Double = math.sqrt(x*x + y*y + z*z)
 }
 
