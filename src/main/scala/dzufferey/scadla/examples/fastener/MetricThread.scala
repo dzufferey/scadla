@@ -400,7 +400,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
     screwThread(
       d + t/8 + tolerance,
       st,
-      30,
+      Pi/6,
       lt,
       0,
       t/4,

@@ -1,6 +1,10 @@
 *.class
 *.log
 
+# model and G-code
+*.stl
+*.gco
+
 # sbt specific
 .cache/
 .history/
