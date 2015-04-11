@@ -42,7 +42,7 @@ object Nut {
 class NutPlaceHolder(tolerance: Double = 0.1) {
 
   def apply(radius: Double) = {
-    Hexagon(radius * 3.2 + tolerance, 1.6 * radius + tolerance)
+    Hexagon(radius * 1.6 + tolerance, 1.6 * radius + tolerance)
   }
 
   val M1   = apply( Thread.ISO.M1 )

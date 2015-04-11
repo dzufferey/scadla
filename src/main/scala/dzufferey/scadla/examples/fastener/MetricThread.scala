@@ -186,7 +186,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    */
   def hexHead(hg: Double, df: Double) = {
     Intersection(
-      Hexagon(df, hg),
+      Hexagon(df/2, hg),
       Cylinder(df/2 + hg, df/2, hg),
       Cylinder(df/2, df/2 + hg, hg)
     )

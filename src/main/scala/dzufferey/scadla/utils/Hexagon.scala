@@ -8,9 +8,13 @@ object Hexagon {
 
   def minRadius(maxRadius: Double) = maxRadius * math.sin(math.Pi/3)
 
+  /* Extrude vertically an hexagon (centered at 0,0 with z from 0 to height)
+   * @param minRadius the radius of the circle inscribed in the hexagon
+   * @param height
+   */
   def apply(minRadius: Double, height: Double) = {
     import scala.math._
-    val rd0 = minRadius/2/sin(Pi/3)
+    val rd0 = minRadius/sin(Pi/3)
     
     val pts = for (i <- 0 until 6; j <- 0 to 1) yield
       Point(rd0 * cos(i * Pi/3), rd0 * sin(i * Pi/3), height * j)
