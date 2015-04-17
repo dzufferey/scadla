@@ -503,6 +503,7 @@ object MetricThread {
   //TODO some screws by name
 
   def renderingOption = List("$fn=30;")
+  def renderer = new backends.OpenSCAD(renderingOption)
 
   def demo = {
 
@@ -547,7 +548,8 @@ object MetricThread {
     //render and display the wheel
     //backends.OpenSCAD.saveFile("test.scad", obj, renderingOption)
     Console.println("rendering set of metric ISO bolts and nuts. This may take a while ...")
-    backends.OpenSCAD.view(obj, renderingOption, Nil, Nil)
+    //new backends.ParallelRenderer(renderer).toSTL(obj, "metric_threads.stl")
+    renderer.view(obj)
   }
 
 }

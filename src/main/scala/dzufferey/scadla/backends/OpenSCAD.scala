@@ -4,7 +4,7 @@ import dzufferey.scadla._
 import dzufferey.utils.SysCmd
 import java.io._
 
-object OpenSCAD {
+class OpenSCAD(header: List[String]) extends Renderer {
 
   protected def getMultiplicity(s: Solid): Map[Solid, Int] = {
     def incr(map: Map[Solid, Int], s: Solid) = {
@@ -170,7 +170,7 @@ object OpenSCAD {
     spaces(n - 8)
   }
 
-  def print(obj: Solid, writer: BufferedWriter, header: Iterable[String] = Nil) {
+  def print(obj: Solid, writer: BufferedWriter) {
     for (h <- header) {
       writer.write(h)
       writer.newLine
@@ -178,57 +178,68 @@ object OpenSCAD {
     printWithModules(obj, writer)
   }
   
-  val defaultHeader = List("$fa=4;", "$fs=0.5;")
 
-
-  protected def writeInFile(file: java.io.File, obj: Solid, header: Iterable[String] = defaultHeader) = {
+  protected def writeInFile(file: java.io.File, obj: Solid) = {
     val writer = new BufferedWriter(new PrintWriter(file))
-    print(obj, writer, header)
+    print(obj, writer)
     writer.close
   }
 
-  protected def toTmpFile(obj: Solid, header: Iterable[String]) = {
+  protected def toTmpFile(obj: Solid) = {
     val tmpFile = java.io.File.createTempFile("scadlaModel", ".scad")
-    writeInFile(tmpFile, obj, header)
+    writeInFile(tmpFile, obj)
     tmpFile
   }
 
-  def saveFile(fileName: String, obj: Solid, header: Iterable[String] = defaultHeader) = {
+  def saveFile(fileName: String, obj: Solid) = {
     val file = new java.io.File(fileName)
-    writeInFile(file, obj, header)
+    writeInFile(file, obj)
   }
 
-  def toSTL(obj: Solid, outputFile: String, header: Iterable[String] = defaultHeader, options: Iterable[String] = Nil) = {
-    val tmpFile = toTmpFile(obj, header)
+  override def toSTL(obj: Solid, outputFile: String) {
+    toSTL(obj, outputFile, Nil)
+  }
+
+  def toSTL(obj: Solid, outputFile: String, options: Iterable[String]) = {
+    val tmpFile = toTmpFile(obj)
     val cmd = Array("openscad", tmpFile.getPath, "-o", outputFile) ++ options
     val res = SysCmd(cmd)
     tmpFile.delete
     res
   }
 
-  def view(obj: Solid, header: Iterable[String] = defaultHeader, optionsRender: Iterable[String] = Nil, optionsView: Iterable[String] = Nil) = {
+  def view(obj: Solid, optionsRender: Iterable[String] = Nil, optionsView: Iterable[String] = Nil) = {
     val tmpFile = java.io.File.createTempFile("scadlaModel", ".stl")
-    toSTL(obj, tmpFile.getPath, header, optionsRender)
+    toSTL(obj, tmpFile.getPath, optionsRender)
     val cmd = Array("meshlab", tmpFile.getPath) ++ optionsView
     val res = SysCmd(cmd)
     tmpFile.delete
     res
   }
 
-  def runOpenSCAD(obj: Solid, header: Iterable[String] = defaultHeader, options: Iterable[String] = Nil) = {
-    val tmpFile = toTmpFile(obj, header)
+  def runOpenSCAD(obj: Solid, options: Iterable[String] = Nil) = {
+    val tmpFile = toTmpFile(obj)
     val cmd = Array("openscad", tmpFile.getPath) ++ options
     val res = SysCmd(cmd)
     tmpFile.delete
     res
   }
 
-  def getResult(obj: Solid, header: Iterable[String] = defaultHeader, options: Iterable[String] = Nil) = {
+  def getResult(obj: Solid, options: Iterable[String] = Nil) = {
     val tmpFile = java.io.File.createTempFile("scadlaModel", ".stl")
-    toSTL(obj, tmpFile.getPath, header, options)
+    toSTL(obj, tmpFile.getPath, options)
     val parsed = stl.Parser(tmpFile.getPath)
     tmpFile.delete
     parsed
   }
+
+  def apply(obj: Solid): Polyhedron = obj match {
+    case p @ Polyhedron(_) => p
+    case other => getResult(other)
+  }
+
+}
+
+object OpenSCAD extends OpenSCAD(List("$fa=4;", "$fs=0.5;")) {
 
 }

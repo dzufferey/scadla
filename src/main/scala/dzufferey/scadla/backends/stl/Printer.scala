@@ -36,22 +36,23 @@ object Printer {
     if (out.order() != ByteOrder.LITTLE_ENDIAN) {
       out.order(ByteOrder.LITTLE_ENDIAN)
     }
-    for (_ <- 0 until 10) out.putLong(0l)
+    def outputPoint(p: Point) {
+      out.putFloat(p.x.toFloat)
+      out.putFloat(p.y.toFloat)
+      out.putFloat(p.z.toFloat)
+    }
+    val header = Array.fill[Byte](80)(' '.toByte)
+    "Generated with Scadla".getBytes.copyToArray(header)
+    out.put(header)
     out.putInt(obj.faces.size)
     obj.faces.foreach{ case f @ Face(p1, p2, p3) =>
       val n = f.normal
       out.putFloat(n.x.toFloat)
       out.putFloat(n.y.toFloat)
       out.putFloat(n.z.toFloat)
-      out.putFloat(p1.x.toFloat)
-      out.putFloat(p1.y.toFloat)
-      out.putFloat(p1.z.toFloat)
-      out.putFloat(p2.x.toFloat)
-      out.putFloat(p2.y.toFloat)
-      out.putFloat(p2.z.toFloat)
-      out.putFloat(p3.x.toFloat)
-      out.putFloat(p3.y.toFloat)
-      out.putFloat(p3.z.toFloat)
+      outputPoint(p1)
+      outputPoint(p2)
+      outputPoint(p3)
       out.putShort(0)
     }
   }
@@ -62,14 +63,30 @@ object Printer {
     finally writer.close
   }
   
+  /*
   def storeBinary(obj: Polyhedron, fileName: String) = {
     val stream = new FileOutputStream(fileName)
     val chan = stream.getChannel
-    val size = 80 + 50 * obj.faces.size
+    val size = 84 + 50 * obj.faces.size
+    assert(size.toLong == 84l + 50l * obj.faces.size, "checking for overflow")
     val buffer = ByteBuffer.allocate(size)
     writeBinary(obj, buffer)
+    buffer.flip
     chan.write(buffer)
     chan.close
+  }
+  */
+
+  def storeBinary(obj: Polyhedron, fileName: String) = {
+    val stream = new RandomAccessFile(fileName, "rw")
+    val chan = stream.getChannel
+    val size = 84 + 50 * obj.faces.size
+    assert(size.toLong == 84l + 50l * obj.faces.size, "checking for overflow")
+    chan.truncate(size)
+    val buffer = chan.map(FileChannel.MapMode.READ_WRITE, 0, size)
+    chan.close
+    writeBinary(obj, buffer)
+    buffer.force
   }
 
 }

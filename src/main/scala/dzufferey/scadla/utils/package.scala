@@ -90,6 +90,7 @@ package object utils {
       case Cube(width, depth, height) if width <= 0.0 || depth <= 0.0 || height <= 0.0 => Empty
       case Sphere(radius) if radius <= 0.0 => Empty
       case Cylinder(radiusBot, radiusTop, height) if height <= 0.0 => Empty
+      //TODO order the points/faces to get a normal form
       case Polyhedron(triangles) if triangles.isEmpty => Empty
 
       case Translate(x1, y1, z1, Translate(x2, y2, z2, s2)) => Translate(x1+x2, y1+y2, z1+z2, s2)

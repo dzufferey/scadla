@@ -210,10 +210,16 @@ object MecanumWheel {
 
     //the full wheel
     val obj = wheel.assembled
-
-    //render and display the wheel
     backends.OpenSCAD.view(obj)
+    //backends.OpenSCAD.toSTL(obj, "mechanum.stl")
     //backends.OpenSCAD.view(obj, Nil, Nil, Nil) //this version renders in a faster but with less details
+
+    //val obj = wheel.rim
+    //val obj = wheel.rollersForCarving
+    //val r = backends.OpenSCAD
+    //val r = new backends.ParallelRenderer(backends.OpenSCAD)
+    //val r = new backends.ParallelRenderer(new backends.OpenSCAD(Nil))
+    //r.toSTL(obj, "carve.stl")
   }
 
 }
