@@ -26,6 +26,7 @@ The main points on which we try to improve are:
 ## Dependencies
 
 For the moment, scadla uses
+* required: Java 8 with JavaFX/OpenJFX
 * required: [OpenSCAD](http://www.openscad.org/) for the CSG operations
 * optional: [Meshlab](http://meshlab.sourceforge.net/) to display the models
 
