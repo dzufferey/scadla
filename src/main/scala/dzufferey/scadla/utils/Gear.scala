@@ -91,6 +91,38 @@ object InvoluteGear {
     carve(pitch, nbrTooths, rackTooth, addenum, height)
   }
 
+  /** An involute gear with z tiled into many layers. */
+  def stepped( pitch: Double,
+               nbrTooths: Int,
+               pressureAngle: Double,
+               addenum: Double,
+               dedenum: Double,
+               height: Double,
+               backlash: Double,
+               skew: Double = 0.1,
+               zStep: Double = 0.1) = {
+    val stepCount = ceil(height / zStep).toInt
+    val stepSize = height / stepCount
+    def isZ(p: Point, z: Double) = (p.z - z).abs <= 1e-10 //TODO better way of dealing with numerical error
+    val base = apply(pitch, nbrTooths, pressureAngle, addenum, dedenum, height, backlash, skew)
+    val (bot, rest) = base.toPolyhedron.faces.partition{ case Face(p1, p2, p3) => isZ(p1, 0) && isZ(p2, 0) && isZ(p3, 0) }
+    val (top, middle) = rest.partition{ case Face(p1, p2, p3) => isZ(p1, height) && isZ(p2, height) && isZ(p3, height) }
+
+    def mvz(i: Int, z: Double) = {
+      if ((z - height).abs <= 1e-10) {
+        if (i == stepCount - 1) z
+        else (i+1) * stepSize
+      } else {
+        i * stepSize
+      }
+    }
+    def mvp(i: Int, p: Point) = Point(p.x, p.y, mvz(i, p.z))
+    def mv(i: Int, f: Face) = Face(mvp(i, f.p1), mvp(i, f.p2), mvp(i, f.p3))
+
+    val newMiddle = middle.flatMap( f => for (i <- 0 until stepCount) yield mv(i, f) )
+    Polyhedron(bot ++ top ++ newMiddle)
+  }
+
 }
 
 object HelicalGear {
@@ -122,14 +154,7 @@ object HelicalGear {
              backlash: Double,
              skew: Double = 0.0,
              zStep: Double = 0.1) = {
-    // (1) make a thin slice of a normal gear
-    // (2) get the polyhedron
-    // (3) stack many copies
-    // (4) apply an helical transform to the points
-    val stepCount = ceil(height / zStep).toInt
-    val stepSize = height / stepCount
-    val step = InvoluteGear(pitch, nbrTooths, pressureAngle, addenum, dedenum, stepSize, backlash, skew)
-    val layer = step.toPolyhedron
+    val stepped = InvoluteGear.stepped(pitch, nbrTooths, pressureAngle, addenum, dedenum, height, backlash, skew, zStep)
     def turnPoint(p: Point): Point = {
       val z = p.z
       val a = helixAngle * z
@@ -137,13 +162,7 @@ object HelicalGear {
       val y = p.x * sin(a) + p.y * cos(a)
       Point(x, y, z)
     }
-    val helixLayer = Polyhedron(layer.faces.map( f => Face(turnPoint(f.p1), turnPoint(f.p2), turnPoint(f.p3)) ))
-    val layers = for (i <- 0 until stepCount) yield {
-      val z = i * stepSize
-      val a = helixAngle * z
-      helixLayer.moveZ(z).rotateZ(a)
-    }
-    Union(layers:_*)
+    Polyhedron(stepped.faces.map( f => Face(turnPoint(f.p1), turnPoint(f.p2), turnPoint(f.p3)) ))
   }
   
 }
@@ -172,12 +191,16 @@ object HerringboneGear {
              backlash: Double,
              skew: Double = 0.0,
              zStep: Double = 0.1) = {
-    // (1) get an helicalGear
-    // (2) union with mirror ground plan
-    // (3) moveZ to get on ground
-    val half = HelicalGear(pitch, nbrTooths, pressureAngle, addenum, dedenum, height/2, helixAngle, backlash, skew, zStep)
-    val full = Union(half, Mirror(0,0,1, half))
-    full.moveZ(height/2)
+    val stepped = InvoluteGear.stepped(pitch, nbrTooths, pressureAngle, addenum, dedenum, height, backlash, skew, zStep)
+    def turnPoint(p: Point): Point = {
+      val z = p.z
+      val a = if (z < height/2) helixAngle * z
+              else helixAngle * (height - z)
+      val x = p.x * cos(a) - p.y * sin(a)
+      val y = p.x * sin(a) + p.y * cos(a)
+      Point(x, y, z)
+    }
+    Polyhedron(stepped.faces.map( f => Face(turnPoint(f.p1), turnPoint(f.p2), turnPoint(f.p3)) ))
   }
   
 }
@@ -190,16 +213,17 @@ object Gear {
     InvoluteGear(pitch, nbrTooths, toRadians(25), add, add, height, backlash)
   }
   
-  /** simplified interface for helical gear (try to guess some parameters) */
-  def helical(pitch: Double, nbrTooths: Int, height: Double, backlash: Double) = {
+  /** simplified interface for helical gear (try to guess some parameters)
+   *  typical helix is 0.05 */
+  def helical(pitch: Double, nbrTooths: Int, height: Double, helix: Double, backlash: Double) = {
     val add = pitch * 2 / nbrTooths
-    HelicalGear(pitch, nbrTooths, toRadians(25), add, add, height, 0.1, backlash)
+    HelicalGear(pitch, nbrTooths, toRadians(25), add, add, height, helix, backlash)
   }
   
   /** simplified interface for herringbone gear (try to guess some parameters) */
-  def herringbone(pitch: Double, nbrTooths: Int, height: Double, backlash: Double) = {
+  def herringbone(pitch: Double, nbrTooths: Int, height: Double, helix: Double, backlash: Double) = {
     val add = pitch * 2 / nbrTooths
-    HerringboneGear(pitch, nbrTooths, toRadians(25), add, add, height, 0.1, backlash)
+    HerringboneGear(pitch, nbrTooths, toRadians(25), add, add, height, helix, backlash)
   }
   
 /* some examples
