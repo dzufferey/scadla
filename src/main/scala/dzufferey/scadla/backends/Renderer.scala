@@ -13,5 +13,15 @@ trait Renderer {
     //stl.Printer.storeText(p, fileName)
   }
 
+  def view(s: Solid) = Viewer.default(apply(s))
+
 }
 
+object Renderer {
+
+  def default: Renderer = {
+    if (OpenSCAD.isPresent) OpenSCAD
+    else JCSG
+  }
+
+}

@@ -208,13 +208,16 @@ class OpenSCAD(header: List[String]) extends Renderer {
     res
   }
 
-  def view(obj: Solid, optionsRender: Iterable[String] = Nil, optionsView: Iterable[String] = Nil) = {
+  def view(obj: Solid, optionsRender: Iterable[String]) = {
     val tmpFile = java.io.File.createTempFile("scadlaModel", ".stl")
     toSTL(obj, tmpFile.getPath, optionsRender)
-    val cmd = Array("meshlab", tmpFile.getPath) ++ optionsView
-    val res = SysCmd(cmd)
+    val res = MeshLab(tmpFile)
     tmpFile.delete
     res
+  }
+
+  override def view(obj: Solid) = {
+    view(obj, Nil)
   }
 
   def runOpenSCAD(obj: Solid, options: Iterable[String] = Nil) = {
@@ -241,5 +244,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
 }
 
 object OpenSCAD extends OpenSCAD(List("$fa=4;", "$fs=0.5;")) {
+
+  lazy val isPresent = SysCmd(Array("openscad", "-v"))._1 == 0
 
 }

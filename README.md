@@ -27,7 +27,7 @@ The main points on which we try to improve are:
 
 For the moment, scadla uses
 * required: Java 8 with JavaFX/OpenJFX
-* required: [OpenSCAD](http://www.openscad.org/) for the CSG operations
+* recommended: [OpenSCAD](http://www.openscad.org/) for the CSG operations
 * optional: [Meshlab](http://meshlab.sourceforge.net/) to display the models
 
 
@@ -108,6 +108,7 @@ Features that may (or may not) be implemented, depending on time and motivation:
   - geometry shader (similar to computer graphics) to modify the surface of objects, e.g., adding a pattern to a flat surface.
   - holes and parts like in SolidPython
   - implicit surfaces, e.g., bezier, nurbs, metaballs.
+  - modifier: Mod(fct: Point => Point, s: Solid) extends Solid
   - more operations
     * chamfer
     * making object smaller (negative minkowski sum): instead of adding some tolerance to all dimension, design your object at the right size, the make them a bit smaller so they fit together. The goal is to move the face parallel to their normal by some amount while keeping the mesh well-formed.

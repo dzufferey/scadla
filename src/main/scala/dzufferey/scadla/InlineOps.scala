@@ -38,7 +38,7 @@ object InlineOps {
     def hull(rhs: Solid) = Hull(lhs, rhs)
     def minkowski(rhs: Solid) = Minkowski(lhs, rhs)
 
-    def toPolyhedron = backends.OpenSCAD.getResult(lhs) //TODO other renderer
+    def toPolyhedron = backends.Renderer.default(lhs) //TODO a way of being lazy
 
   }
 
