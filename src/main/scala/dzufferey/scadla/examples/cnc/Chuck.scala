@@ -61,12 +61,15 @@ object Chuck {
   }
 
   //TODO some more parameters
-  //TODO better wrench, U shaped with the handles at the end of the U
-  def wrench = {
-    val hRadius = Hexagon.minRadius(12.6)
-    val inner = Hexagon(hRadius + tolerance * 4, 8)
-    val body = roundedCubeH(60, 16, 8, 3).move(-60, -8, 0) + roundedCubeH(25, 36, 8, 12).move(-18, -18, 0)
-    body - inner
+  def wrench(tolerance: Double) = {
+    val wall = 15
+    val r = 12.6
+    val c1 = Cylinder(r + 0.5, r + 0.5, 9)
+    val hRadius = Hexagon.minRadius(13)
+    val hex = Hexagon(hRadius + tolerance * 2, 9)
+    val inner = Hull(hex, hex.moveX(r*2))
+    val body = roundedCubeH(r*4+wall, r*2+wall, 9, 5)
+    body - (c1 + inner).move(r+wall/2, r+wall/2, 0)
   }
 
 }

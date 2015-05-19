@@ -77,17 +77,21 @@ object Spindle {
   //TODO creating the gears already does some rendering!!
 
   //val gearBase = Gear.spur( motorBoltDistance / 2.0, 18, 10, 0.1)
-  val gear1 = Gear.helical( motorBoltDistance / 2.0, 24, 10,-0.04, tolerance)
-  val gear2 = Gear.helical( motorBoltDistance / 2.0, 24, 10, 0.04, tolerance)
+  //val gear1 = Gear.helical( motorBoltDistance / 2.0, 24, 10,-0.04, tolerance)
+  //val gear2 = Gear.helical( motorBoltDistance / 2.0, 24, 10, 0.04, tolerance)
+  val gear1 = Gear.helical( motorBoltDistance * 2 / 3.0, 32, 10,-0.04, tolerance)
+  val gear2 = Gear.helical( motorBoltDistance / 3.0    , 16, 10, 0.04, tolerance)
   //val gear1 = Gear.herringbone( motorBoltDistance / 2.0, 24, 10,-0.04, tolerance)
   //val gear2 = Gear.herringbone( motorBoltDistance / 2.0, 24, 10, 0.04, tolerance)
   val motorKnobs = {
     val c = Cylinder(3-tolerance, 3-tolerance, 2).moveZ(10)
-    List(c.moveX(9), c.moveX(-9), c.moveY(9), c.moveY(-9))
+    val u = Union(c.moveX(9), c.moveX(-9), c.moveY(9), c.moveY(-9))
+    val r = (motorBoltDistance / 3.0) * (1.0 - 2.0 / 16)
+    u * Cylinder(r, r, 20)
   }
   //gears
   val gearBolt = gear1 - Cylinder(4+tolerance, 4+tolerance, 10) - nut.M8.moveZ(5.5)
-  val gearMotor = gear2 - Cylinder(2.5+tolerance, 2.5+tolerance, 10) ++ motorKnobs
+  val gearMotor = gear2 - Cylinder(2.5+tolerance, 2.5+tolerance, 10) + motorKnobs
 
   objects += "gear_bolt" -> gearBolt
   objects += "gear_motor" -> gearMotor
@@ -207,7 +211,7 @@ object Spindle {
 
   val colletWrench = Collet.wrench(innerHole, Thread.UTS._1_8, tolerance)
 
-  objects += "chuck_wrench" -> Chuck.wrench
+  objects += "chuck_wrench" -> Chuck.wrench(tolerance)
   objects += "chuck_blocker" -> chuckBlocker
   objects += "chuck_inner" -> chuckInner
   objects += "collet_inner" -> colletInner

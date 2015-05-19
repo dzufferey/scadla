@@ -1,6 +1,8 @@
 package dzufferey.scadla.utils
   
 import dzufferey.scadla._
+import InlineOps._
+import scala.math._
 
 object Hexagon {
 
@@ -36,6 +38,20 @@ object Hexagon {
     )
     val faces = side1 ++ side2 ++ bottom ++ top
     Polyhedron(faces)
+  }
+  
+  /* Extrude vertically a semi-regular hexagon (centered at 0,0 with z from 0 to height)
+   * @param radius1 the radius of the circle inscribed in the hexagon even faces
+   * @param radius2 the radius of the circle inscribed in the hexagon odd faces
+   * @param height
+   */
+  def semiRegular(radius1: Double, radius2: Double, height: Double) = {
+    val r = max(maxRadius(radius1), maxRadius(radius2))
+    val base = Cylinder(r,r,height)
+    val chop = Cube(r, 2*r, height).moveY(-r)
+    val neg1 = for(i <- 0 until 6 if i % 2 == 0) yield chop.moveX(radius1).rotateZ(i * Pi / 3)
+    val neg2 = for(i <- 0 until 6 if i % 2 == 1) yield chop.moveX(radius2).rotateZ(i * Pi / 3)
+    base -- neg1 -- neg2
   }
 
 }
