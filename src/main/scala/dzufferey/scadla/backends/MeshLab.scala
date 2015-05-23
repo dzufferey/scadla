@@ -19,4 +19,6 @@ object MeshLab extends Viewer {
     tmpFile.delete
   }
   
+  lazy val isPresent = SysCmd(Array("meshlab", "-h"))._1 == 0
+  
 }

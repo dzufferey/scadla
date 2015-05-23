@@ -207,20 +207,26 @@ object HerringboneGear {
 
 object Gear {
 
-  /** simplified interface for spur gear (try to guess some parameters) */
+  /** Simplified interface for spur gear (try to guess some parameters).
+   *  To mesh gears of different sizes, the pitch/nbrTooths ratio must be the same for all the gears.
+   */
   def spur(pitch: Double, nbrTooths: Int, height: Double, backlash: Double) = {
     val add = pitch * 2 / nbrTooths
     InvoluteGear(pitch, nbrTooths, toRadians(25), add, add, height, backlash)
   }
   
-  /** simplified interface for helical gear (try to guess some parameters)
-   *  typical helix is 0.05 */
+  /** Simplified interface for helical gear (try to guess some parameters)
+   *  Typical helix is 0.05
+   *  To mesh gears of different sizes, the pitch/nbrTooths and pitch/helix ratio must be the same for all the gears.
+   */
   def helical(pitch: Double, nbrTooths: Int, height: Double, helix: Double, backlash: Double) = {
     val add = pitch * 2 / nbrTooths
     HelicalGear(pitch, nbrTooths, toRadians(25), add, add, height, helix, backlash)
   }
   
-  /** simplified interface for herringbone gear (try to guess some parameters) */
+  /** simplified interface for herringbone gear (try to guess some parameters)
+   *  To mesh gears of different sizes, the pitch/nbrTooths and pitch/helix ratio must be the same for all the gears.
+   */
   def herringbone(pitch: Double, nbrTooths: Int, height: Double, helix: Double, backlash: Double) = {
     val add = pitch * 2 / nbrTooths
     HerringboneGear(pitch, nbrTooths, toRadians(25), add, add, height, helix, backlash)

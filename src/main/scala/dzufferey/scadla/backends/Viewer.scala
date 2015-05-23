@@ -13,7 +13,9 @@ trait Viewer {
 
 object Viewer {
 
-  //TODO configurable
-  def default = MeshLab
+  def default: Viewer = {
+    if (MeshLab.isPresent) MeshLab
+    else JfxViewer
+  }
 
 }
