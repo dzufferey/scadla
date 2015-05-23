@@ -5,7 +5,12 @@ import org.scalatest._
 
 class OpenSCADTest extends FunSuite {
 
-//test("rendering 1") {
+//test("rendering 1a") {
+//  val obj = OpenSCAD(Sphere(1.0))
+//  JfxViewer(obj)
+//}
+
+//test("rendering 1b") {
 //  OpenSCAD.view(Sphere(1.0))
 //}
 

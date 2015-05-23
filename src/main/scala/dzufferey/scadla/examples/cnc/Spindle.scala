@@ -79,8 +79,8 @@ object Spindle {
   //val gearBase = Gear.spur( motorBoltDistance / 2.0, 18, 10, 0.1)
   //val gear1 = Gear.helical( motorBoltDistance / 2.0, 24, 10,-0.04, tolerance)
   //val gear2 = Gear.helical( motorBoltDistance / 2.0, 24, 10, 0.04, tolerance)
-  val gear1 = Gear.helical( motorBoltDistance * 2 / 3.0, 32, 10,-0.04, tolerance)
-  val gear2 = Gear.helical( motorBoltDistance / 3.0    , 16, 10, 0.04, tolerance)
+  val gear1 = Gear.helical( motorBoltDistance * 2 / 3.0, 32, 10,-0.03, tolerance)
+  val gear2 = Gear.helical( motorBoltDistance / 3.0    , 16, 10, 0.06, tolerance)
   //val gear1 = Gear.herringbone( motorBoltDistance / 2.0, 24, 10,-0.04, tolerance)
   //val gear2 = Gear.herringbone( motorBoltDistance / 2.0, 24, 10, 0.04, tolerance)
   val motorKnobs = {
