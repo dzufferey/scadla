@@ -31,7 +31,7 @@ package object utils {
       val d = 2*r
       assert(d < x && d < y, "roundedCube, radius should be less than x/2, y/2.")
       val c = Translate(r, r, 0, Cube(x - d, y - d, h))
-      Minkowski(c, Cylinder(r, r, h))
+      Minkowski(c, Cylinder(r, h))
     } else {
       Cube(x,y,z)
     }

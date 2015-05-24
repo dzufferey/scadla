@@ -61,37 +61,34 @@ object Spindle {
   // parameters //
   ////////////////
   
-  val boltSupportTop = 86 - 5.5 // space used by the gear
   val motorBaseToGear = 37.3
   val bitsLength = 25
-  val bearingSupportHeight = 15 // part under the base
+  val boltSupportTop = 86 - 10 - 5
+  //10 space used by the gear at the top
+  //5 space taken by the chuck at the bottom
+
 
   //derived constants
   val motorBoltDistance = (30 + 30) / 2f //depends on the size of the motorBase and boltSupport
-  val motorBaseHeight = boltSupportTop + 1 - motorBaseToGear - bearingSupportHeight
+  val motorBaseHeight = boltSupportTop + 1 - motorBaseToGear 
 
   ///////////
   // gears //
   ///////////
 
   //TODO creating the gears already does some rendering!!
-
-  //val gearBase = Gear.spur( motorBoltDistance / 2.0, 18, 10, 0.1)
-  //val gear1 = Gear.helical( motorBoltDistance / 2.0, 24, 10,-0.04, tolerance)
-  //val gear2 = Gear.helical( motorBoltDistance / 2.0, 24, 10, 0.04, tolerance)
   val gear1 = Gear.helical( motorBoltDistance * 2 / 3.0, 32, 10,-0.03, tolerance)
   val gear2 = Gear.helical( motorBoltDistance / 3.0    , 16, 10, 0.06, tolerance)
-  //val gear1 = Gear.herringbone( motorBoltDistance / 2.0, 24, 10,-0.04, tolerance)
-  //val gear2 = Gear.herringbone( motorBoltDistance / 2.0, 24, 10, 0.04, tolerance)
   val motorKnobs = {
-    val c = Cylinder(3-tolerance, 3-tolerance, 2).moveZ(10)
+    val c = Cylinder(3-tolerance, 2).moveZ(10)
     val u = Union(c.moveX(9), c.moveX(-9), c.moveY(9), c.moveY(-9))
     val r = (motorBoltDistance / 3.0) * (1.0 - 2.0 / 16)
-    u * Cylinder(r, r, 20)
+    u * Cylinder(r, 20)
   }
+  val nutTop = Cylinder(Thread.ISO.M8 * 3, 14) - nut.M8.moveZ(10)
   //gears
-  val gearBolt = gear1 - Cylinder(4+tolerance, 4+tolerance, 10) - nut.M8.moveZ(5.5)
-  val gearMotor = gear2 - Cylinder(2.5+tolerance, 2.5+tolerance, 10) + motorKnobs
+  val gearBolt = gear1 + nutTop - Cylinder(4+tolerance, 10)
+  val gearMotor = gear2 - Cylinder(2.5+tolerance, 10) + motorKnobs
 
   objects += "gear_bolt" -> gearBolt
   objects += "gear_motor" -> gearMotor
@@ -106,7 +103,7 @@ object Spindle {
   val motorBase = {
 
     val nm3 = bigger(Hull(nut.M3, nut.M3.moveX(5)), 0.4)
-    val screw_hole = Cylinder(Thread.ISO.M3, Thread.ISO.M3, 10)
+    val screw_hole = Cylinder(Thread.ISO.M3, 10)
     val fasteners = Seq(
       screw_hole.move( 3.25, 3.25, 0),
       screw_hole.move(26.75, 3.25, 0),
@@ -118,70 +115,26 @@ object Spindle {
       nm3.rotateZ(Pi).move( 3.25,26.75, 4)
     ).map(_.moveZ(motorBaseHeight - 10))
 
-    val shaftHole = Cylinder(10, 10, motorBaseHeight).move(15, 15, 0) //hole for the lower part of the motor's shaft
+    val shaftHole = Cylinder(10, motorBaseHeight).move(15, 15, 0) //hole for the lower part of the motor's shaft
     val breathingSpaces = Seq(
-      Cylinder(20, 20, 50).moveZ(-25).scaleX(0.30).rotateX(Pi/2).move(15,15,motorBaseHeight),
-      Cylinder(20, 20, 50).moveZ(-25).scaleY(0.30).rotateY(Pi/2).move(15,15,motorBaseHeight)
+      Cylinder(20, 50).moveZ(-25).scaleX(0.30).rotateX(Pi/2).move(15,15,motorBaseHeight),
+      Cylinder(20, 50).moveZ(-25).scaleY(0.30).rotateY(Pi/2).move(15,15,motorBaseHeight)
     )
 
     //the block on which the motor is screwed
     Cube(30, 30, motorBaseHeight) - shaftHole -- fasteners -- breathingSpaces
   }
 
-  val supportBlocks = Union(
-    Cube(6,3,3).moveY(5),
-    Cube(6,3,3).moveY(10),
-    Cube(6,3,3).moveY(15),
-    Cube(6,3,3)
-  )
-  objects += "support_blocks" -> supportBlocks
-  val supportBlockPH = Cube(3+tolerance,3+tolerance,3+tolerance).move(-tolerance/2, -tolerance/2, 0)
-  val sbs = Seq(
-    supportBlockPH.move(13.5,0,0),
-    supportBlockPH.move(0,13.5,0),
-    supportBlockPH.move(13.5,27,0),
-    supportBlockPH.move(27,13.5,0)
-  )
-
-  val bearingSupport = {
-    //val block = Cube(30, 30, bearingSupportHeight)
-    val block = roundedCubeH(30, 30, bearingSupportHeight, 3)
-    val b = bearing.move(15, 15, bearingSupportHeight - 7)
-    val screw_hole = Union(
-      Cylinder(Thread.ISO.M2 + tolerance, Thread.ISO.M2 + tolerance, bearingSupportHeight),
-      Cylinder(Thread.ISO.M2 * 2, Thread.ISO.M2 * 2, 2).moveZ(bearingSupportHeight -2)
-    )
-    val screws = Seq(
-      screw_hole.move( 3.25, 3.25, 0),
-      screw_hole.move(26.75, 3.25, 0),
-      screw_hole.move( 3.25,26.75, 0),
-      screw_hole.move(26.75,26.75, 0)
-    )
-    block - b -- screws -- sbs - Cylinder(8, 8, bearingSupportHeight).move(15,15,0)
-  }
-
   //centered at 0, 0
   val boltSupport = {
-    val top = boltSupportTop - bearingSupportHeight
-    val base = Cube(30, 30, top).move(-15, -15, 0)
-    val nm2 = bigger(Hull(nut.M2, nut.M2.moveX(5)), 0.2)
-    val screw = Cylinder(Thread.ISO.M2 + tolerance, Thread.ISO.M2 + tolerance, 10)
-    val fasteners = (List(
-      screw.move( 3.25, 3.25, 0),
-      screw.move(26.75, 3.25, 0),
-      screw.move( 3.25,26.75, 0),
-      screw.move(26.75,26.75, 0),
-      nm2.rotateZ(-Pi/2).move(26.75, 3.25, 3),
-      nm2.move(26.75,26.75, 3),
-      nm2.rotateZ(-Pi/2).move( 3.25, 3.25, 3),
-      nm2.rotateZ(Pi).move( 3.25,26.75, 3)
-    ) ++ sbs).map(_.move(-15, -15, 0))
-    base - bearing.moveZ(top - 7) - Cylinder(8, 8, boltSupportTop) -- fasteners
+    val base = Cube(30, 30, boltSupportTop).move(-15, -15, 0)
+    val lowerBearing = Hull(Cylinder(10, 7.5), bearing.moveZ(-0.5)) //add a small chamfer
+    base - lowerBearing - bearing.moveZ(boltSupportTop - 7) - Cylinder(9, boltSupportTop)
   }
 
   val spindle = {
-    val s = Cylinder(Thread.ISO.M3 + tolerance, Thread.ISO.M3 + tolerance, 5)
-    val fix = Cylinder(5, 5, 5) + Cube(5, 10, 5).move(-5, -5, 0) - s
+    val s = Cylinder(Thread.ISO.M3 + tolerance, 5)
+    val fix = Cylinder(5, 5) + Cube(5, 10, 5).move(-5, -5, 0) - s
     Union(
       boltSupport.move(15, 15, 0),
       motorBase.moveY(30),
@@ -192,7 +145,6 @@ object Spindle {
    )
   }
 
-  objects += "bearing_support" -> bearingSupport
   objects += "spindle_body" -> spindle
 
 
@@ -201,18 +153,18 @@ object Spindle {
   ///////////
 
   val colletLength = bitsLength - 3
-  val chuckHeight = 20.5 + colletLength
+  val chuckHeight = 5.5 + 8 + colletLength + 15 //(5.5 + 8) represent the space for the nuts
 
   val innerHole = 17.5 / 2
-  val chuckInner = Chuck.innerThread(innerHole, chuckHeight, colletLength, 20)
+  val chuckInner = Chuck.innerThread(13, innerHole+tolerance, chuckHeight, colletLength, 20)
   val colletInner = Collet.threaded(innerHole+1, innerHole, Thread.UTS._1_8+tolerance, colletLength,
                                     6, 1, 2, 20, tolerance, Thread.ISO.M2)
-  val chuckBlocker = Chuck.blocker( innerHole, tolerance)
+  //val chuckBlocker = Chuck.blocker( innerHole, tolerance)
 
   val colletWrench = Collet.wrench(innerHole, Thread.UTS._1_8, tolerance)
 
-  objects += "chuck_wrench" -> Chuck.wrench(tolerance)
-  objects += "chuck_blocker" -> chuckBlocker
+  objects += "chuck_wrench" -> Chuck.wrench(13, tolerance)
+  //objects += "chuck_blocker" -> chuckBlocker
   objects += "chuck_inner" -> chuckInner
   objects += "collet_inner" -> colletInner
   objects += "collet_wrench" -> colletWrench

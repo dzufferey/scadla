@@ -17,7 +17,7 @@ object BitsHolder {
     val holes = for (i <- 0 until cols; j <- 0 until rows) yield {
       val mx = separation/2 + i * separation
       val my = separation/2 + j * separation
-      Cylinder(shankDiammeter/2, shankDiammeter/2, height).move(mx, my, 1)
+      Cylinder(shankDiammeter/2, height).move(mx, my, 1)
     }
     base -- holes
   }

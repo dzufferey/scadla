@@ -11,7 +11,7 @@ class Roller(height: Double, maxOuterRadius: Double,minOuterRadius: Double, inne
   val axis = 0.5
   val h = height - 2*axis
 
-  protected def carveAxle(s: Solid) = s - Cylinder(innerRadius,innerRadius, height)
+  protected def carveAxle(s: Solid) = s - Cylinder(innerRadius, height)
 
   def outline = {
     // r * f = maxOuterRadius
@@ -21,8 +21,8 @@ class Roller(height: Double, maxOuterRadius: Double,minOuterRadius: Double, inne
     val r = h / 2 / math.sin(a)
     val f = maxOuterRadius / r
     val s = Sphere(r).scale(f, f, 1).moveZ(height/2)
-    val c1 = Cylinder(maxOuterRadius, maxOuterRadius, h).moveZ(axis)
-    val c2 = Cylinder(minOuterRadius, minOuterRadius, height)
+    val c1 = Cylinder(maxOuterRadius, h).moveZ(axis)
+    val c2 = Cylinder(minOuterRadius, height)
     (s * c1) + c2
   }
 
@@ -33,7 +33,7 @@ class Roller(height: Double, maxOuterRadius: Double,minOuterRadius: Double, inne
   def skeleton = {
     val base =
       carveAxle(
-        Cylinder(minOuterRadius, minOuterRadius, height) +
+        Cylinder(minOuterRadius, height) +
         solid.scale(0.8, 0.8, 1)
       )
     val angle = math.Pi / 8
@@ -128,13 +128,13 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
   protected def rollersForCarving = {
     val r1 = Hull(roller.solid, roller.solid.moveX(2*maxR))
     val r2 = bigger(r1, rollerRimGap).moveZ(-rollerHeight/2)
-    val c = Cylinder(rollerAxleRadius1, rollerAxleRadius1, axleHeight).moveZ(-axleHeight/2)
+    val c = Cylinder(rollerAxleRadius1, axleHeight).moveZ(-axleHeight/2)
     placeOnRim(r2 + c)
   }
 
   protected def rollers = {
     val r = roller.solid.moveZ(-rollerHeight/2)
-    //val c = Cylinder(rollerAxleRadius1, rollerAxleRadius1, axleHeight).moveZ(-axleHeight/2)
+    //val c = Cylinder(rollerAxleRadius1, axleHeight).moveZ(-axleHeight/2)
     placeOnRim(r) //+ c)
   }
 
@@ -163,16 +163,16 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     val holeOffsetA = angle / 2
 
     val holes = for(i <- 0 until nbrHoles) yield
-        Cylinder(rollerAxleRadius1, rollerAxleRadius1, width).moveX(holeOffsetX).rotate(0, 0, holeOffsetA + i*angle)
+        Cylinder(rollerAxleRadius1, width).moveX(holeOffsetX).rotate(0, 0, holeOffsetA + i*angle)
 
     val withHoles = hub -- holes
-    val lowerHalf = withHoles * Cylinder(innerR+ maxR, innerR + maxR, width/2)
-    val upperHalf = withHoles * Cylinder(innerR+ maxR, innerR + maxR, width/2).moveZ(width/2)
+    val lowerHalf = withHoles * Cylinder(innerR + maxR, width/2)
+    val upperHalf = withHoles * Cylinder(innerR + maxR, width/2).moveZ(width/2)
 
     val kHeight = min(5, width / 2 - 2)
     val kRadius = 1.5
     val knobX = holeOffsetX + kRadius - 1
-    val knob = Cylinder(kRadius, kRadius, kHeight)
+    val knob = Cylinder(kRadius, kHeight)
     val knobs = for(i <- 0 until nbrHoles) yield knob.move(knobX, 0, width/2).rotate(0, 0, i*angle)
 
     val lowerWithKnobs = lowerHalf ++ knobs

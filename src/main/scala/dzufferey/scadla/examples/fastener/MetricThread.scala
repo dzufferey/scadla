@@ -82,7 +82,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
     val thread = for(i <- 0 until ttn; j <- 0 until sn) yield mkPoly(i, j)
 
     val r = ir + icut
-    val center = Translate(0, 0, -st, Cylinder(r, r, (ttn+1)*st))
+    val center = Translate(0, 0, -st, Cylinder(r, (ttn+1)*st))
 
     Union( (center +: thread):_* )
   }
@@ -109,22 +109,22 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    */
   def threadShape(cs: Int, lt: Double, or: Double, ir: Double, st: Double, ocut: Double) = {
     if ( cs == 0 ) {
-      Cylinder(or-ocut, or-ocut, lt)
+      Cylinder(or-ocut, lt)
     } else {
       Intersection(
         Union(
-          Cylinder(or, or, lt-st+0.005).moveZ(st/2),
+          Cylinder(or, lt-st+0.005).moveZ(st/2),
 
           if ( cs == -1 || cs == 2 ) Cylinder(ir, or, st/2)
-          else Cylinder(or, or, st/2),
+          else Cylinder(or, st/2),
           
           Translate(0, 0, lt-st/2,
             if ( cs == 1 || cs == 2 ) Cylinder(or, ir, st/2)
-            else Cylinder(or, or, st/2)
+            else Cylinder(or, st/2)
           )
         ),
         
-        Cylinder(or-ocut, or-ocut, lt+st).moveZ(-st/2.0)
+        Cylinder(or-ocut, lt+st).moveZ(-st/2.0)
       )
     }
   }
@@ -272,15 +272,15 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
       hexHead(hg, df),
          
       Translate(0, 0, hg,
-        if ( ntl == 0 ) Cylinder(ntr, ntr, 0.01)
-        else if ( ntd == -1 ) Cylinder(ntr, ntr, ntl+0.01)
+        if ( ntl == 0 ) Cylinder(ntr, 0.01)
+        else if ( ntd == -1 ) Cylinder(ntr, ntl+0.01)
         else if ( ntd == 0 ) {
           val r = od/2 - ocut
           Union(
-            Cylinder(r, r, ntl-st/2),
+            Cylinder(r, ntl-st/2),
             Cylinder( r, ntr, st/2).moveZ(ntl-st/2)
           )
-        } else Cylinder(ntd/2, ntd/2, ntl)
+        } else Cylinder(ntd/2, ntl)
       ),
 
       screwThread(od-tolerance, st, lf0, lt, cs, icut, ocut).moveZ(ntl+hg)

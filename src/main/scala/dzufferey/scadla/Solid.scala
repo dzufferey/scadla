@@ -25,3 +25,9 @@ case class Mirror(x: Double, y: Double, z: Double, obj: Solid) extends Solid
 case class Multiply(m: Matrix, obj: Solid) extends Solid
 
 //modifiers
+
+
+//additional constructor for Cylinder
+object Cylinder {
+  def apply(radius: Double, height: Double): Cylinder = Cylinder(radius, radius, height)
+}

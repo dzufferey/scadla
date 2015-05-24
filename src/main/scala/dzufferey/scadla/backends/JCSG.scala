@@ -7,8 +7,6 @@ import scala.math._
 import java.util.ArrayList
 
 //backend using: https://github.com/miho/JCSG
-//model viewer:  https://github.com/miho/JFXScad
-
 object JCSG extends JCSG(16)
 
 class JCSG(numSlices: Int) extends Renderer {

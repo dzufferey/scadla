@@ -8,68 +8,40 @@ import dzufferey.scadla.examples.fastener._
 import Common._
 
 object Chuck {
+
+  protected def doubleHex(radius: Double, height: Double) = {
+    val h = Hexagon(radius, height)
+    Union(h, h.rotateZ(Pi/6))
+  }
   
   //TODO some more parameters
-  def innerThread( innerHole: Double,
+  //assumes M8 middle
+  def innerThread( outerRadius: Double,
+                   innerHole: Double,
                    chuckHeight: Double,
                    colletLength: Double,
                    mNumber: Double ) = {
-    val body = Cylinder(12.6, 12.6, chuckHeight - 10)
-    val hexTop = (body * Hexagon(Hexagon.minRadius(13), 10)).moveZ(chuckHeight-10)
-    val thread = threading.screwThreadIsoInner(mNumber, colletLength)
-    val toRemove = List(
-      thread,
-      nut.M8.moveZ(chuckHeight -4.5),
-      Cylinder( 4, 4, chuckHeight),
-      Cylinder( innerHole, innerHole, chuckHeight -4.5 -8),
-      Cylinder( innerHole+1, innerHole, chuckHeight -4.5 -8 -8),
-      Cylinder( innerHole, innerHole - 6, 6).moveZ(chuckHeight -4.5 -8)
+    val body = Union(
+      Cylinder(outerRadius, chuckHeight - 5).moveZ(5),
+      doubleHex(Hexagon.minRadius(outerRadius), 5)
     )
-    body + hexTop --toRemove
-  }
-
-  //TODO some more parameters
-  def outerThread(innerHole: Double,
-                  chuckHeight: Double,
-                  colletLength: Double,
-                  mNumber: Double) = {
-    val body = Cylinder(12.6, 12.6, chuckHeight - 10)
-    val hexTop = (body * Hexagon(Hexagon.minRadius(13), 10)).moveZ(chuckHeight-10)
-    val thread = threading.screwThreadIsoOuter(mNumber, colletLength, 2)
     val toRemove = List(
-      nut.M8.moveZ(chuckHeight -4.5),
-      Cylinder( 4, 4, chuckHeight),
-      Cylinder( innerHole, innerHole, chuckHeight -4.5 -8),
-      Cylinder( innerHole+1, innerHole, chuckHeight -4.5 -8 -8),
-      Cylinder( innerHole, innerHole - 6, 6).moveZ(chuckHeight -4.5 -8)
+      threading.screwThreadIsoInner(mNumber, colletLength),
+      Cylinder( 4, chuckHeight),
+      nut.M8.moveZ(colletLength + 8),
+      Cylinder( innerHole, colletLength + 8),
+      Cylinder( innerHole+1, innerHole, colletLength)
     )
-    body + hexTop + thread -- toRemove
-  }
-
-  //TODO some more parameters
-  def outerThreadCap(chuckHeight: Double, colletLength: Double) = {
-    val body = Cylinder(18, 18, colletLength + 3)
-    val thread = threading.screwThreadIsoInner(30, chuckHeight)
-    val grove = Cylinder(1, 1, colletLength).scaleX(0.5).moveX(18)
-    val groves = for (i <- 0 until 12) yield grove.rotateZ(i * 2 * Pi / 12)
-    body - thread.moveZ(2) - Cylinder(3, 3, colletLength) -- groves
+    body -- toRemove
   }
   
   //TODO some more parameters
-  def blocker(innerHole: Double, tolerance: Double) = {
-    Cylinder( innerHole-tolerance, innerHole-6-tolerance, 6) - Cylinder( 4+tolerance, 4+tolerance, 6)
-  }
-
-  //TODO some more parameters
-  def wrench(tolerance: Double) = {
-    val wall = 15
-    val r = 12.6
-    val c1 = Cylinder(r + 0.5, r + 0.5, 9)
-    val hRadius = Hexagon.minRadius(13)
-    val hex = Hexagon(hRadius + tolerance * 2, 9)
-    val inner = Hull(hex, hex.moveX(r*2))
-    val body = roundedCubeH(r*4+wall, r*2+wall, 9, 5)
-    body - (c1 + inner).move(r+wall/2, r+wall/2, 0)
+  def wrench(outerRadius: Double, tolerance: Double) = {
+    val wall = 5
+    val hex = doubleHex(Hexagon.minRadius(outerRadius) + tolerance, 5)
+    val head = Cylinder(outerRadius + wall, 5)
+    val handle = roundedCubeH(outerRadius*6, outerRadius*2, 5, 3)
+    head + handle.moveY(-outerRadius) - hex
   }
 
 }

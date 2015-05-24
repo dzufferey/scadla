@@ -13,7 +13,7 @@ object Platform {
     Union(
       bearing.moveZ(-tolerance/2),
       bearing.moveZ(7 + space + tolerance/2),
-      Cylinder(9, 9, space).moveZ(7),
+      Cylinder(9, space).moveZ(7),
       Cylinder(11 + tolerance,         11 + tolerance - space, space).moveZ(7),
       Cylinder(11 + tolerance - space, 11 + tolerance,         space).moveZ(7)
     )
@@ -31,7 +31,7 @@ object Platform {
   }
 
   def bearingsTest(height: Double, s: Double) = {
-    val base = Cylinder(14, 14, height)
+    val base = Cylinder(14, height)
     val hole = Cube(15,3,height-3).move(5,-1.5,1.5)
     base - hole - bearings(s).moveZ(height/2 - 7 - s/2)
   }
@@ -39,7 +39,7 @@ object Platform {
   //space should be ~ zBearingSpace + 2*tolerance
   def apply(wall: Double, height: Double, space: Double) = {
     val bNeg = bearings(space).moveZ(height/2 - 7 - space/2) 
-    val bHolder = Cylinder(11 + wall, 11 + wall, height)
+    val bHolder = Cylinder(11 + wall, height)
     val radius = 48
     def place(s: Solid) = {
       val paired = Union(

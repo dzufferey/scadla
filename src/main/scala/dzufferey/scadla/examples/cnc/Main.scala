@@ -17,6 +17,8 @@ object Main{
   //}
   //r.toSTL(Spindle.objects("gear_bolt"), "gear_bolt.stl")
   //r.toSTL(Spindle.objects("gear_motor"), "gear_motor.stl")
+  //r.toSTL(Rotate(math.Pi, 0, 0, Spindle.objects("bearing_support")), "bearing_support.stl")
+  //r.toSTL(Spindle.objects("spindle_body"), "spindle_body.stl")
 
   //val j = new Joint2DOF()
   //j.parts.zipWithIndex.par.foreach{ case (p, i) =>
@@ -25,7 +27,7 @@ object Main{
 
   //r.toSTL(Platform(4, 10, 1.8), "paltform.stl")
 
-    sys.error("work in progress")
+    println("work in progress")
   }
 
 }

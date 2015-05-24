@@ -120,11 +120,13 @@ Features that may (or may not) be implemented, depending on time and motivation:
      generalize renderer into `Renderer[A]` with
       * `render(s: Solid, renderedChildren: Seq[A]): A`
       * `postprocess(s: A): Polyhedron`
+  - built-in model viewer
+    * choosing window size according to screen size, and allow resizing
+    * moving the point of view
   - for more complex surface look at marchine cube:
     * [marching cubes](https://en.wikipedia.org/wiki/Marching_cubes), http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7139, http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html, http://link.springer.com/article/10.1007%2FBF01900830
     * It could be fun to try to implement that in OpenCL using [JavaCL](https://code.google.com/p/javacl/)
     * use adaptative sampling instead of a fix grid
-  - Could we build a simple 3D viewer? so we could remove the meshlab dependence. (look at [OpenJFX](https://wiki.openjdk.java.net/display/OpenJFX/Main), [JFXScad](https://github.com/miho/JFXScad) )
 
 * ...
 

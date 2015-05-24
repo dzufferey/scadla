@@ -34,15 +34,15 @@ class Joint2DOF(radius: Double = Thread.UTS._1_4) {
   protected val yThreadHolder = (Hexagon.maxRadius(radius) * 2 + 1) + 6
   protected val zThreadHolder = 15.0
 
-  protected val xAxis = Cylinder(m3t, m3t, 25)
-  protected val zAxis = Cylinder(M4, M4, 25) //Cylinder(m4t, m4t, 25)
+  protected val xAxis = Cylinder(m3t, 25)
+  protected val zAxis = Cylinder(M4, 25) //Cylinder(m4t, 25)
   protected val zOffset = 1
   protected val zBearingSpace = 1
   
   protected val yBase = 18.5
 
   val part1a = {
-    val t = Cylinder(15,15,7) - bearing
+    val t = Cylinder(15,7) - bearing
     val n = {
       val n0 = nut(radius + tolerance).moveZ(3)
       val n1 = n0.moveX(-radius+1) + n0.moveX(radius-1)
@@ -80,7 +80,7 @@ class Joint2DOF(radius: Double = Thread.UTS._1_4) {
   }
 
   val part2a = {
-    val c4 = Cylinder(m2t, m2t, 10)
+    val c4 = Cylinder(m2t, 10)
     val c5 = Cube(4, m2t*2+2, m2t*2+2)
 
     val offset = (xThreadHolder-7) / 2
@@ -101,15 +101,15 @@ class Joint2DOF(radius: Double = Thread.UTS._1_4) {
   }
 
   val part2b = {
-    val c2 = Cylinder(4, 4, 3.5)
-    val c3 = Cylinder(6, 6, 0.5)
-    val c4 = Cylinder(m2t, m2t, 10)
+    val c2 = Cylinder(4, 3.5)
+    val c3 = Cylinder(6, 0.5)
+    val c4 = Cylinder(m2t, 10)
     val c5 = Cube(m2t*2+2, m2t*2+2, 2)
     
     val sideLenght = 22
 
     val pos = Union(
-      Hull(Cube(m2t*2+5,yBase,3), Cylinder(6,6,3).move(sideLenght,yBase/2,0)),
+      Hull(Cube(m2t*2+5,yBase,3), Cylinder(6,3).move(sideLenght,yBase/2,0)),
       (c2.moveZ(3.5) + c3.moveZ(3)).move(sideLenght,yBase/2,0),
       c5.move(3,0,3),
       c5.move(3,yBase-c5.depth,3)
@@ -125,17 +125,17 @@ class Joint2DOF(radius: Double = Thread.UTS._1_4) {
   }
 
   val part2c = {
-    Cylinder(6, 6, zBearingSpace) - zAxis
+    Cylinder(6, zBearingSpace) - zAxis
   }
   
   val part2d = {
-    val c2 = Cylinder(4, 4, 14+zBearingSpace-tolerance)
-    val c3 = Cylinder(6, 6, zOffset)
+    val c2 = Cylinder(4, 14+zBearingSpace-tolerance)
+    val c3 = Cylinder(6, zOffset)
     c2.moveZ(zOffset) + c3 - zAxis
   }
   
   val part2e = {
-    Cylinder(6, 6, zBearingSpace) - Cylinder(4, 4, zBearingSpace)
+    Cylinder(6, zBearingSpace) - Cylinder(4, zBearingSpace)
   }
   
 

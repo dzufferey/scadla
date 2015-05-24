@@ -48,7 +48,7 @@ object InvoluteGear {
     val negatives = for (i <- 0 until nbrTooths) yield negative.rotateZ((2 * i) * angle)// + offset)
 
     val outsideRadius = pitch + addenum
-    val outer = Cylinder(outsideRadius, outsideRadius, height)
+    val outer = Cylinder(outsideRadius, height)
 
     outer -- negatives
   }
