@@ -31,7 +31,7 @@ class Joint2DOF(radius: Double = Thread.UTS._1_4) {
   protected val m4t = M4 + tolerance
 
   protected val xThreadHolder = radius * 2 + 2
-  protected val yThreadHolder = (Hexagon.maxRadius(radius) * 2 + 1) + 6
+  protected val yThreadHolder = radius * 3.2 + 5
   protected val zThreadHolder = 15.0
 
   protected val xAxis = Cylinder(m3t, 25)
@@ -46,7 +46,7 @@ class Joint2DOF(radius: Double = Thread.UTS._1_4) {
     val n = {
       val n0 = nut(radius + tolerance).moveZ(3)
       val n1 = n0.moveX(-radius+1) + n0.moveX(radius-1)
-      n1.moveZ(-tolerance) + n1.moveZ(tolerance)
+      n1.moveZ(-looseTolerance) + n1.moveZ(looseTolerance)
     }
     val s = Hexagon(radius, zThreadHolder).moveZ(2).rotateZ(Pi/6)
     val x = xThreadHolder

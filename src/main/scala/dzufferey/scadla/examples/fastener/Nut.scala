@@ -13,6 +13,10 @@ object Nut {
     thread.hexNutIso(radius*2, 1.6 * radius)
   }
 
+  def minOuterRadius(innerRadius: Double) = 1.6 * innerRadius
+  def maxOuterRadius(innerRadius: Double) = Hexagon.maxRadius(minOuterRadius(innerRadius))
+  def height(innerRadius: Double) = 1.6 * innerRadius
+
   //metric versions (ISO)
   val M1   = apply( Thread.ISO.M1 )
   val M1_2 = apply( Thread.ISO.M1_2 )
@@ -44,6 +48,10 @@ class NutPlaceHolder(tolerance: Double = 0.1) {
   def apply(radius: Double) = {
     Hexagon(radius * 1.6 + tolerance, 1.6 * radius + tolerance)
   }
+  
+  def minOuterRadius(innerRadius: Double) = 1.6 * innerRadius + tolerance
+  def maxOuterRadius(innerRadius: Double) = Hexagon.maxRadius(minOuterRadius(innerRadius))
+  def height(innerRadius: Double) = 1.6 * innerRadius + tolerance
 
   val M1   = apply( Thread.ISO.M1 )
   val M1_2 = apply( Thread.ISO.M1_2 )

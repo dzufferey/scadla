@@ -20,14 +20,8 @@ object Platform {
   }
 
   protected def spindleMount(height: Double, gap: Double) = {
-    val screw = Cylinder(Thread.ISO.M3, Thread.ISO.M3, height)
-    Union(
-      roundedCubeH(30+gap, 30+gap, height, 3+gap).move(-gap/2, -gap/2, 0),
-      screw.move(35, 5, 0),
-      screw.move(35, 55, 0),
-      screw.move(-5, 5, 0),
-      screw.move(-5, 55, 0)
-    )
+    val screw = Cylinder(Thread.ISO.M3+tolerance, Thread.ISO.M3+tolerance, height)
+    Cylinder(15+gap, height).move(15,15,0) ++ Spindle.fixCoord.map{ case (x,y,_) => screw.move(x,y,0) }
   }
 
   def bearingsTest(height: Double, s: Double) = {
@@ -37,19 +31,20 @@ object Platform {
   }
 
   //space should be ~ zBearingSpace + 2*tolerance
-  def apply(wall: Double, height: Double, space: Double) = {
+  def apply(wall: Double, bearingGap: Double, height: Double, space: Double) = {
     val bNeg = bearings(space).moveZ(height/2 - 7 - space/2) 
     val bHolder = Cylinder(11 + wall, height)
-    val radius = 48
+    val radius = 43
+    val offset = max(wall/2, bearingGap/2)
     def place(s: Solid) = {
       val paired = Union(
-        s.move( 11 +wall/2, radius, 0),
-        s.move(-11 -wall/2, radius, 0)
+        s.move( 11 +offset, radius, 0),
+        s.move(-11 -offset, radius, 0)
       )
       for (i <- 0 until 3) yield paired.rotateZ(2 * i * Pi / 3)
     }
     val base = Hull(place(bHolder): _*) -- place(bNeg)
-    base - spindleMount(height, 1).move(-15, -30, 0)
+    base - spindleMount(height, 0.8).move(-15, -30, 0)
   }
 
 }
