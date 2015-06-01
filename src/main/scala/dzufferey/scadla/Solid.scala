@@ -26,8 +26,22 @@ case class Multiply(m: Matrix, obj: Solid) extends Solid
 
 //modifiers
 
+////////////////////////////
+//additional constructors //
+////////////////////////////
 
-//additional constructor for Cylinder
 object Cylinder {
   def apply(radius: Double, height: Double): Cylinder = Cylinder(radius, radius, height)
+}
+
+object Translate {
+  def apply(v: Vector, s: Solid): Translate = Translate(v.x, v.y, v.z, s)
+}
+
+object Rotate {
+  def apply(q: Quaternion, s: Solid): Rotate = {
+    // TODO make sure OpendSCAD use the same sequence of roation
+    val v = q.toRollPitchYaw
+    Rotate(v.x, v.y, v.z, s)
+  }
 }

@@ -129,7 +129,7 @@ class Joint2DOF(radius: Double = Thread.UTS._1_4) {
   }
   
   val part2d = {
-    val c2 = Cylinder(4, 14+zBearingSpace-tolerance)
+    val c2 = Cylinder(4-tolerance, 14+zBearingSpace-tolerance)
     val c3 = Cylinder(6, zOffset)
     c2.moveZ(zOffset) + c3 - zAxis
   }
