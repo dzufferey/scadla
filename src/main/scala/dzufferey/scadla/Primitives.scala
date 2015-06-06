@@ -2,6 +2,8 @@ package dzufferey.scadla
 
 case class Point(x: Double, y: Double, z: Double) {
   def to(p: Point) = Vector(p.x-x, p.y-y, p.z-z)
+  def toVector = Vector(x, y, z)
+  def toQuaternion = Quaternion(0, x, y, z)
 }
 
 case class Face(p1: Point, p2: Point, p3: Point) {
@@ -28,7 +30,7 @@ case class Vector(x: Double, y: Double, z: Double) {
   def norm: Double = math.sqrt(x*x + y*y + z*z)
   def unit = this / norm
   def toQuaternion = Quaternion(0, x, y, z)
-  def rotate(q: Quaternion) = (q * toQuaternion * q.inverse).toVector
+  def rotateBy(q: Quaternion) = q.rotate(this)
 }
 
 case class Quaternion(a: Double, i: Double, j: Double, k: Double) {
@@ -44,6 +46,7 @@ case class Quaternion(a: Double, i: Double, j: Double, k: Double) {
     Quaternion(a/n, i/n, j/n, k/n)
   }
   def toVector = Vector(i, j, k)
+  def toPoint = Point(i, j, k)
   def toMatrix = Matrix(1 - 2*(j*j + k*k),     2*(i*j - k*a),     2*(i*k + j*a), 0,
                             2*(i*j + k*a), 1 - 2*(i*i + k*k),     2*(j*k - i*a), 0,
                             2*(i*k - j*a),     2*(j*k + i*a), 1 - 2*(i*i + j*j), 0,
@@ -62,6 +65,9 @@ case class Quaternion(a: Double, i: Double, j: Double, k: Double) {
     math.asin(2 * (a*k - i*k)),
     math.atan2(2 * (a*k + i*j), 1 - 2 * (j*j + k*k))
   )
+
+  def rotate(v: Vector): Vector = (this * v.toQuaternion * inverse).toVector
+  def rotate(p: Point): Point = (this * p.toQuaternion * inverse).toPoint
 }
 
 object Quaternion {

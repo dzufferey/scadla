@@ -5,6 +5,7 @@ import dzufferey.scadla._
 import utils._
 import InlineOps._
 import dzufferey.scadla.examples.fastener._
+import Common._
 
 object Collet {
 
@@ -23,8 +24,8 @@ object Collet {
 
   def threaded(outer1: Double, outer2: Double, inner: Double, height: Double,
                nbrSlits: Int, slitWidth: Double, wall: Double,
-               mNumber: Double, tolerance: Double, screwRadius: Double) = {
-    val innerC = Cylinder(inner, height)
+               mNumber: Double, screwRadius: Double) = {
+    val innerC = Cylinder(inner+tolerance, height)
     val base = Cylinder(outer1, outer2, height)
     val slts = slits(mNumber, height, nbrSlits, slitWidth, wall)
     val thread = new MetricThread(tolerance).screwThreadIsoOuter(mNumber, height, 2)
@@ -33,34 +34,13 @@ object Collet {
     thread + base -- slts - innerC -- wrenchHoles
   }
 
-  def withPulloutScrew(outer1: Double, outer2: Double, inner: Double, height: Double,
-                       nbrSlits: Int, slitWidth: Double, wall: Double,
-                       screwRadius: Double, screwLength: Double, screwHead: Double, screwOut: Double, tolerance: Double) = {
-    val nut = new NutPlaceHolder(tolerance).apply(screwRadius)
-    val nutHole = Hull(nut, nut.moveX(max(outer1, outer2)))
-    val screw = Union(
-      Cylinder(screwRadius + tolerance, screwLength + screwHead),
-      Cylinder(screwRadius * 2, screwHead).moveZ(screwLength),
-      nutHole.moveZ(screwOut)
-    ).moveZ(height - screwLength - screwHead)
-
-    val nbrScrew = nbrSlits / 2
-    val angleOffset = Pi / nbrSlits
-    val xOffset = (inner + min(outer1, outer2)) * 2 / 3
-    val screws = for(i <- 0 until nbrScrew) yield screw.moveX(xOffset).rotateZ(i * 2 * Pi / nbrScrew )
-
-    val base = apply(outer1, outer2, inner, height, nbrSlits, slitWidth, wall)
-    base -- screws
-
-  }
-
   //TODO some more parameters
-  def wrench(outer: Double, inner: Double, tolerance: Double) = {
+  def wrench(outer: Double, inner: Double, nbrSlits: Int, screwRadius: Double) = {
     val base = roundedCubeH(60, 20, 5, 3).move(-30, -10, 0)
     val t = Thread.ISO.M2
     val screw = Cylinder(t+tolerance, 5)
     val hole = Hull(screw.moveX(inner + t), screw.moveX(outer - t))
-    base - Cylinder(3, 5) -- (0 until 6).map( i => hole.rotateZ(i * Pi / 3) )
+    base - Cylinder(3, 5) -- (0 until nbrSlits).map( i => hole.rotateZ(2 * i * Pi / nbrSlits) )
   }
 
 }

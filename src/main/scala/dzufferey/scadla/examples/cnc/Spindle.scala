@@ -7,36 +7,22 @@ import InlineOps._
 import dzufferey.scadla.examples.fastener._
 import Common._
 
-//TODO
-//-two gears:
-//  -one for the motor (with knows)
-//  -one for the bolt (with hole for the nut)
-//-vertical thing to hold the bolt
-//-place to hold the motor
-//-chuck to put on the bolt (partially flat thread ? asymmetric thread ?)
-//-...
-
 //parameters:
-//- tolerance ?uniform?
 //- thickness of structure
 //- bolt
 //  - diameter
 //  - head height
-//  - space between the head and the bottom nut
-//  - space between the two bottom nuts
+//  - non-threaded length
+//  - threaded length
 //- motor
 //  - base fixation
 //  - height from base to gear: 37.3
 //  - rotor diameter
 //  - additional thing to make the gear hold better to the rotor
-//- bearing
-//  - height
-//  - outer diameter (inner diameter must be the same as the bolt diameter)
 //- chuck
 //  - outer diameter (inner diameter is constrained by the size of the nut/bolt diameter)
 //  - thread (type, lead, size)
 //  - collet height
-//  - height of locknut
 
 /*
 for a parallax 1050kv outrunner brushless motor
@@ -175,14 +161,13 @@ object Spindle {
 
 
   val chuck = Chuck.innerThread(13, innerHole+tolerance, chuckHeight, colletLength, 20)
-  val colletInner = Collet.threaded(innerHole+1, innerHole, Thread.UTS._1_8+tolerance, colletLength,
-                                    6, 1, 2, 20, tolerance, Thread.ISO.M2)
-  //val chuckBlocker = Chuck.blocker( innerHole, tolerance)
+  val slits = 4 //6
+  val colletInner = Collet.threaded(innerHole+1, innerHole, Thread.UTS._1_8, colletLength,
+                                    slits, 0.5, 1, 20, Thread.ISO.M2)
 
-  val colletWrench = Collet.wrench(innerHole, Thread.UTS._1_8, tolerance)
+  val colletWrench = Collet.wrench(innerHole, Thread.UTS._1_8, slits, Thread.ISO.M2)
 
   objects += "chuck_wrench" -> Chuck.wrench(13, tolerance)
-  //objects += "chuck_blocker" -> chuckBlocker
   objects += "chuck" -> chuck.rotateX(Pi)
   objects += "collet_inner" -> colletInner
   objects += "collet_wrench" -> colletWrench

@@ -16,6 +16,14 @@ class Beam(wall: Double, innerThreadRadius: Double) {
     o - i.move(xy2, xy2, 0)
   }
 
+  def carveMale(s: Solid) = {
+    ???
+  }
+
+  def carveFemale(s: Solid) = {
+    ???
+  }
+
   //TODO
   //connector: straight (dovetail?), L, T, diagonals
   //ends: space for the nuts, washers, and nut blockers

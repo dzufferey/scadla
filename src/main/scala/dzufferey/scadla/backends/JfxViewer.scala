@@ -167,12 +167,6 @@ object JfxViewerApp extends JFXApp {
   }
 
   protected def getBoundingBox(obj: Polyhedron) = {
-    var minX =  1e10
-    var maxX = -1e10
-    var minY =  1e10
-    var maxY = -1e10
-    var minZ =  1e10
-    var maxZ = -1e10
     if (obj.faces.isEmpty) {
       (
         (0.0, 1.0),
@@ -180,19 +174,7 @@ object JfxViewerApp extends JFXApp {
         (0.0, 1.0)
       )
     } else {
-      obj.faces.foreach{ case Face(p1, p2, p3) => 
-        minX = math.min(minX, math.min(p1.x, math.min(p2.x, p3.x)))
-        maxX = math.max(maxX, math.max(p1.x, math.max(p2.x, p3.x)))
-        minY = math.min(minY, math.min(p1.y, math.min(p2.y, p3.y)))
-        maxY = math.max(maxY, math.max(p1.y, math.max(p2.y, p3.y)))
-        minZ = math.min(minZ, math.min(p1.z, math.min(p2.z, p3.z)))
-        maxZ = math.max(maxZ, math.max(p1.z, math.max(p2.z, p3.z)))
-      }
-      (
-        (minX, maxX),
-        (minY, maxY),
-        (minZ, maxZ)
-      )
+      obj.boundingBox
     }
   }
 
@@ -203,19 +185,18 @@ object JfxViewerApp extends JFXApp {
                            1.0f, 0.0f,
                            0.0f, 1.0f)
 
-    val allPoints = obj.faces.foldLeft(Set[Point]())( (acc, f) => {
-      acc + f.p1 + f.p2 + f.p3
-    }).zipWithIndex.toMap
-    val ptsArray = Array.ofDim[Float](allPoints.size * 3)
-    for ( (p,i) <- allPoints ) {
+    val (indexedP,indexedF) = obj.indexed
+    val ptsArray = Array.ofDim[Float](indexedP.size * 3)
+    for ( i <- indexedP.indices ) {
+      val p = indexedP(i)
       ptsArray(3*i)   = p.x.toFloat
       ptsArray(3*i+1) = p.y.toFloat
       ptsArray(3*i+2) = p.z.toFloat
     }
     mesh.points = ptsArray
 
-    mesh.faces = obj.faces.flatMap{ case Face(p1, p2, p3) =>
-      Array(allPoints(p1), 0, allPoints(p2), 1, allPoints(p3), 2)
+    mesh.faces = indexedF.flatMap{ case (i1, i2, i3) =>
+      Array(i1, 0, i2, 1, i3, 2)
     }.toArray
 
     mesh.faceSmoothingGroups = Array.fill(obj.faces.size)(0)

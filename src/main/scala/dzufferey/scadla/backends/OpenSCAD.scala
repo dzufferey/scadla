@@ -61,14 +61,12 @@ class OpenSCAD(header: List[String]) extends Renderer {
         case Cylinder(radiusBot, radiusTop, height) =>
           writer.write("cylinder( r1 = " + radiusBot + ", r2 = " + radiusTop + ", h = " + height + ");")
           writer.newLine
-        case Polyhedron(triangles) =>
-          val points = triangles.foldLeft(Set[Point]())( (acc, face) => acc + face.p1 + face.p2 + face.p3 )
-          val indexed = points.toSeq.zipWithIndex
-          val idx: Map[Point, Int] = indexed.toMap
+        case p @ Polyhedron(_) =>
+          val (indexedP,indexedF) = p.indexed
           writer.write("polyhedron( points=[ ")
-          writer.write(indexed.map{ case (Point(x,y,z), _) => "["+x+","+y+","+z+"]" }.mkString(", "))
+          writer.write(indexedP.map{ case Point(x,y,z) => "["+x+","+y+","+z+"]" }.mkString(", "))
           writer.write(" ], faces=[ ")
-          writer.write(triangles.map{ case Face(a,b,c) => "["+idx(a)+","+idx(b)+","+idx(c)+"]" }.mkString(", "))
+          writer.write(indexedF.map{ case (a,b,c) => "["+a+","+b+","+c+"]" }.mkString(", "))
           writer.write(" ]);")
           writer.newLine
         case FromFile(path, format) =>
