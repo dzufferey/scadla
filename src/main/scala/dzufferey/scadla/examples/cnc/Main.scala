@@ -1,6 +1,8 @@
 package dzufferey.scadla.examples.cnc
 
 import dzufferey.scadla._
+import dzufferey.scadla.InlineOps._
+import scala.math._
 
 object Main{
     
@@ -15,18 +17,14 @@ object Main{
   //Spindle.objects.par.foreach{ case (name, obj) => 
   //  r.toSTL(obj, name + ".stl")
   //}
-  //r.toSTL(Spindle.objects("chuck"), "chuck.stl")
-  //r.toSTL(Spindle.objects("gear_bolt"), "gear_bolt.stl")
-  //r.toSTL(Spindle.objects("gear_motor"), "gear_motor.stl")
-  //r.toSTL(Rotate(math.Pi, 0, 0, Spindle.objects("bearing_support")), "bearing_support.stl")
-  //r.toSTL(Spindle.objects("spindle_body"), "spindle_body.stl")
+  //r.toSTL(Spindle.collet, "collet.stl")
+  //r.toSTL(Spindle.spindle, "spindle.stl")
 
-  //val j = new Joint2DOF()
-  //j.parts.zipWithIndex.par.foreach{ case (p, i) =>
+  //new Joint2DOF().parts.zipWithIndex.par.foreach{ case (p, i) =>
   //  r.toSTL(p, "j2dof_" + i + ".stl")
   //}
 
-  //r.toSTL(Platform(4, 10, 10, 1.8), "platform.stl")
+  //r.toSTL(Platform(4, 10, 10, 1.6), "platform.stl")
 
     println("work in progress")
   }

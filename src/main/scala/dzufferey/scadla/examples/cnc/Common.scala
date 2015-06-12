@@ -7,9 +7,9 @@ import dzufferey.scadla.examples.fastener._
 
 object Common {
   
-  val tightTolerance = 0.15
+  val tightTolerance = 0.10
+  val tolerance      = 0.15
   val looseTolerance = 0.22
-  val tolerance = tightTolerance
   
   val nut = new NutPlaceHolder(looseTolerance)
   val bearing = {

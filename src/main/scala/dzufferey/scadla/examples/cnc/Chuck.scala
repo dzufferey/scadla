@@ -21,7 +21,7 @@ object Chuck {
                    chuckHeight: Double,
                    colletLength: Double,
                    mNumber: Double ) = {
-  val shaft = Thread.ISO.M8
+  val shaft = Thread.ISO.M8 + tightTolerance //TODO add more/less tolerance ???
   val splitWasher = 2
   val nutHeight = nut.height(shaft)
     val body = Union(
@@ -30,7 +30,7 @@ object Chuck {
     )
     val toRemove = List(
       threading.screwThreadIsoInner(mNumber, colletLength),
-      Cylinder(shaft, chuckHeight), //TODO add tolerance ???
+      Cylinder(shaft, chuckHeight),
       nut(shaft).moveZ(colletLength + splitWasher + nutHeight),
       Cylinder( innerHole, colletLength + splitWasher + nutHeight),
       Cylinder( innerHole+1, innerHole, colletLength)

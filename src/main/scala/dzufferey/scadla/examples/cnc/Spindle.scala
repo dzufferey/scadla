@@ -42,8 +42,6 @@ base
 //TODO as a class with the parameter in the ctor
 object Spindle {
 
-  var objects = Map[String, Solid]()
-
   ////////////////
   // parameters //
   ////////////////
@@ -73,9 +71,8 @@ object Spindle {
   // gears //
   ///////////
 
-  //TODO creating the gears already does some rendering, something moer lazy...
-  val gear1 = Gear.helical( motorBoltDistance * 2 / 3.0, 32, gearHeight,-0.03, tolerance)
-  val gear2 = Gear.helical( motorBoltDistance / 3.0    , 16, gearHeight, 0.06, tolerance)
+  lazy val gear1 = Gear.helical( motorBoltDistance * 2 / 3.0, 32, gearHeight,-0.03, tolerance)
+  lazy val gear2 = Gear.helical( motorBoltDistance / 3.0    , 16, gearHeight, 0.06, tolerance)
   val motorKnobs = {
     val c = Cylinder(3-tolerance, 2).moveZ(gearHeight)
     val u = Union(c.moveX(9), c.moveX(-9), c.moveY(9), c.moveY(-9))
@@ -84,23 +81,25 @@ object Spindle {
   }
   val nutTop = Cylinder(Thread.ISO.M8 * 3, 14) - nut.M8.moveZ(gearHeight)
   //gears
-  val gearBolt = gear1 + nutTop - Cylinder(Thread.ISO.M8 + tolerance, gearHeight)
-  val gearMotor = gear2 - Cylinder(Thread.ISO.M5 + tolerance, gearHeight) + motorKnobs
+  lazy val gearBolt = gear1 + nutTop - Cylinder(Thread.ISO.M8 + tolerance, gearHeight)
+  lazy val gearMotor = gear2 - Cylinder(Thread.ISO.M5 + tolerance, gearHeight) + motorKnobs
 
-  objects += "gear_bolt" -> gearBolt
-  objects += "gear_motor" -> gearMotor
-  objects += "bolt_washer_top" -> Tube(6, 4 + 2*tolerance, topBoltWasher)
-  objects += "bolt_washer_bot" -> Tube(6, 4 + 2*tolerance, bottomBoltWasher)
-  
 
   /////////////////////////////////
   // bolt support and motor base //
   /////////////////////////////////
 
   //TODO not so square ...
-  //boundind box is Cube(30, 30, motorBaseHeight)
   val motorBase = {
 
+    val topZ = 3
+    val bot = Trapezoid(46, 30, 5, 21).rotateX(-Pi/2).moveZ(5)
+    val top = Cube(30,30,topZ).moveZ(motorBaseHeight - topZ)
+    val subTtop = Cube(30,30-6.5,topZ).moveZ(motorBaseHeight - 2 * topZ)
+    val base = Union(
+        Hull(bot, subTtop),
+        top
+      )
     val nm3 = bigger(Hull(nut.M3, nut.M3.moveX(5)), 0.4)
     val screw_hole = Cylinder(Thread.ISO.M3, 10)
     val fasteners = Seq(
@@ -114,14 +113,17 @@ object Spindle {
       nm3.rotateZ(Pi).move( 3.25,26.75, 4)
     ).map(_.moveZ(motorBaseHeight - 10))
 
-    val shaftHole = Cylinder(10, motorBaseHeight).move(15, 15, 0) //hole for the lower part of the motor's shaft
+    val shaftHole = {
+      val c = Cylinder( 8, motorBaseHeight).move(15, 15, 0) //hole for the lower part of the motor's shaft
+      Hull(c, c.moveY(15))
+    }
     val breathingSpaces = Seq(
-      Cylinder(20, 50).moveZ(-25).scaleX(0.30).rotateX(Pi/2).move(15,15,motorBaseHeight),
-      Cylinder(20, 50).moveZ(-25).scaleY(0.30).rotateY(Pi/2).move(15,15,motorBaseHeight)
+      Cylinder(20, 50).moveZ(-25).scaleX(0.30).rotateX(Pi/2).move(15,15,motorBaseHeight)//,
+      //Cylinder(20, 50).moveZ(-25).scaleY(0.30).rotateY(Pi/2).move(15,15,motorBaseHeight)
     )
 
     //the block on which the motor is screwed
-    Cube(30, 30, motorBaseHeight) - shaftHole -- fasteners -- breathingSpaces
+    base - shaftHole -- fasteners -- breathingSpaces
   }
 
   val fixCoord = List[(Double,Double,Double)](
@@ -129,8 +131,8 @@ object Spindle {
     (-1,  4, Pi+Pi/5.2),
     (34, 30,  0),
     (-4, 30, Pi),
-    (34, 56,  0),
-    (-4, 56, Pi)
+    (34, 56, Pi/2),
+    (-4, 56, Pi/2)
   )
 
   //centered at 0, 0
@@ -152,8 +154,6 @@ object Spindle {
    ) ++ fixCoord.map{ case (x,y,a) => fix.rotateZ(a).move(x,y,0) }
   }
 
-  objects += "spindle_body" -> spindle
-
 
   ///////////
   // chuck //
@@ -162,15 +162,21 @@ object Spindle {
 
   val chuck = Chuck.innerThread(13, innerHole+tolerance, chuckHeight, colletLength, 20)
   val slits = 4 //6
-  val colletInner = Collet.threaded(innerHole+1, innerHole, Thread.UTS._1_8, colletLength,
-                                    slits, 0.5, 1, 20, Thread.ISO.M2)
-
+  val collet  = Collet.threaded(innerHole+1, innerHole, Thread.UTS._1_8, colletLength,
+                                slits, 0.5, 1, 20, Thread.ISO.M2)
   val colletWrench = Collet.wrench(innerHole, Thread.UTS._1_8, slits, Thread.ISO.M2)
 
-  objects += "chuck_wrench" -> Chuck.wrench(13, tolerance)
-  objects += "chuck" -> chuck.rotateX(Pi)
-  objects += "collet_inner" -> colletInner
-  objects += "collet_wrench" -> colletWrench
+  def objects = Map(
+    "gear_bolt" -> gearBolt,
+    "gear_motor" -> gearMotor,
+    "bolt_washer_top" -> Tube(6, 4 + 2*tolerance, topBoltWasher),
+    "bolt_washer_bot" -> Tube(6, 4 + 2*tolerance, bottomBoltWasher),
+    "spindle_body" -> spindle,
+    "chuck_wrench" -> Chuck.wrench(13, tolerance),
+    "chuck" -> chuck.rotateX(Pi),
+    "collet_inner" -> collet,
+    "collet_wrench" -> colletWrench
+  )
 
 }
 

@@ -30,7 +30,7 @@ object Collet {
     val slts = slits(mNumber, height, nbrSlits, slitWidth, wall)
     val thread = new MetricThread(tolerance).screwThreadIsoOuter(mNumber, height, 2)
     val wrenchHoles = for(i <- 0 until nbrSlits) yield
-      Cylinder(screwRadius+tolerance, height).moveX((outer2+inner)*2/3).rotateZ(i * 2 * Pi / nbrSlits)
+      Cylinder(screwRadius+tolerance, height).moveX((outer2+inner)*2/3).rotateZ( (i*2+1) * Pi / nbrSlits)
     thread + base -- slts - innerC -- wrenchHoles
   }
 
