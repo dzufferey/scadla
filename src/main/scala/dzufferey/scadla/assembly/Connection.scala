@@ -16,7 +16,8 @@ class Connection(val parent: Assembly,
 }
 
 object Connection {
-  def apply(p: Assembly, t: Vector, q: Quaternion): Connection = new Connection(p, new Frame(t, q))
+  def apply(p: Assembly, f: Frame): Connection = new Connection(p, f)
+  def apply(p: Assembly, t: Vector, q: Quaternion): Connection = apply(p, Frame(t, q))
   def apply(p: Assembly, t: Vector): Connection = apply(p, t, Quaternion(1,0,0,0))
   def apply(p: Assembly, q: Quaternion): Connection = apply(p, Vector(0,0,0), q)
   def apply(p: Assembly): Connection = apply(p, Vector(0,0,0), Quaternion(1,0,0,0))

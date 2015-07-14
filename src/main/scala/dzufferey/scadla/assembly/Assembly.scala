@@ -5,8 +5,6 @@ import dzufferey.scadla.backends.Renderer
 import scala.language.implicitConversions
 
 
-//TODO instead of returning a single Solid, should return a collection of (Frame,Polyhedron)
-
 class Assembly(name: String) {
 
   protected var children: List[(Connection,Joint,Connection)] = Nil
@@ -63,6 +61,7 @@ class Assembly(name: String) {
 
   def plate(x: Double, y: Double, gap: Double = 5): Seq[(Frame,Polyhedron)] = {
     val b = bom
+    //TODO filter out vitamines
     //TODO compute bounding box and place within the x-y space
     ???
   }
@@ -72,6 +71,11 @@ class Assembly(name: String) {
 object Assembly {
 
   implicit def part2Assembly(part: Part): Assembly = new SingletonAssembly(part)
+
+  def quickRender(assembly: Seq[(Frame,Polyhedron)]) = {
+    val p2 = assembly.map{ case (f,p) => f.directTo(p) }
+    Polyhedron(p2.flatMap(_.faces))
+  }
 
 }
 

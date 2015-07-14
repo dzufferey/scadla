@@ -19,6 +19,7 @@ object Main{
   //}
   //r.toSTL(Spindle.collet, "collet.stl")
   //r.toSTL(Spindle.spindle, "spindle.stl")
+  //r.toSTL(Spindle.colletWrench, "wrench.stl")
 
   //new Joint2DOF().parts.zipWithIndex.par.foreach{ case (p, i) =>
   //  r.toSTL(p, "j2dof_" + i + ".stl")

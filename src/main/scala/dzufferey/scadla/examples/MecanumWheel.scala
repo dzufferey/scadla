@@ -178,12 +178,44 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     val lowerWithKnobs = lowerHalf ++ knobs
     val upperWithKnobs = upperHalf -- knobs.map(bigger(_, 2*tolerance))
 
-    (lowerWithKnobs, upperWithKnobs.rotate(Pi, 0, 0).moveZ(-width/2))
+    (lowerWithKnobs, upperWithKnobs)
+  }
+
+  def hubHalvesPrintable(nbrHoles: Int) = {
+    val (l, h) = hubHalves(nbrHoles)
+    (l, h.rotate(Pi, 0, 0).moveZ(-width/2))
   }
 
   def assembled = Union(hub, rollers)
 
-  //TODO a list of parts in a printable position
+  def assembly = {
+    import dzufferey.scadla.assembly._
+    val rollerP = new Part("roller", roller.solid)
+    val axleHeight = width / cos(angle)
+    val axle = new Part("filament, 1.75mm", Cylinder(rollerAxleRadius2, axleHeight))
+    axle.vitamin = true
+    val (lower,upper) = hubHalves(8)
+    val lowerP = new Part("hub, lower half", lower)
+    val upperP = new Part("hub, upper half", upper)
+    upperP.addPrintTransform(_.rotate(Pi, 0, 0).moveZ(-width/2))
+    val asmbl = new Assembly("Mecanum wheel")
+    def place(c2: Connection) {
+      val jt = new RevoluteJoint(Vector(0,0,1))
+      val f0 = Frame(Vector(innerR,0,width/2), Quaternion.mkRotation(angle, Vector(1,0,0)))
+      for (i <- 0 until nbrRollers) {
+        val f1 = Frame(Vector(0,0,0), Quaternion.mkRotation(i * 2 * Pi / nbrRollers, Vector(0,0,1)))
+        val frame = f0.compose(f1)
+        val c1 = Connection(asmbl, frame)
+        c1.attach(jt, c2)
+      }
+    }
+    Connection(asmbl).attach( new FixedJoint(Vector(0,0,-1)), Connection(lowerP))
+    Connection(asmbl).attach( new FixedJoint(Vector(0,0, 1)), Connection(upperP))
+    place(Connection(rollerP, Vector(0,0,-rollerHeight/2)))
+    place(Connection(axle, Vector(0,0,-axleHeight)))
+    asmbl
+  }
+
 }
 
 object MecanumWheel {
@@ -200,7 +232,7 @@ object MecanumWheel {
     wheel.printParameters
     
     //val obj = wheel.hub //the hub in one piece
-    //val (lower, upper) = wheel.hubHalves(8) //the hub in two half for easier printing
+    //val (lower, upper) = wheel.hubHalvesPrintable(8) //the hub in two half for easier printing
     //val obj = wheel.roller.solid 
     //val obj = wheel.roller.skeleton
     //val obj = wheel.roller.mold(4, 2)

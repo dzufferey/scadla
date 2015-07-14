@@ -4,7 +4,7 @@ organization := "io.github.dzufferey"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.7"
 
 scalacOptions in Compile ++= Seq(
     "-unchecked",
@@ -14,10 +14,10 @@ scalacOptions in Compile ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.3",
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
+  "org.scalatest" %% "scalatest" % "2.2.4" % "test",
   "io.github.dzufferey" %% "misc-scala-utils" % "0.1-SNAPSHOT",
-  "org.scala-lang.modules" %% "scala-pickling" % "0.10.0",
+  "org.scala-lang.modules" %% "scala-pickling" % "0.10.1",
   "org.scalafx" %% "scalafx" % "8.0.40-R8"
 )
 

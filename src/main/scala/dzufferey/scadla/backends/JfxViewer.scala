@@ -14,6 +14,10 @@ import scalafx.scene.shape.{MeshView, TriangleMesh}
 import scalafx.scene.transform.{Rotate,Scale}
 import scalafx.scene.{AmbientLight, Group, Node, PerspectiveCamera, PointLight, Scene, SceneAntialiasing}
 
+//TODO support for viewing assemblies:
+//-expand and time sliders
+//-pack the serialized class into smth that indicates the type
+
 object JfxViewer extends Viewer {
   
   def apply(obj: Polyhedron) {

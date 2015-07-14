@@ -27,14 +27,15 @@ class Frame(val translation: Vector,
     Translate(translation * -1, Rotate(orientation.inverse, s))
   }
 
-  //TODO direct operations for Polyhedron
+  def directTo(p: Point): Point = ((p.toVector + translation).rotateBy(orientation)).toPoint
+
   def directTo(p: Polyhedron): Polyhedron = {
-    ???
+    Polyhedron(p.faces.map{ case Face(p1, p2, p3) =>
+      Face(directTo(p1), directTo(p2), directTo(p3))
+    })
   }
 
-  def directFrom(p: Polyhedron): Polyhedron = {
-    ???
-  }
+  def directFrom(p: Polyhedron): Polyhedron = inverse.directTo(p)
 
 }
 

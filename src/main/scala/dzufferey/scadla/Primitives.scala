@@ -30,6 +30,7 @@ case class Vector(x: Double, y: Double, z: Double) {
   def norm: Double = math.sqrt(x*x + y*y + z*z)
   def unit = this / norm
   def toQuaternion = Quaternion(0, x, y, z)
+  def toPoint = Point(x, y, z)
   def rotateBy(q: Quaternion) = q.rotate(this)
 }
 

@@ -40,7 +40,7 @@ object Collet {
     val t = Thread.ISO.M2
     val screw = Cylinder(t+tolerance, 5)
     val hole = Hull(screw.moveX(inner + t), screw.moveX(outer - t))
-    base - Cylinder(3, 5) -- (0 until nbrSlits).map( i => hole.rotateZ(2 * i * Pi / nbrSlits) )
+    base - Cylinder(3, 5) -- (0 until nbrSlits).map( i => hole.rotateZ((2*i+1) * Pi / nbrSlits) )
   }
 
 }
