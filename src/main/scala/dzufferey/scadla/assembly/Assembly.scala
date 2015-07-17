@@ -4,7 +4,6 @@ import dzufferey.scadla._
 import dzufferey.scadla.backends.Renderer
 import scala.language.implicitConversions
 
-
 class Assembly(name: String) {
 
   protected var children: List[(Connection,Joint,Connection)] = Nil
@@ -19,28 +18,21 @@ class Assembly(name: String) {
     assert(child.parent.checkNotInChildren(Set(this)))
     children ::= (where, joint, child)
   }
-
-  def at(t: Double): Seq[(Frame,Polyhedron)] = {
+  
+  def expandAt(expansion: Double, time: Double): Seq[(Frame,Polyhedron)] = {
     children.flatMap{ case (c1, j, c2) =>
       val f1 = c1.frame
-      val f2 = j.at(t)
+      val f2 = j.expandAt(expansion, time)
       val f3 = c2.frame.inverse
       val f = f1.compose(f2).compose(f3)
-      val children = c2.parent.at(t)
+      val children = c2.parent.expandAt(expansion, time)
       children.map{ case (fc,p) => (f.compose(fc),p) }
     }
   }
 
-  def expand(t: Double): Seq[(Frame,Polyhedron)] = {
-    children.flatMap{ case (c1, j, c2) =>
-      val f1 = c1.frame
-      val f2 = j.expand(t)
-      val f3 = c2.frame.inverse
-      val f = f1.compose(f2).compose(f3)
-      val children = c2.parent.expand(t)
-      children.map{ case (fc,p) => (f.compose(fc),p) }
-    }
-  }
+  def at(t: Double): Seq[(Frame,Polyhedron)] = expandAt(0, t)
+
+  def expand(t: Double): Seq[(Frame,Polyhedron)] = expandAt(t, 0)
   
   def preRender(r: Renderer) {
     children.foreach( _._3.parent.preRender(r) )
@@ -60,8 +52,10 @@ class Assembly(name: String) {
   }
 
   def plate(x: Double, y: Double, gap: Double = 5): Seq[(Frame,Polyhedron)] = {
-    val b = bom
-    //TODO filter out vitamines
+    //filter out vitamines
+    val b = bom.filter(!_._1.vitamin)
+    //gets all the parts to print
+    val polys = b.flatMap{ case (p,n) => Seq.fill(n)(p.printableModel) }
     //TODO compute bounding box and place within the x-y space
     ???
   }

@@ -1,6 +1,7 @@
 package dzufferey.scadla.backends
 
 import dzufferey.scadla._
+import dzufferey.scadla.assembly._
 import dzufferey.utils.SysCmd
 
 import scalafx.Includes._
@@ -14,10 +15,6 @@ import scalafx.scene.shape.{MeshView, TriangleMesh}
 import scalafx.scene.transform.{Rotate,Scale}
 import scalafx.scene.{AmbientLight, Group, Node, PerspectiveCamera, PointLight, Scene, SceneAntialiasing}
 
-//TODO support for viewing assemblies:
-//-expand and time sliders
-//-pack the serialized class into smth that indicates the type
-
 object JfxViewer extends Viewer {
   
   def apply(obj: Polyhedron) {
@@ -29,13 +26,19 @@ object JfxViewer extends Viewer {
   def serialize(obj: Polyhedron): String = {
     import scala.pickling.Defaults._
     import scala.pickling.json._
-    obj.pickle.value
+    JfxViewerObjPoly(obj).pickle.value
   }
   
-  def deserialize(str: String): Polyhedron = {
+  def serialize(a: Assembly): String = {
     import scala.pickling.Defaults._
     import scala.pickling.json._
-    JSONPickle(str).unpickle[Polyhedron]
+    JfxViewerObjAssembly(a).pickle.value
+  }
+  
+  def deserialize(str: String): JfxViewerObj = {
+    import scala.pickling.Defaults._
+    import scala.pickling.json._
+    JSONPickle(str).unpickle[JfxViewerObj]
   }
 
   def getClassPath = System.getProperty("java.class.path")
@@ -48,6 +51,7 @@ object JfxViewer extends Viewer {
 
 }
 
+//TODO add parameters from the JfxViewerObj
 object JfxViewerApp extends JFXApp {
 
   protected def readPolyFromStdIn = {
@@ -62,23 +66,18 @@ object JfxViewerApp extends JFXApp {
 
   stage = new PrimaryStage {
     title = "Scadla JavaFX model viewer"
+    //TODO adapt resolution
     scene = new Scene(800, 600, true, SceneAntialiasing.Balanced) {
       fill = Color.LightBlue
      
-      val poly = readPolyFromStdIn
-      val mesh = objToMesh(poly)
-      val obj = new MeshView(mesh) {
-        material = new PhongMaterial(Color.Gray) {
-          specularColor = Color.White
-        }
-      }
+      val obj = readPolyFromStdIn
       
       val ((minX,maxX), 
            (minY,maxY),
-           (minZ,maxZ)) = getBoundingBox(poly)
+           (minZ,maxZ)) = obj.boundingBox
      
       //center at origin
-      val centered = new Group(obj) {
+      val centered = new Group(obj.mesh) {
         translateX = - (maxX - minX) / 2
         translateY = - (maxY - minY) / 2
         translateZ = - (maxZ - minZ) / 2
@@ -170,7 +169,35 @@ object JfxViewerApp extends JFXApp {
     }
   }
 
-  protected def getBoundingBox(obj: Polyhedron) = {
+}
+
+abstract class JfxViewerObj {
+  def parameters: List[(String, Double, Double)] //name, min, max
+  def setParameters(params: List[Double]): Unit
+  def mesh: Node
+  def boundingBox: ((Double,Double),(Double,Double),(Double,Double))
+}
+case class JfxViewerObjPoly(p: Polyhedron) extends JfxViewerObj {
+  def parameters = Nil
+  def setParameters(params: List[Double]) {}
+  def mesh = JfxViewerObj.objToMeshView(p)
+  def boundingBox = JfxViewerObj.getBoundingBox(p)
+}
+//TODO for displaying Assembly
+case class JfxViewerObjAssembly(a: Assembly) extends JfxViewerObj {
+  def parameters = List(("time", 0, 10), ("expansion",0,1))
+  def setParameters(params: List[Double]) {
+    //TODO when updating, only the values of the tranforms needs to be updated
+    ???
+  }
+  //TODO turn the Seq[(Frame,Polyhedron)] into a series of object and tranforms (and keep a ref for the update)
+  def mesh = ???
+  def boundingBox = ??? 
+}
+
+object JfxViewerObj {
+
+  def getBoundingBox(obj: Polyhedron) = {
     if (obj.faces.isEmpty) {
       (
         (0.0, 1.0),
@@ -182,7 +209,7 @@ object JfxViewerApp extends JFXApp {
     }
   }
 
-  protected def objToMesh(obj: Polyhedron) = {
+  def objToMeshView(obj: Polyhedron) = {
     val mesh = new TriangleMesh
 
     mesh.texCoords = Array(0.0f, 0.0f,
@@ -205,8 +232,12 @@ object JfxViewerApp extends JFXApp {
 
     mesh.faceSmoothingGroups = Array.fill(obj.faces.size)(0)
       
-    mesh
+    new MeshView(mesh) {
+      material = new PhongMaterial(Color.Gray) {
+        specularColor = Color.White
+      }
+    }
   }
+
   
 }
-

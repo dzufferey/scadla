@@ -10,19 +10,25 @@ abstract class Joint(direction: Vector) {
   protected def getLinearSpeed: Double
   protected def getAngularSpeed: Double
 
-  def at(t: Double): Frame = {
-    val effectiveT = timeModifiers.foldRight(t)( (fct, acc) => fct(acc) )
-    val r = Quaternion.mkRotation(getAngularSpeed * t, dir)
-    val l = dir * getLinearSpeed * t
+  //TODO need to know the bounding box of the two objects connected by this joint to scale appropriately
+
+  def expandAt(expansion: Double, time: Double): Frame = {
+    val effectiveT = timeModifiers.foldRight(time)( (fct, acc) => fct(acc) )
+    val r = Quaternion.mkRotation(getAngularSpeed * effectiveT, dir)
+    val l = dir * (getLinearSpeed * effectiveT + expansion)
     Frame(l, r)
   }
-
-  def at(t: Double, s: Solid): Solid = {
-    val effectiveT = timeModifiers.foldRight(t)( (fct, acc) => fct(acc) )
-    val r = Quaternion.mkRotation(getAngularSpeed * t, dir)
-    val l = dir * getLinearSpeed * t
+  
+  def expandAt(expansion: Double, time: Double, s: Solid): Solid = {
+    val effectiveT = timeModifiers.foldRight(time)( (fct, acc) => fct(acc) )
+    val r = Quaternion.mkRotation(getAngularSpeed * effectiveT, dir)
+    val l = dir * (getLinearSpeed * effectiveT + expansion)
     Translate(l, Rotate(r, s))
   }
+
+  def at(t: Double): Frame = expandAt(0, t)
+
+  def at(t: Double, s: Solid): Solid = expandAt(0, t, s)
   
   protected var timeModifiers = List[Double => Double]()
 
@@ -34,16 +40,9 @@ abstract class Joint(direction: Vector) {
     timeModifiers = Nil
   }
 
-  //TODO need to know the bounding box of the two objects connected by this joint to scale appropriately
+  def expand(t: Double): Frame = expandAt(t, 0)
 
-  def expand(t: Double): Frame = {
-    Frame(dir * t)
-  }
-
-  def expand(t: Double, s: Solid): Solid = {
-    val l = dir * t
-    Translate(l, s)
-  }
+  def expand(t: Double, s: Solid): Solid = expandAt(t, 0, s)
 
 }
 
