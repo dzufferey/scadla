@@ -22,23 +22,34 @@ object JfxViewer extends Viewer {
     val input = Some(serialize(obj))
     SysCmd.execWithoutOutput(cmd, input)
   }
+  
+  def apply(a: Assembly) {
+    val cmd = Array("java", "-classpath", getClassPath, "dzufferey.scadla.backends.JfxViewerApp")
+    val input = Some(serialize(a))
+    SysCmd.execWithoutOutput(cmd, input)
+  }
 
   def serialize(obj: Polyhedron): String = {
     import scala.pickling.Defaults._
     import scala.pickling.json._
+    //import scala.pickling.static._
     JfxViewerObjPoly(obj).pickle.value
   }
   
   def serialize(a: Assembly): String = {
     import scala.pickling.Defaults._
     import scala.pickling.json._
-    JfxViewerObjAssembly(a).pickle.value
+    //import scala.pickling.static._
+    //JfxViewerObjAssembly(a).pickle.value
+    ???
   }
   
   def deserialize(str: String): JfxViewerObj = {
     import scala.pickling.Defaults._
     import scala.pickling.json._
-    JSONPickle(str).unpickle[JfxViewerObj]
+    //import scala.pickling.static._
+    //JSONPickle(str).unpickle[JfxViewerObj]
+    ???
   }
 
   def getClassPath = System.getProperty("java.class.path")
@@ -48,6 +59,19 @@ object JfxViewer extends Viewer {
 //  val obj = OpenSCAD(Union(dzufferey.scadla.Translate(-2,-2,-2,Sphere(5.0)), Cube(1.0, 1.0, 1.0)))
 //  apply(obj)
 //}
+
+  def main(args: Array[String]) {
+    import Assembly.part2Assembly
+    val p0 = new Part("base", dzufferey.scadla.Translate(-5, -5, -1, Cube(10,10,1)))
+    val p1 = new Part("center", Cylinder(3, 5))
+    val p2 = new Part("spinning", dzufferey.scadla.Translate(-3, -3, 0, Cube(6,6,3)))
+    val a0 = Assembly(p0)
+    val a1 = Assembly(p1)
+    val a11 = a1 + (Vector(0,0,5), Joint.revolute(0,0,1), p2)
+    val a01 = a0 + (Joint.fixed(0,0,1), a11)
+    a01.preRender(JCSG)
+    apply(a01)
+  }
 
 }
 
@@ -172,7 +196,7 @@ object JfxViewerApp extends JFXApp {
 
 }
 
-abstract class JfxViewerObj {
+sealed abstract class JfxViewerObj {
   def parameters: List[(String, Double, Double)] //name, min, max
   def setParameters(params: List[Double]): Unit
   def mesh: Node

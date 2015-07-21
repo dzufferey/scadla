@@ -3,9 +3,10 @@ package dzufferey.scadla.assembly
 import dzufferey.scadla._
 import dzufferey.scadla.backends.Renderer
 
-//TODO rendering
+//final for pickling
 
-class Part(val name: String, val model: Solid) {
+//TODO immutable
+final class Part(val name: String, val model: Solid) {
 
   var description: String = ""
 

@@ -2,27 +2,23 @@ package dzufferey.scadla.assembly
 
 import dzufferey.scadla._
 
-abstract class Joint(direction: Vector) {
-
-  protected val dir = direction.unit
-
-  //method to be defined by the subclasses
-  protected def getLinearSpeed: Double
-  protected def getAngularSpeed: Double
+case class Joint(direction: Vector,
+                 linearSpeed: Double,
+                 angularSpeed: Double) {
 
   //TODO need to know the bounding box of the two objects connected by this joint to scale appropriately
 
   def expandAt(expansion: Double, time: Double): Frame = {
     val effectiveT = timeModifiers.foldRight(time)( (fct, acc) => fct(acc) )
-    val r = Quaternion.mkRotation(getAngularSpeed * effectiveT, dir)
-    val l = dir * (getLinearSpeed * effectiveT + expansion)
+    val r = Quaternion.mkRotation(angularSpeed * effectiveT, direction)
+    val l = direction * (linearSpeed * effectiveT + expansion)
     Frame(l, r)
   }
   
   def expandAt(expansion: Double, time: Double, s: Solid): Solid = {
     val effectiveT = timeModifiers.foldRight(time)( (fct, acc) => fct(acc) )
-    val r = Quaternion.mkRotation(getAngularSpeed * effectiveT, dir)
-    val l = dir * (getLinearSpeed * effectiveT + expansion)
+    val r = Quaternion.mkRotation(angularSpeed * effectiveT, direction)
+    val l = direction * (linearSpeed * effectiveT + expansion)
     Translate(l, Rotate(r, s))
   }
 
@@ -30,6 +26,7 @@ abstract class Joint(direction: Vector) {
 
   def at(t: Double, s: Solid): Solid = expandAt(0, t, s)
   
+  //TODO separate modifiers for linear and anular speed
   protected var timeModifiers = List[Double => Double]()
 
   def addTimeModifier(fct: Double => Double) {
@@ -46,22 +43,20 @@ abstract class Joint(direction: Vector) {
 
 }
 
-class FixedJoint(direction: Vector) extends Joint(direction) {
-  protected def getLinearSpeed: Double = 0
-  protected def getAngularSpeed: Double = 0
-}
+object Joint {
+  
+  def fixed(direction: Vector): Joint = new Joint(direction, 0, 0)
+  def fixed(x:Double, y: Double, z: Double): Joint = fixed(Vector(x,y,z))
+  
+  def revolute(direction: Vector): Joint = new Joint(direction, 0, 1)
+  def revolute(direction: Vector, angularSpeed: Double): Joint = new Joint(direction, 0, angularSpeed)
+  def revolute(x:Double, y: Double, z: Double, angularSpeed: Double = 1.0): Joint = revolute(Vector(x,y,z), angularSpeed)
 
-class RevoluteJoint(direction: Vector, var angularSpeed: Double = 1.0) extends Joint(direction) {
-  protected def getLinearSpeed: Double = 0
-  protected def getAngularSpeed: Double = angularSpeed
-}
+  def prismatic(direction: Vector): Joint = new Joint(direction, 1, 0)
+  def prismatic(direction: Vector, linearSpeed: Double): Joint = new Joint(direction, linearSpeed, 0)
+  def prismatic(x:Double, y: Double, z: Double, linearSpeed: Double = 1.0): Joint = prismatic(Vector(x,y,z), linearSpeed)
 
-class PrismaticJoint(direction: Vector, var linearSpeed: Double = 1.0) extends Joint(direction) {
-  protected def getLinearSpeed: Double = linearSpeed
-  protected def getAngularSpeed: Double = 0
-}
+  def screw(direction: Vector, linearSpeed: Double, angularSpeed: Double): Joint = new Joint(direction, linearSpeed, angularSpeed)
+  def screw(x:Double, y: Double, z: Double, linearSpeed: Double = 1.0, angularSpeed: Double = 1.0): Joint = screw(Vector(x,y,z), linearSpeed, angularSpeed)
 
-class ScrewJoint(direction: Vector, var linearSpeed: Double = 1.0, var angularSpeed: Double = 1.0) extends Joint(direction) {
-  protected def getLinearSpeed: Double = linearSpeed
-  protected def getAngularSpeed: Double = angularSpeed
 }

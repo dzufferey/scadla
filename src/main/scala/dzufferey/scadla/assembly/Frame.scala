@@ -4,19 +4,18 @@ import dzufferey.scadla._
 
 
 
-class Frame(val translation: Vector,
-            val orientation: Quaternion) {
+case class Frame(translation: Vector, orientation: Quaternion) {
 
   def compose(f: Frame): Frame = {
     val t = translation + orientation.rotate(f.translation)
     val o = orientation * f.orientation //TODO is that the right order
-    new Frame(t, o)
+    Frame(t, o)
   }
 
   def inverse: Frame = {
     val o = orientation.inverse
     val t = o.rotate(translation)
-    new Frame(t, o) //TODO does that make sense ?
+    Frame(t, o) //TODO does that make sense ?
   }
 
   def toRefence(s: Solid): Solid = { 
@@ -40,8 +39,7 @@ class Frame(val translation: Vector,
 }
 
 object Frame {
-  def apply(t: Vector, q: Quaternion) = new Frame(t, q)
-  def apply(t: Vector) = new Frame(t, Quaternion(1,0,0,0))
-  def apply(q: Quaternion) = new Frame(Vector(0,0,0), q)
-  def apply() = new Frame(Vector(0,0,0), Quaternion(1,0,0,0))
+  def apply(t: Vector): Frame = Frame(t, Quaternion(1,0,0,0))
+  def apply(q: Quaternion): Frame = Frame(Vector(0,0,0), q)
+  def apply(): Frame = Frame(Vector(0,0,0), Quaternion(1,0,0,0))
 }

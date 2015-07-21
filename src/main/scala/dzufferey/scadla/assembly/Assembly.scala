@@ -4,28 +4,51 @@ import dzufferey.scadla._
 import dzufferey.scadla.backends.Renderer
 import scala.language.implicitConversions
 
-class Assembly(name: String) {
-
-  protected var children: List[(Connection,Joint,Connection)] = Nil
+//TODO get rid of Connection
+sealed abstract class Assembly(name: String, children: List[(Frame,Joint,Assembly,Frame)]) {
 
   protected def checkNotInChildren(as: Set[Assembly]): Boolean = {
     val tas = as + this
-    !as(this) && children.forall(_._3.parent.checkNotInChildren(tas))
+    !as(this) && children.forall(_._3.checkNotInChildren(tas))
   }
 
-  def attach(where: Connection, joint: Joint, child: Connection) {
-    assert(where.parent == this)
-    assert(child.parent.checkNotInChildren(Set(this)))
-    children ::= (where, joint, child)
+  protected def addChild(where: Frame, joint: Joint, child: Assembly, whereChild: Frame): Assembly
+  
+
+  def +(where: Frame, joint: Joint, child: Assembly, whereChild: Frame): Assembly = {
+    assert(child.checkNotInChildren(Set(this)))
+    addChild(where, joint, child, whereChild.inverse)
   }
   
+  def +(where: Vector, joint: Joint, child: Assembly, whereChild: Frame): Assembly =
+    this + (Frame(where), joint, child, whereChild)
+
+  def +(joint: Joint, child: Assembly, whereChild: Frame): Assembly =
+    this + (Frame(), joint, child, whereChild)
+  
+  def +(where: Frame, joint: Joint, child: Assembly, whereChild: Vector): Assembly =
+    this + (where, joint, child, Frame(whereChild))
+  
+  def +(where: Vector, joint: Joint, child: Assembly, whereChild: Vector): Assembly =
+    this + (Frame(where), joint, child, Frame(whereChild))
+
+  def +(joint: Joint, child: Assembly, whereChild: Vector): Assembly =
+    this + (Frame(), joint, child, Frame(whereChild))
+
+  def +(where: Frame, joint: Joint, child: Assembly): Assembly =
+    this + (where, joint, child, Frame())
+
+  def +(where: Vector, joint: Joint, child: Assembly): Assembly =
+    this + (Frame(where), joint, child, Frame())
+
+  def +(joint: Joint, child: Assembly): Assembly =
+    this + (Frame(), joint, child, Frame())
+  
   def expandAt(expansion: Double, time: Double): Seq[(Frame,Polyhedron)] = {
-    children.flatMap{ case (c1, j, c2) =>
-      val f1 = c1.frame
+    children.flatMap{ case (f1, j, c, f3) =>
       val f2 = j.expandAt(expansion, time)
-      val f3 = c2.frame.inverse
       val f = f1.compose(f2).compose(f3)
-      val children = c2.parent.expandAt(expansion, time)
+      val children = c.expandAt(expansion, time)
       children.map{ case (fc,p) => (f.compose(fc),p) }
     }
   }
@@ -34,17 +57,18 @@ class Assembly(name: String) {
 
   def expand(t: Double): Seq[(Frame,Polyhedron)] = expandAt(t, 0)
   
+  //TODO immutable
   def preRender(r: Renderer) {
-    children.foreach( _._3.parent.preRender(r) )
+    children.foreach( _._3.preRender(r) )
   }
     
   def parts: Set[Part] = {
-    children.foldLeft(Set[Part]())( _ ++ _._3.parent.parts )
+    children.foldLeft(Set[Part]())( _ ++ _._3.parts )
   }
 
   def bom: Map[Part,Int] = {
     children.foldLeft(Map[Part,Int]())( (acc,c) => {
-      c._3.parent.bom.foldLeft(acc)( (acc, kv) => {
+      c._3.bom.foldLeft(acc)( (acc, kv) => {
         val (k,v) = kv
         acc + (k -> (acc.getOrElse(k,0) + v))
       })
@@ -64,7 +88,10 @@ class Assembly(name: String) {
 
 object Assembly {
 
-  implicit def part2Assembly(part: Part): Assembly = new SingletonAssembly(part)
+  def apply(name: String) = EmptyAssembly(name, Nil)
+  def apply(part: Part) = SingletonAssembly(part, Nil)
+
+  implicit def part2Assembly(part: Part): Assembly = new SingletonAssembly(part, Nil)
 
   def quickRender(assembly: Seq[(Frame,Polyhedron)]) = {
     val p2 = assembly.map{ case (f,p) => f.directTo(p) }
@@ -73,11 +100,19 @@ object Assembly {
 
 }
 
-class SingletonAssembly(val part: Part) extends Assembly(part.name) {
+case class EmptyAssembly(name: String, children: List[(Frame,Joint,Assembly,Frame)]) extends Assembly(name, children) {
+  protected def addChild(where: Frame, joint: Joint, child: Assembly, whereChild: Frame): Assembly = {
+    EmptyAssembly(name, (where, joint, child, whereChild) :: children)
+  }
+}
 
-  override def at(t: Double) = super.at(t) :+ (Frame() -> part.mesh)
+case class SingletonAssembly(part: Part, children: List[(Frame,Joint,Assembly,Frame)]) extends Assembly(part.name, children) {
+  
+  protected def addChild(where: Frame, joint: Joint, child: Assembly, whereChild: Frame): Assembly = {
+    SingletonAssembly(part, (where, joint, child, whereChild) :: children)
+  }
 
-  override def expand(t: Double) = super.expand(t) :+ (Frame() -> part.mesh)
+  override def expandAt(e: Double, t: Double): Seq[(Frame,Polyhedron)] = super.expandAt(e, t) :+ (Frame() -> part.mesh)
 
   override def preRender(r: Renderer) {
     super.preRender(r)
@@ -92,3 +127,4 @@ class SingletonAssembly(val part: Part) extends Assembly(part.name) {
   }
 
 }
+

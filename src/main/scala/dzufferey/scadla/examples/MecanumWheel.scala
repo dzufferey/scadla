@@ -198,22 +198,21 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     val lowerP = new Part("hub, lower half", lower)
     val upperP = new Part("hub, upper half", upper)
     upperP.addPrintTransform(_.rotate(Pi, 0, 0).moveZ(-width/2))
-    val asmbl = new Assembly("Mecanum wheel")
-    def place(c2: Connection) {
-      val jt = new RevoluteJoint(Vector(0,0,1))
+    val asmbl0 = Assembly("Mecanum wheel")
+    def place(as: Assembly, c: Assembly, w: Vector) = {
+      val jt = Joint.revolute(0,0,1)
       val f0 = Frame(Vector(innerR,0,width/2), Quaternion.mkRotation(angle, Vector(1,0,0)))
-      for (i <- 0 until nbrRollers) {
+      (0 until nbrRollers).foldLeft(as)( (acc, i) => {
         val f1 = Frame(Vector(0,0,0), Quaternion.mkRotation(i * 2 * Pi / nbrRollers, Vector(0,0,1)))
         val frame = f0.compose(f1)
-        val c1 = Connection(asmbl, frame)
-        c1.attach(jt, c2)
-      }
+        acc + (frame, jt, c, w)
+      })
     }
-    Connection(asmbl).attach( new FixedJoint(Vector(0,0,-1)), Connection(lowerP))
-    Connection(asmbl).attach( new FixedJoint(Vector(0,0, 1)), Connection(upperP))
-    place(Connection(rollerP, Vector(0,0,-rollerHeight/2)))
-    place(Connection(axle, Vector(0,0,-axleHeight)))
-    asmbl
+    val asmbl1 = asmbl0 +
+                (Joint.fixed(0,0,-1), lowerP) +
+                (Joint.fixed(0,0, 1), upperP)
+    val asmbl2 = place(asmbl1, rollerP, Vector(0,0,-rollerHeight/2))
+    place(asmbl2, axle, Vector(0,0,-axleHeight))
   }
 
 }
