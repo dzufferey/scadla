@@ -1,6 +1,7 @@
 package dzufferey.scadla.backends
 
 import dzufferey.scadla._
+import dzufferey.scadla.utils.simplify
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ForkJoinTask
 
@@ -64,7 +65,7 @@ class ParallelRenderer(renderer: Renderer) extends Renderer {
       }
     }
 
-    val s = utils.simplify(obj)
+    val s = simplify(obj)
     val p = process(s)
     renderer(p)
   }

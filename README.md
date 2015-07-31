@@ -125,7 +125,7 @@ Features that may (or may not) be implemented, depending on time and motivation:
     * moving the point of view
   - for more complex surface look at marchine cube:
     * [marching cubes](https://en.wikipedia.org/wiki/Marching_cubes), http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7139, http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html, http://link.springer.com/article/10.1007%2FBF01900830
-    * It could be fun to try to implement that in OpenCL using [JavaCL](https://code.google.com/p/javacl/)
+    * It could be fun to try to implement that in OpenCL using [ScalaCL](https://github.com/nativelibs4java/ScalaCL)
     * use adaptative sampling instead of a fix grid
 
 * ...

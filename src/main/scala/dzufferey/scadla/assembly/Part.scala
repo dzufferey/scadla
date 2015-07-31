@@ -6,25 +6,20 @@ import dzufferey.scadla.backends.Renderer
 //final for pickling
 
 //TODO immutable
-final class Part(val name: String, val model: Solid) {
+final class Part(val name: String, val model: Solid, val printableModel: Option[Solid] = None) {
 
   var description: String = ""
 
   var vitamin = false
 
-  protected var printTransform = List[Solid => Solid]() 
+  //TODO should be protected but serialization ...
+  var poly: Polyhedron = null
+  var polyPrint: Polyhedron = null
 
-  protected var poly: Polyhedron = null
-  protected var polyPrint: Polyhedron = null
-
-  def addPrintTransform(fct: Solid => Solid) = {
-    printTransform ::= fct
-  }
-  
   def preRender(r: Renderer) {
     if (poly == null) {
       poly = r(model)
-      polyPrint = r(printTransform.foldRight(model)( (f, acc) => f(acc) ))
+      polyPrint = printableModel.map(r(_)).getOrElse(poly)
     }
   }
 
@@ -36,7 +31,7 @@ final class Part(val name: String, val model: Solid) {
     }
   }
 
-  def printableModel = {
+  def printable = {
     if (polyPrint != null) {
       polyPrint
     } else {

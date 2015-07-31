@@ -18,7 +18,7 @@ case class Union(objs: Solid*) extends Solid
 case class Intersection(objs: Solid*) extends Solid
 case class Difference(pos: Solid, negs: Solid*) extends Solid
 case class Minkowski(objs: Solid*) extends Solid
-case class Hull(obj: Solid*) extends Solid
+case class Hull(objs: Solid*) extends Solid
 
 //transforms
 case class Scale(x: Double, y: Double, z: Double, obj: Solid) extends Solid

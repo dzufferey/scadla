@@ -1,6 +1,7 @@
 package dzufferey.scadla.backends
 
 import dzufferey.scadla._
+import dzufferey.scadla.utils.fold
 import dzufferey.utils.SysCmd
 import java.io._
 
@@ -11,7 +12,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
       val mult = map.getOrElse(s, 0) + 1
       map + (s -> mult)
     }
-    utils.fold(incr, Map[Solid, Int](), s)
+    fold(incr, Map[Solid, Int](), s)
   }
   
   protected def decreaseMultiplicity(map: Map[Solid, Int], s: Solid, n: Int): Map[Solid, Int] = {
@@ -21,7 +22,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
       //assert(mult >= 0, "new mult = " + mult + " should be ≥ 0\nn = " + n + "\ns2 = "+s2+"\ns = "+s+").")
       map + (s2 -> mult)
     }
-    utils.fold(decr, map, s)
+    fold(decr, map, s)
   }
 
   protected def printWithModules(obj: Solid, writer: BufferedWriter) {

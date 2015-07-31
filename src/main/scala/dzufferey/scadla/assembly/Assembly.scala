@@ -4,7 +4,6 @@ import dzufferey.scadla._
 import dzufferey.scadla.backends.Renderer
 import scala.language.implicitConversions
 
-//TODO get rid of Connection
 sealed abstract class Assembly(name: String, children: List[(Frame,Joint,Assembly,Frame)]) {
 
   protected def checkNotInChildren(as: Set[Assembly]): Boolean = {
@@ -79,7 +78,7 @@ sealed abstract class Assembly(name: String, children: List[(Frame,Joint,Assembl
     //filter out vitamines
     val b = bom.filter(!_._1.vitamin)
     //gets all the parts to print
-    val polys = b.flatMap{ case (p,n) => Seq.fill(n)(p.printableModel) }
+    val polys = b.flatMap{ case (p,n) => Seq.fill(n)(p.printable) }
     //TODO compute bounding box and place within the x-y space
     ???
   }

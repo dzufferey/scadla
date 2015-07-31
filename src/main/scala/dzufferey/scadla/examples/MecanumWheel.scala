@@ -196,8 +196,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     axle.vitamin = true
     val (lower,upper) = hubHalves(8)
     val lowerP = new Part("hub, lower half", lower)
-    val upperP = new Part("hub, upper half", upper)
-    upperP.addPrintTransform(_.rotate(Pi, 0, 0).moveZ(-width/2))
+    val upperP = new Part("hub, upper half", upper, Some(upper.rotate(Pi, 0, 0).moveZ(-width/2)))
     val asmbl0 = Assembly("Mecanum wheel")
     def place(as: Assembly, c: Assembly, w: Vector) = {
       val jt = Joint.revolute(0,0,1)

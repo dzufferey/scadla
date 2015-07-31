@@ -18,39 +18,46 @@ import scalafx.scene.{AmbientLight, Group, Node, PerspectiveCamera, PointLight, 
 object JfxViewer extends Viewer {
   
   def apply(obj: Polyhedron) {
-    val cmd = Array("java", "-classpath", getClassPath, "dzufferey.scadla.backends.JfxViewerApp")
+    val cmd = Array("java", "-classpath", getClassPath, "dzufferey.scadla.backends.JfxViewerAppP")
     val input = Some(serialize(obj))
     SysCmd.execWithoutOutput(cmd, input)
   }
   
   def apply(a: Assembly) {
-    val cmd = Array("java", "-classpath", getClassPath, "dzufferey.scadla.backends.JfxViewerApp")
+    val cmd = Array("java", "-classpath", getClassPath, "dzufferey.scadla.backends.JfxViewerAppA")
     val input = Some(serialize(a))
     SysCmd.execWithoutOutput(cmd, input)
   }
+    
+  import scala.pickling.Defaults._
+  import scala.pickling.json._
+  //import scala.pickling.static._
+  import dzufferey.scadla.backends.utils.Pickles._
+
 
   def serialize(obj: Polyhedron): String = {
-    import scala.pickling.Defaults._
-    import scala.pickling.json._
-    //import scala.pickling.static._
     JfxViewerObjPoly(obj).pickle.value
   }
   
   def serialize(a: Assembly): String = {
-    import scala.pickling.Defaults._
-    import scala.pickling.json._
-    //import scala.pickling.static._
-    //JfxViewerObjAssembly(a).pickle.value
-    ???
+    JfxViewerObjAssembly(a).pickle.value
   }
   
   def deserialize(str: String): JfxViewerObj = {
-    import scala.pickling.Defaults._
-    import scala.pickling.json._
-    //import scala.pickling.static._
+    //TODO
     //JSONPickle(str).unpickle[JfxViewerObj]
-    ???
+    JSONPickle(str).unpickle[JfxViewerObjPoly]
+    //JSONPickle(str).unpickle[JfxViewerObjAssembly]
   }
+  
+  def deserializeP(str: String): JfxViewerObj = {
+    JSONPickle(str).unpickle[JfxViewerObjPoly]
+  }
+  
+  def deserializeA(str: String): JfxViewerObj = {
+    JSONPickle(str).unpickle[JfxViewerObjAssembly]
+  }
+
 
   def getClassPath = System.getProperty("java.class.path")
 
@@ -60,24 +67,34 @@ object JfxViewer extends Viewer {
 //  apply(obj)
 //}
 
-  def main(args: Array[String]) {
-    import Assembly.part2Assembly
-    val p0 = new Part("base", dzufferey.scadla.Translate(-5, -5, -1, Cube(10,10,1)))
-    val p1 = new Part("center", Cylinder(3, 5))
-    val p2 = new Part("spinning", dzufferey.scadla.Translate(-3, -3, 0, Cube(6,6,3)))
-    val a0 = Assembly(p0)
-    val a1 = Assembly(p1)
-    val a11 = a1 + (Vector(0,0,5), Joint.revolute(0,0,1), p2)
-    val a01 = a0 + (Joint.fixed(0,0,1), a11)
-    a01.preRender(JCSG)
-    apply(a01)
-  }
+//def main(args: Array[String]) {
+//  import Assembly.part2Assembly
+//  val p0 = new Part("base", dzufferey.scadla.Translate(-5, -5, -1, Cube(10,10,1)))
+//  val p1 = new Part("center", Cylinder(3, 5))
+//  val p2 = new Part("spinning", dzufferey.scadla.Translate(-3, -3, 0, Cube(6,6,3)))
+//  val a0 = Assembly(p0)
+//  val a1 = Assembly(p1)
+//  val a11 = a1 + (Vector(0,0,5), Joint.revolute(0,0,1), p2)
+//  val a01 = a0 + (Joint.fixed(0,0,1), a11)
+//  a01.preRender(JCSG)
+//  apply(a01)
+//}
 
+}
+
+object JfxViewerAppP extends JfxViewerApp {
+  override protected def deserialize(s: String) = JfxViewer.deserializeP(s)
+}
+
+object JfxViewerAppA extends JfxViewerApp {
+  override protected def deserialize(s: String) = JfxViewer.deserializeA(s)
 }
 
 //TODO add parameters from the JfxViewerObj
 //TODO arrows to display the axis
-object JfxViewerApp extends JFXApp {
+class JfxViewerApp extends JFXApp {
+
+  protected def deserialize(s: String) = JfxViewer.deserialize(s)
 
   protected def readPolyFromStdIn = {
     val buffer = new StringBuffer
@@ -86,7 +103,7 @@ object JfxViewerApp extends JFXApp {
       buffer.append(line)
       line = scala.io.StdIn.readLine
     }
-    JfxViewer.deserialize(buffer.toString)
+    deserialize(buffer.toString)
   }
 
   stage = new PrimaryStage {
@@ -208,7 +225,6 @@ case class JfxViewerObjPoly(p: Polyhedron) extends JfxViewerObj {
   def mesh = JfxViewerObj.objToMeshView(p)
   def boundingBox = JfxViewerObj.getBoundingBox(p)
 }
-//TODO for displaying Assembly
 case class JfxViewerObjAssembly(a: Assembly) extends JfxViewerObj {
   
   protected def setFrame( frame: Frame,

@@ -8,15 +8,18 @@ case class Joint(direction: Vector,
 
   //TODO need to know the bounding box of the two objects connected by this joint to scale appropriately
 
+  //TODO override that for putting bounds on the rotation, e.g., hinges
+  def effectiveTime(time: Double) = time
+
   def expandAt(expansion: Double, time: Double): Frame = {
-    val effectiveT = timeModifiers.foldRight(time)( (fct, acc) => fct(acc) )
+    val effectiveT = effectiveTime(time)
     val r = Quaternion.mkRotation(angularSpeed * effectiveT, direction)
     val l = direction * (linearSpeed * effectiveT + expansion)
     Frame(l, r)
   }
   
   def expandAt(expansion: Double, time: Double, s: Solid): Solid = {
-    val effectiveT = timeModifiers.foldRight(time)( (fct, acc) => fct(acc) )
+    val effectiveT = effectiveTime(time)
     val r = Quaternion.mkRotation(angularSpeed * effectiveT, direction)
     val l = direction * (linearSpeed * effectiveT + expansion)
     Translate(l, Rotate(r, s))
@@ -26,17 +29,6 @@ case class Joint(direction: Vector,
 
   def at(t: Double, s: Solid): Solid = expandAt(0, t, s)
   
-  //TODO separate modifiers for linear and anular speed
-  protected var timeModifiers = List[Double => Double]()
-
-  def addTimeModifier(fct: Double => Double) {
-    timeModifiers ::= fct
-  }
-
-  def clearTimeModifier {
-    timeModifiers = Nil
-  }
-
   def expand(t: Double): Frame = expandAt(t, 0)
 
   def expand(t: Double, s: Solid): Solid = expandAt(t, 0, s)
