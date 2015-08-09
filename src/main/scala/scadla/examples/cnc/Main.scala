@@ -27,6 +27,8 @@ object Main{
 
   //r.toSTL(Platform(4, 10, 10, 1.6), "platform.stl")
 
+  //r.view(Frame(250, 20, Pi/4, 100))
+
     println("work in progress")
   }
 

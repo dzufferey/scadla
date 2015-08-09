@@ -10,6 +10,18 @@ package object utils {
 
   def centeredCube(x: Double, y: Double, z:Double) = Translate(-x/2, -y/2, -z/2, Cube(x,y,z))
 
+  def centeredCubeXY(x: Double, y: Double, z:Double) = Translate(-x/2, -y/2, 0, Cube(x,y,z))
+
+  def centeredCubeXZ(x: Double, y: Double, z:Double) = Translate(-x/2, 0, -z/2, Cube(x,y,z))
+  
+  def centeredCubeYZ(x: Double, y: Double, z:Double) = Translate(0, -y/2, -z/2, Cube(x,y,z))
+
+  def centeredCubeX(x: Double, y: Double, z:Double) = Translate(-x/2, 0, 0, Cube(x,y,z))
+
+  def centeredCubeY(x: Double, y: Double, z:Double) = Translate(0, -y/2, 0, Cube(x,y,z))
+  
+  def centeredCubeZ(x: Double, y: Double, z:Double) = Translate(0, 0, -z/2, Cube(x,y,z))
+
   def biggerS(obj: Solid, s: Double) = Minkowski(obj, Sphere(s))
 
   def bigger(obj: Solid, s: Double) = Minkowski(obj, centeredCube(s,s,s))
