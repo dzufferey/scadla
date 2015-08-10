@@ -4,6 +4,7 @@ import scadla._
 
 object PieSlice {
 
+  //TODO this does not look right ...
   def apply(outerRadius: Double, innerRadius: Double, angle: Double, height: Double) = {
     val o1 = outerRadius + 1
     val t = Tube(outerRadius, innerRadius, height)
