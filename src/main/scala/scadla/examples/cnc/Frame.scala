@@ -64,34 +64,49 @@ class Frame(var mainBeamLength: Double = 250,
       beamHexaC(mainBeamLength, cl),
       beamHexaTop(topAngle, topVBeamLength, cl, mainBeamLength).moveZ(tl),
       beamHexaH(topHBeamLength, cl).moveZ(topHeight),
-      beamHexaC(topHBeamLength, cl).moveZ(topHeight)
+      beamHexaC(topHBeamLength, cl).moveZ(topHeight) //TODO can these beams be replaced by wires ?
     )
   }
+  
+  //TODO the different types of connector
+  //TODO the diagonal things (rigidity) → some form of static rope
 
   protected def c0 = Extrusion.connector(connectorThickness, connectorKnobs, connectorTolerance)
 
   protected def connectorCorner = {
-    //TODO
-    ???
-  //val ct = connectorThickness
-  //val ci = cl - ct
-  //val inner = sqrt(ci*ci + ct*ct) - ci
-  //val outer = inner + ct
-  //val p = PieSlice(outer, inner, Pi/3, ew)
-  //p.move(-outer, ew2, -ew2)
+    val α = atan2(ew2, cl) - 1e-6
+    val β = Pi/3 - 2 * α
+    val inner = (cl - connectorThickness) / cos(α)
+    val outer = cl / cos(α)
+    val p = PieSlice(outer, inner, β, ew)
+    p.rotateZ(α).moveZ(-ew2)
+  }
+
+  //the corners' corners
+  protected def connectorCornerTriple = {
+    val c0 = connectorCorner.moveZ(ew2)
+    val c1 = connectorCorner.moveZ(-ew2).rotateX(Pi/2)
+    val c2 = connectorCorner.moveZ(ew2).rotate(Pi/2, 0, Pi/3)
+    Intersection(c0, c1, c2) //TODO fix
+  }
+  protected def connectorCornerDouble = {
+    val c0 = connectorCorner.moveZ(ew2)
+    val c1 = connectorCorner.moveZ(-ew2).rotateX(Pi/2)
+    Intersection(c0, c1) //TODO fix
   }
 
   def connectorBottom = {
-    val b1 = centeredCubeXY(ew, ew, connectorThickness).moveZ(cl-connectorThickness)
-    val b2 = b1.rotateY( Pi/2)
-    //TODO corners using pieSlice instead of Hexagon/Hull
-    val block = Hull(
-      b1,
-      b2,
-      b2.rotateZ( Pi/3),
-      b2.rotateZ(-Pi/3),
-      b1.moveZ(connectorThickness-cl -ew2)
+    val corners = Seq(
+      connectorCorner,                             //bottom left
+      connectorCorner.rotateX(Pi/2),               //middle center
+      connectorCorner.rotateX(Pi),                 //bottom right
+      connectorCorner.rotate(Pi/2,     0,  Pi/3),  //middle left
+      connectorCorner.rotate(Pi/2,     0, -Pi/3),  //middle right
+      connectorCorner.rotate(   0, -Pi/2, Pi),     //top right
+      connectorCorner.rotate(Pi/2, -Pi/2, Pi),     //top center
+      connectorCorner.rotate(  Pi, -Pi/2, Pi)      //top left
     )
+
     val c1 = c0.moveZ(cl)
     val c2 = c1.rotateY( Pi/2)
     Union(
@@ -99,7 +114,17 @@ class Frame(var mainBeamLength: Double = 250,
       c2,
       c2.rotateZ( Pi/3),
       c2.rotateZ(-Pi/3),
-      block
+      corners(0),
+      corners(2),
+      Hull(corners(1), corners(6)), //TODO better than Hull
+    //Hull(corners(3), corners(7)),
+    //Hull(corners(4), corners(5)),
+      corners(3), corners(7), //TODO better than Hull
+      corners(4), corners(5),  //TODO better than Hull
+      connectorCornerTriple,
+      connectorCornerTriple.rotateZ(-Pi/3),
+      connectorCornerDouble.rotate(0,-Pi/2,-Pi),
+      connectorCornerDouble.rotate(0,-Pi/2,-Pi/2)
     )
   }
   
@@ -112,8 +137,8 @@ class Frame(var mainBeamLength: Double = 250,
   }
 
   def connectorCenter = {
-    val c1 = c0.rotateY( Pi/2) + connectorCorner
-    putAtCorners(c1, cl)
+    val c1 = c0.rotateY( Pi/2)
+    putAtCorners(c1, cl) + putAtCorners(connectorCorner, 0)
   }
 
   def connections = {
@@ -124,9 +149,6 @@ class Frame(var mainBeamLength: Double = 250,
   }
 
   def full = skeleton + connections
-
-  //TODO the different types of connector
-  //TODO the diagonal things (rigidity) → some form of static rope
 
 
 }
@@ -140,58 +162,7 @@ object Frame {
     val f = new Frame(mainBeamLength, clearance, topAngle, topLength)
     //f.connections
     //f.full
-    //f.connectorBottom
-    f.connectorCenter
-  }
-
-}
-
-
-//place holder for 20x20mm aluminium extrusions
-object Extrusion {
-
-  val width = 20
-
-  protected def centerHole(length: Double) = Cylinder(2.1, length+2).moveZ(-1)
-
-  def apply(length: Double) = {
-    val base = roundedCubeH(20,20, length, 1.5).move(-10, -10, 0)
-    val shell = Difference(
-      base,
-      centeredCubeXY(16, 16, length + 1).moveZ(-1),
-      centeredCubeXY(22, 6.5, length + 1).moveZ(-1),
-      centeredCubeXY(6.5, 22, length + 1).moveZ(-1)
-    )
-    val withInner = Union(
-      shell,
-      centeredCubeXY(8, 8, length), //center
-      centeredCubeXY(3, 3, length).move(-7.5, -7.5, 0), //corner
-      centeredCubeXY(3, 3, length).move(-7.5,  7.5, 0), //corner
-      centeredCubeXY(3, 3, length).move( 7.5, -7.5, 0), //corner
-      centeredCubeXY(3, 3, length).move( 7.5,  7.5, 0), //corner
-      centeredCubeXY(1.75, 25, length).rotateZ( Pi/4), //cross
-      centeredCubeXY(1.75, 25, length).rotateZ(-Pi/4)  //cross
-    )
-    withInner - centerHole(length)
-  }
-  
-  def placeHolder(length: Double) = centeredCubeXY(20, 20, length)
-
-  def connector(plateThicknesss: Double,
-                knobHeight: Double,
-                tolerance: Double = Common.tightTolerance) = {
-    val base = centeredCubeXY(20, 20, plateThicknesss + knobHeight).moveZ(-plateThicknesss)
-    val negative = bigger(apply(knobHeight), tolerance).moveZ(tolerance/2)
-    val hole = centerHole(knobHeight + plateThicknesss).moveZ(-plateThicknesss)
-    Difference(
-      base,
-      negative,
-      hole,
-      centeredCubeXY(4,4,knobHeight+1).move( 10, 10, 0),
-      centeredCubeXY(4,4,knobHeight+1).move( 10,-10, 0),
-      centeredCubeXY(4,4,knobHeight+1).move(-10, 10, 0),
-      centeredCubeXY(4,4,knobHeight+1).move(-10,-10, 0)
-    )
+    f.connectorBottom
   }
 
 }
