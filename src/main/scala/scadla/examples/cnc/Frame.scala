@@ -82,17 +82,30 @@ class Frame(var mainBeamLength: Double = 250,
     p.rotateZ(α).moveZ(-ew2)
   }
 
+  protected def connectorCornerHalf = {
+    val α = atan2(ew2, cl) - 1e-6
+    val β = Pi/3 - 2 * α
+    val inner = (cl - connectorThickness) / cos(α)
+    val outer = cl / cos(α)
+    val p = PieSlice(outer, inner, β/2, ew)
+    (p.rotateZ(α).moveZ(-ew2),
+     p.rotateZ(α + β/2 - 5e-7).moveZ(-ew2))
+  }
+  
   //the corners' corners
   protected def connectorCornerTriple = {
-    val c0 = connectorCorner.moveZ(ew2)
-    val c1 = connectorCorner.moveZ(-ew2).rotateX(Pi/2)
-    val c2 = connectorCorner.moveZ(ew2).rotate(Pi/2, 0, Pi/3)
-    Intersection(c0, c1, c2) //TODO fix
+    val (ch1, ch2) = connectorCornerHalf
+    val c0 = ch1.moveZ(ew2)
+    val c1 = ch2.moveZ(ew2)
+    val c2 = connectorCorner.moveZ(-ew2).rotateX(Pi/2)
+    val c3 = connectorCorner.moveZ(ew2).rotate(Pi/2, 0, Pi/3)
+    Union(c0 * c2, c1 * c3)
   }
   protected def connectorCornerDouble = {
     val c0 = connectorCorner.moveZ(ew2)
     val c1 = connectorCorner.moveZ(-ew2).rotateX(Pi/2)
-    Intersection(c0, c1) //TODO fix
+    val c2 = connectorCorner.moveY(ew2 * (sqrt(2) - 1))rotateX(Pi/4)
+    Intersection(c0, c1, c2)
   }
 
   def connectorBottom = {
@@ -107,24 +120,52 @@ class Frame(var mainBeamLength: Double = 250,
       connectorCorner.rotate(  Pi, -Pi/2, Pi)      //top left
     )
 
-    val c1 = c0.moveZ(cl)
-    val c2 = c1.rotateY( Pi/2)
+    val connector = c0.moveZ(cl)
+    val connectors = Union(
+      connector,
+      connector.rotate(0, Pi/2,     0),
+      connector.rotate(0, Pi/2,  Pi/3),
+      connector.rotate(0, Pi/2, -Pi/3)
+    )
+
+    val b0 = Cube(connectorThickness, ew, connectorThickness).move(ew2, -ew2, -connectorThickness)
+    val b1 = b0.moveZ(cl).rotateY(Pi/2)
+    val base = Hull(
+      b0.move(-ew, 0, -ew2),
+      b1,
+      b1.rotateZ( Pi/3),
+      b1.rotateZ(-Pi/3)
+    )
+
+    val pSize = 5.0
+    val p0 = {
+      val c = Cube(pSize, pSize, cl+ew2)
+      Intersection(c, c.rotateZ(Pi/4)).move(-pSize/2, -pSize/2, -ew2)
+    }
+    val pillars = Union(
+      p0.move(-ew2+pSize/2, -ew2+pSize/2, 0),
+      p0.move(-ew2+pSize/2,  ew2-pSize/2, 0)
+    )
+
     Union(
-      c1,
-      c2,
-      c2.rotateZ( Pi/3),
-      c2.rotateZ(-Pi/3),
+      base,
+      pillars,
+      connectors,
       corners(0),
       corners(2),
-      Hull(corners(1), corners(6)), //TODO better than Hull
-    //Hull(corners(3), corners(7)),
-    //Hull(corners(4), corners(5)),
-      corners(3), corners(7), //TODO better than Hull
-      corners(4), corners(5),  //TODO better than Hull
-      connectorCornerTriple,
-      connectorCornerTriple.rotateZ(-Pi/3),
-      connectorCornerDouble.rotate(0,-Pi/2,-Pi),
-      connectorCornerDouble.rotate(0,-Pi/2,-Pi/2)
+      //TODO better than Hull
+      Hull(corners(1), corners(6)),
+      Hull(corners(4),
+           corners(5),
+           connectorCornerTriple.rotateZ(-Pi/3),
+           connectorCornerDouble.rotate(0,-Pi/2,-Pi)
+      ),
+      Hull(corners(3),
+           corners(7),
+           connectorCornerTriple,
+           connectorCornerDouble.rotate(0,-Pi/2,-Pi/2)
+      )
+      //TODO to attach cables
     )
   }
   
@@ -162,7 +203,8 @@ object Frame {
     val f = new Frame(mainBeamLength, clearance, topAngle, topLength)
     //f.connections
     //f.full
-    f.connectorBottom
+    //f.connectorBottom
+    f.connectorMiddle
   }
 
 }
