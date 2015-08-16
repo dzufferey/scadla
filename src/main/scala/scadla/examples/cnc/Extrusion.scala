@@ -40,7 +40,7 @@ object Extrusion {
                 tolerance: Double = Common.tightTolerance) = {
     val base = centeredCubeXY(20, 20, plateThicknesss + knobHeight).moveZ(-plateThicknesss)
     val negative = bigger(apply(knobHeight), tolerance).moveZ(tolerance/2)
-    val hole = centerHole(knobHeight + plateThicknesss).moveZ(-plateThicknesss)
+    val hole = Cylinder(Thread.ISO.M5, knobHeight + plateThicknesss + 1).moveZ(-plateThicknesss-1)
     Difference(
       base,
       negative,
