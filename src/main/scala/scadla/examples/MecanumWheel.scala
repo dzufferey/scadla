@@ -44,7 +44,6 @@ class Roller(height: Double, maxOuterRadius: Double,minOuterRadius: Double, inne
   }
 
   //mold for k*l roller
-  //TODO put some grove to let the additional oogoo escape
   def mold(k: Int, l: Int) = {
     val wall = 2
     val distToWall = wall + maxOuterRadius
@@ -58,8 +57,14 @@ class Roller(height: Double, maxOuterRadius: Double,minOuterRadius: Double, inne
       val rs = for (j <- 0 until l) yield row.moveY(j*(2+height))
       Union(rs:_*)
     }
+    val grooves = {
+      val w = wall * 0.4
+      val groove = centeredCubeXZ(w,l*(2+height),w).rotateY(Pi/4).moveZ(distToWall)
+      val gs = for (i <- 0 until (k-1)) yield groove.moveX( distToWall + (i+0.5)*step)
+      Union(gs:_*)
+    }
     val base = Cube(k*step+wall, l*(2+height), distToWall)
-    base - rows
+    base - grooves - rows
   }
 
 }
@@ -220,36 +225,32 @@ object MecanumWheel {
 
   def main(args: Array[String]) {
     //a small version
-    val wheel = new MecanumWheel(20, 15, Pi/6, 12)
-    //val wheel = new MecanumWheel(20, 15, -Pi/6, 12)
+    val r = 25
+    val w = 18
+    val n = 12
+    val a = Pi/6
+    val wheel1 = new MecanumWheel(r, w, a, n)
+    val wheel2 = new MecanumWheel(r, w,-a, n)
     
-    //a bigger version
-    //val wheel = new MecanumWheel(30, 20, Pi/4, 12)
-    //val wheel = new MecanumWheel(30, 20, -Pi/4, 12)
+    wheel1.printParameters
     
-    wheel.printParameters
-    
-    //val obj = wheel.hub //the hub in one piece
-    //val (lower, upper) = wheel.hubHalvesPrintable(8) //the hub in two half for easier printing
-    //val obj = wheel.roller.solid 
-    //val obj = wheel.roller.skeleton
-    //val obj = wheel.roller.mold(4, 2)
+  ///* the parts */
+  //val (lower1, upper1) = wheel1.hubHalvesPrintable(8)
+  //val (lower2, upper2) = wheel2.hubHalvesPrintable(8)
+  //val roller = wheel1.roller.skeleton
+  //val mold = wheel1.roller.mold(6, 2)
+  ///* save to files */
+  //backends.OpenSCAD.toSTL(lower1, "lower1.stl")
+  //backends.OpenSCAD.toSTL(upper1, "upper1.stl")
+  //backends.OpenSCAD.toSTL(lower2, "lower2.stl")
+  //backends.OpenSCAD.toSTL(upper2, "upper2.stl")
+  //backends.OpenSCAD.toSTL(roller, "roller.stl")
+  //backends.OpenSCAD.toSTL(mold,   "mold.stl")
 
-    //backends.OpenSCAD.toSTL(lower, "lower1.stl") //can be directly saved as STL
-    //backends.OpenSCAD.toSTL(upper, "upper1.stl")
-
-    //the full wheel
-    val obj = wheel.assembled
+    /* view the full wheel */
+    val obj = wheel1.assembled
     backends.OpenSCAD.view(obj)
-    //backends.OpenSCAD.toSTL(obj, "mechanum.stl")
     //backends.OpenSCAD.view(obj, Nil, Nil, Nil) //this version renders in a faster but with less details
-
-    //val obj = wheel.rim
-    //val obj = wheel.rollersForCarving
-    //val r = backends.OpenSCAD
-    //val r = new backends.ParallelRenderer(backends.OpenSCAD)
-    //val r = new backends.ParallelRenderer(new backends.OpenSCAD(Nil))
-    //r.toSTL(obj, "carve.stl")
   }
 
 }
