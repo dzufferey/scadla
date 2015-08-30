@@ -27,7 +27,9 @@ object Main{
 
   //r.toSTL(Platform(4, 10, 10, 1.6), "platform.stl")
 
-    r.view(Frame(250, 20, Pi/4, 100))
+    r.view(Nema17(36))
+
+  //r.view(Frame(250, 20, Pi/4, 100))
   //r.toSTL(Frame(250, 20, Pi/4, 100), "frame.stl")
   //r.view(Extrusion.connector(3, 5))
 
