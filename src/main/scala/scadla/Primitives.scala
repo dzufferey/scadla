@@ -13,6 +13,7 @@ case class Face(p1: Point, p2: Point, p3: Point) {
     val n1 = v1 cross v2
     n1 / n1.norm
   }
+  def flipOrientation = Face(p1, p3, p2)
 }
 
 case class Matrix(m00: Double, m01: Double, m02: Double, m03:Double,

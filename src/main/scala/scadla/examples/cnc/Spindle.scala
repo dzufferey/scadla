@@ -3,6 +3,7 @@ package scadla.examples.cnc
 import math._
 import scadla._
 import utils._
+import utils.gear._
 import InlineOps._
 import scadla.examples.fastener._
 import Common._

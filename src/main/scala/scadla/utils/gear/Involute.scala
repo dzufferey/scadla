@@ -1,4 +1,4 @@
-package scadla.utils
+package scadla.utils.gear
   
 import scadla._
 import scala.math._

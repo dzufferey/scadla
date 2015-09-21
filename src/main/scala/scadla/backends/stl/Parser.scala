@@ -15,8 +15,11 @@ object AsciiParser extends JavaTokenParsers {
     }
 
   def parseFacet: Parser[Face] =
-    "facet" ~> "normal" ~> repN(3, floatingPointNumber) ~> "outer" ~> "loop" ~> repN(3, parseVertex) <~ "endloop" <~ "endfacet" ^^ {
-      case List(a, b,c) => Face(a, b, c)
+    ("facet" ~> "normal" ~> repN(3, floatingPointNumber)) ~ ("outer" ~> "loop" ~> repN(3, parseVertex) <~ "endloop" <~ "endfacet") ^^ {
+      case List(nx, ny, nz) ~ List(a, b, c) =>
+        val n = Vector(nx.toDouble, ny.toDouble, nz.toDouble)
+        val f = Face(a, b, c)
+        scadla.backends.stl.Parser.checkNormal(f, n)
     }
 
   def parseSolid: Parser[Polyhedron] =
@@ -45,6 +48,13 @@ object BinaryParser {
   import java.nio.channels.FileChannel
   import java.nio.ByteBuffer
 
+  protected def vector(buffer: ByteBuffer) = {
+    val p1 = buffer.getFloat
+    val p2 = buffer.getFloat
+    val p3 = buffer.getFloat
+    Vector(p1, p2, p3)
+  }
+
   protected def point(buffer: ByteBuffer) = {
     val p1 = buffer.getFloat
     val p2 = buffer.getFloat
@@ -60,12 +70,12 @@ object BinaryParser {
     buffer.position(80) //skip the header
     val nbrTriangles = buffer.getInt
     val triangles = for (_ <- 0 until nbrTriangles) yield {
-      buffer.position(buffer.position + 9) //skip normal
+      val n = vector(buffer)
       val p1 = point(buffer)
       val p2 = point(buffer)
       val p3 = point(buffer)
       buffer.position(buffer.position + 2) //skip attributes
-      Face(p1, p2, p3)
+      Parser.checkNormal(Face(p1, p2, p3), n)
     }
     Polyhedron(triangles)       
   }
@@ -77,6 +87,11 @@ object Parser {
   val txtHeader = "solid"
   val bytesHeader = txtHeader.getBytes("US-ASCII")
   val headerSize = bytesHeader.size
+
+  def checkNormal(f: Face, n: Vector): Face = {
+    if (n.dot(f.normal) < 1e-10) f.flipOrientation
+    else f
+  }
 
   protected def isTxt(fileName: String) = {
     val stream = new FileInputStream(fileName)
