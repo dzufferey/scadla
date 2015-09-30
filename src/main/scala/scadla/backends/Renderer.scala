@@ -20,7 +20,8 @@ trait Renderer {
 object Renderer {
 
   def default: Renderer = {
-    if (OpenSCAD.isPresent) OpenSCAD
+    if (OpenSCADnightly.isPresent) OpenSCADnightly
+    else if (OpenSCAD.isPresent) OpenSCAD
     else JCSG
   }
 

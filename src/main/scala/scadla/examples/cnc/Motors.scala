@@ -8,13 +8,15 @@ import scala.math._
 //place holder for NEMA stepper motors
 
 object Nema14 {
+
+  val size = 35.2
   
   def apply( length: Double,
              screwLength: Double,
              axisFlat: Double,
              axisLengthFront: Double,
              axisLengthBack: Double ): Solid = {
-    NemaStepper(35.2, length,
+    NemaStepper(size, length,
                 26, Thread.ISO.M3, screwLength,
                 11, 2.0,
                 2.5, axisFlat, axisLengthFront, axisLengthBack)
@@ -25,6 +27,12 @@ object Nema14 {
              axisFlat: Double ): Solid = {
     apply(length, screwLength, axisFlat, 22, 0)
   }
+  
+  def apply( length: Double,
+             screwLength: Double): Solid = {
+    apply(length, screwLength, 0.45, 22, 0)
+  }
+
 
   def apply( length: Double): Solid = {
     apply(length, 3, 0.45, 22, 0)
@@ -34,12 +42,14 @@ object Nema14 {
 
 object Nema17 {
 
+  val size = 42.3
+
   def apply( length: Double,
              screwLength: Double,
              axisFlat: Double,
              axisLengthFront: Double,
              axisLengthBack: Double ): Solid = {
-    NemaStepper(42.3, length,
+    NemaStepper(size, length,
                 31, Thread.ISO.M3, screwLength,
                 11, 2.0,
                 2.5, axisFlat, axisLengthFront, axisLengthBack)
@@ -49,6 +59,11 @@ object Nema17 {
              screwLength: Double,
              axisFlat: Double ): Solid = {
     apply(length, screwLength, axisFlat, 25, 0)
+  }
+
+  def apply( length: Double,
+             screwLength: Double): Solid = {
+    apply(length, screwLength, 0.45, 25, 0)
   }
 
   def apply( length: Double): Solid = {

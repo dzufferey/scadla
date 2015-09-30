@@ -7,6 +7,10 @@ import java.io._
 
 class OpenSCAD(header: List[String]) extends Renderer {
 
+  protected val command = "openscad"
+
+  lazy val isPresent = SysCmd(Array(command, "-v"))._1 == 0
+
   protected def getMultiplicity(s: Solid): Map[Solid, Int] = {
     def incr(map: Map[Solid, Int], s: Solid) = {
       val mult = map.getOrElse(s, 0) + 1
@@ -201,7 +205,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
 
   def toSTL(obj: Solid, outputFile: String, options: Iterable[String]) = {
     val tmpFile = toTmpFile(obj)
-    val cmd = Array("openscad", tmpFile.getPath, "-o", outputFile) ++ options
+    val cmd = Array(command, tmpFile.getPath, "-o", outputFile) ++ options
     val res = SysCmd(cmd)
     tmpFile.delete
     res
@@ -221,7 +225,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
 
   def runOpenSCAD(obj: Solid, options: Iterable[String] = Nil) = {
     val tmpFile = toTmpFile(obj)
-    val cmd = Array("openscad", tmpFile.getPath) ++ options
+    val cmd = Array(command, tmpFile.getPath) ++ options
     val res = SysCmd(cmd)
     tmpFile.delete
     res
@@ -244,6 +248,10 @@ class OpenSCAD(header: List[String]) extends Renderer {
 
 object OpenSCAD extends OpenSCAD(List("$fa=4;", "$fs=0.5;")) {
 
-  lazy val isPresent = SysCmd(Array("openscad", "-v"))._1 == 0
+}
+
+object OpenSCADnightly extends OpenSCAD(List("$fa=4;", "$fs=0.5;")) {
+
+  override protected val command = "openscad-nightly"
 
 }

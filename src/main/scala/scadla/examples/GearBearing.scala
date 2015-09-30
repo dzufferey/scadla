@@ -30,14 +30,14 @@ object GearBearing {
 
 }
 
-class GearBearing(outerRadius: Double,
-                  height: Double,
-                  nbrPlanets: Int,
-                  nbrTeethPlanet: Int,
-                  nbrTeethSun: Int,
-                  helixAngleOuter: Double,
-                  centerHexagonMinRadius: Double,
-                  backlash: Double) {
+class GearBearing(val outerRadius: Double,
+                  val height: Double,
+                  val nbrPlanets: Int,
+                  val nbrTeethPlanet: Int,
+                  val nbrTeethSun: Int,
+                  val helixAngleOuter: Double,
+                  val centerHexagonMinRadius: Double,
+                  val backlash: Double) {
     
   //constants
   val sunToPlanetRatio = nbrTeethSun.toDouble / nbrTeethPlanet
@@ -52,7 +52,7 @@ class GearBearing(outerRadius: Double,
   def outer = Gear.herringbone(-outerRadius, nbrTeethOuter, height, helixAngleOuter, backlash)
   def planet = Gear.herringbone(planetRadius, nbrTeethPlanet, height, helixAnglePlanet, backlash) 
   def sun = {
-    val sunCenter = Hexagon(centerHexagonMinRadius, height).rotateX(Pi).moveZ(10)
+    val sunCenter = Hexagon(centerHexagonMinRadius + backlash, height).rotateX(Pi).moveZ(10)
     Gear.herringbone(sunRadius, nbrTeethSun, height, helixAngleSun, backlash) - sunCenter
   }
 

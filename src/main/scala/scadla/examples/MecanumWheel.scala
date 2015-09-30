@@ -249,7 +249,7 @@ object MecanumWheel {
 
     /* view the full wheel */
     val obj = wheel1.assembled
-    backends.OpenSCAD.view(obj)
+    backends.Renderer.default.view(obj)
     //backends.OpenSCAD.view(obj, Nil, Nil, Nil) //this version renders in a faster but with less details
   }
 
