@@ -13,7 +13,9 @@ object InvoluteGear {
     profile.rotateZ(angle).move(x, y, 0)
   }
 
-  protected def makeToothCarvingProfile(pitch: Double, profile: Solid, samples: Int = 50) = {
+  protected def makeToothCarvingProfile(pitch: Double, profile: Solid) = {
+    val samples = Gear.toothProfileAccuracy
+    assert(samples > 1, "toothProfileAccuracy must be larger than 1")
     val range = 2*Pi/3 //TODO vary angle and samples according to pressureAngle
     val trajectory = for (i <- 1 until samples) yield {
       val a = 0 - range / 2 + i * range / samples
@@ -101,8 +103,9 @@ object InvoluteGear {
                dedenum: Double,
                height: Double,
                backlash: Double,
-               skew: Double = 0.1,
-               zStep: Double = 0.1) = {
+               skew: Double = 0.0) = {
+    val zStep = Gear.zResolution
+    assert(zStep > 0.0, "zResolution must be greater than 0")
     val stepCount = ceil(height / zStep).toInt
     val stepSize = height / stepCount
     def isZ(p: Point, z: Double) = (p.z - z).abs <= 1e-10 //TODO better way of dealing with numerical error

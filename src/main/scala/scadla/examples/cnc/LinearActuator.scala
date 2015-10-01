@@ -40,8 +40,8 @@ object LinearActuator {
     motorLength + plateThickness,
     6,
     12,
-    18,
-    0.01,
+    24,
+    0.03,
     0,
     tightTolerance
   )
@@ -58,7 +58,7 @@ object LinearActuator {
   
   lazy val motorGear = {
     val g = Gear.herringbone(motorGearRadius, nbrTeethMotor, plateThickness, 0.02, tightTolerance)
-    g - motor.moveZ(5) //clear the flange
+    g - motor.moveZ(-5) //clear the flange
   }
 
   lazy val planetGear = gb.planet //needs 6 copies of that one

@@ -6,7 +6,8 @@ import scala.math._
 
 object Main{
     
-  val r = backends.OpenSCAD
+  val r = backends.Renderer.default
+  //val r = backends.OpenSCAD
   //val r = backends.JCSG
   //val r = new backends.ParallelRenderer(backends.OpenSCAD)
   //val r = new backends.ParallelRenderer(backends.JCSG)
@@ -33,7 +34,16 @@ object Main{
   //r.toSTL(Frame(250, 20, Pi/4, 100), "frame.stl")
   //r.view(Extrusion.connector(3, 5))
   
-    r.view(LinearActuator.basePlate)
+  //val linAct = Map(
+  //  "la-base" -> LinearActuator.basePlate,
+  //  "la-motor" -> LinearActuator.motorGear,
+  //  "la-planet" -> LinearActuator.planetGear,
+  //  "la-sun1" -> LinearActuator.sunGearPart1,
+  //  "la-sun2" -> LinearActuator.sunGearPart2)
+  //for ( (n,s) <- linAct) {
+  //  //r.view(s)
+  //  r.toSTL(s, n + ".stl")
+  //}
 
     println("work in progress")
   }

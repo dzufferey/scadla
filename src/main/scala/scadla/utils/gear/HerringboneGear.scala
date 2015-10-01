@@ -16,7 +16,6 @@ object HerringboneGear {
    * @param helixAngle how much twisting (in rad / mm)
    * @param backlash add some space (manufacturing tolerance)
    * @param skew generate a gear with an asymmetric profile by skewing the tooths
-   * @param zStep (level of detail) how thick should the layers be before applying the transform
    */
   def apply( pitch: Double,
              nbrTooths: Int,
@@ -26,9 +25,8 @@ object HerringboneGear {
              height: Double,
              helixAngle: Double,
              backlash: Double,
-             skew: Double = 0.0,
-             zStep: Double = 0.1) = {
-    val stepped = InvoluteGear.stepped(pitch, nbrTooths, pressureAngle, addenum, dedenum, height, backlash, skew, zStep)
+             skew: Double = 0.0) = {
+    val stepped = InvoluteGear.stepped(pitch, nbrTooths, pressureAngle, addenum, dedenum, height, backlash, skew)
     def turnPoint(p: Point): Point = {
       val z = p.z
       val a = if (z < height/2) helixAngle * z

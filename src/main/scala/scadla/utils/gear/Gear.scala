@@ -16,6 +16,13 @@ import scala.math._
 
 object Gear {
 
+  /** ~accuracy of the tooth profile */
+  var toothProfileAccuracy = 30
+
+  /** This determines the number of vertical steps for helical and herringbone gear.
+   *  This should more or less corresponds to the thickness of the layer when printing */
+  var zResolution = 0.2
+
   /** Simplified interface for spur gear (try to guess some parameters).
    *  To mesh gears of different sizes, the pitch/nbrTooths ratio must be the same for all the gears.
    */
