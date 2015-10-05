@@ -45,7 +45,7 @@ class GearBearing(val outerRadius: Double,
   val sunRadius = planetRadius * sunToPlanetRatio
   val nbrTeethOuter = 2 * nbrTeethPlanet + nbrTeethSun
   val helixAnglePlanet = helixAngleOuter * outerRadius / planetRadius
-  val helixAngleSun = helixAngleOuter * outerRadius / sunRadius
+  val helixAngleSun = -(helixAngleOuter * outerRadius / sunRadius)
 
   //TODO check for interferences
 
@@ -56,13 +56,24 @@ class GearBearing(val outerRadius: Double,
     Gear.herringbone(sunRadius, nbrTeethSun, height, helixAngleSun, backlash) - sunCenter
   }
 
+  protected def positionPlanet(p: Solid) = {
+    val r = sunRadius+planetRadius
+    val α = 2 * Pi / nbrPlanets
+    val β = -α * outerRadius / planetRadius
+    for (i <- 0 until nbrPlanets) yield p.rotateZ(i*β).moveX(r).rotateZ(i*α)
+  }
+
   def all = {
     val p = planet
-    val r = sunRadius+planetRadius
-    val α = 2 * Pi / nbrTeethPlanet
-    val β = -α * outerRadius / planetRadius
-    val planets = for (i <- 0 until nbrPlanets) yield p.rotateZ(i*β).moveX(r).rotateZ(i*α)
+    val planets = positionPlanet(p)
     outer ++ planets + sun //TODO the sun should also rotate a bit ???
+  }
+
+  def planetHelper(baseThickness: Double, tolerance: Double) = {
+    val add = Gear.addenum(outerRadius, nbrTeethOuter) + tolerance
+    val planet = Cylinder(planetRadius+add, height).moveZ(baseThickness)
+    val planets = positionPlanet(planet)
+    Tube(outerRadius - add, sunRadius + add, height) -- planets
   }
 
 }

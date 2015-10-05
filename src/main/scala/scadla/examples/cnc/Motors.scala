@@ -33,9 +33,12 @@ object Nema14 {
     apply(length, screwLength, 0.45, 22, 0)
   }
 
-
   def apply( length: Double): Solid = {
     apply(length, 3, 0.45, 22, 0)
+  }
+  
+  def putOnScrew(s: Solid) = {
+    NemaStepper.putOnScrew(26, s)
   }
 
 }
@@ -69,6 +72,10 @@ object Nema17 {
   def apply( length: Double): Solid = {
     apply(length, 5, 0.45, 22, 0)
   }
+  
+  def putOnScrew(s: Solid) = {
+    NemaStepper.putOnScrew(31, s)
+  }
 
 }
 
@@ -88,12 +95,7 @@ object NemaStepper {
     val base = centeredCubeXY(side, side, length).moveZ(-length)
     val withFlange = if (flangeDepth > 0) base + Cylinder(flangeRadius, flangeDepth) else base
     val screw = Cylinder(screwSize, screwLength.abs)
-    val screws = Union(
-      screw.move( -screwSeparation/2, -screwSeparation/2, 0),
-      screw.move( -screwSeparation/2,  screwSeparation/2, 0),
-      screw.move(  screwSeparation/2, -screwSeparation/2, 0),
-      screw.move(  screwSeparation/2,  screwSeparation/2, 0)
-    )
+    val screws = putOnScrew(screwSeparation, screw)
     val withScrews =
       if (screwLength > 0) {
         withFlange - screws.moveZ(-screwLength)
@@ -113,6 +115,15 @@ object NemaStepper {
     val withFrontAxis = withScrews + axis(axisLengthFront)
     val withBackAxis = withFrontAxis + axis(axisLengthBack).moveZ(-length -axisLengthBack)
     withBackAxis
+  }
+
+  def putOnScrew(screwSeparation: Double, s: Solid) = {
+    Union(
+      s.move( -screwSeparation/2, -screwSeparation/2, 0),
+      s.move( -screwSeparation/2,  screwSeparation/2, 0),
+      s.move(  screwSeparation/2, -screwSeparation/2, 0),
+      s.move(  screwSeparation/2,  screwSeparation/2, 0)
+    )
   }
 
 }

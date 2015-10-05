@@ -25,7 +25,7 @@ object Rack {
   
   /** Create an involute spur gear.
    * @param toothWidth the width of a tooth
-   * @param nbrTooths the number of tooth in the gear
+   * @param nbrTeeth the number of tooth in the gear
    * @param pressureAngle the angle between meshing gears at the pitch radius (0 mean "square" tooths, π/2 no tooths)
    * @param addenum how much to add to the pitch to get the outer radius of the gear
    * @param dedenum how much to remove to the pitch to get the root radius of the gear
@@ -34,7 +34,7 @@ object Rack {
    * @param skew generate a gear with an asymmetric profile by skewing the tooths
    */
   def apply( toothWidth: Double,
-             nbrTooths: Int,
+             nbrTeeth: Int,
              pressureAngle: Double,
              addenum: Double,
              dedenum: Double,
@@ -44,14 +44,14 @@ object Rack {
 
     assert(addenum > 0, "addenum must be greater than 0")
     assert(dedenum > 0, "dedenum must be greater than 0")
-    assert(nbrTooths > 0, "number of tooths must be greater than 0")
+    assert(nbrTeeth > 0, "number of tooths must be greater than 0")
     assert(toothWidth > 0, "toothWidth must be greater than 0")
 
     val rackTooth = tooth(toothWidth, pressureAngle, addenum, dedenum, height, backlash, skew)
 
     val space = 2*toothWidth
-    val teeth = for (i <- 0 until nbrTooths) yield rackTooth.moveY(i * space)
-    val base = Cube(5, nbrTooths * space, height).move(dedenum, -space/2, 0) //TODO why 5
+    val teeth = for (i <- 0 until nbrTeeth) yield rackTooth.moveY(i * space)
+    val base = Cube(5, nbrTeeth * space, height).move(dedenum, -space/2, 0) //TODO why 5
     base ++ teeth
   }
 

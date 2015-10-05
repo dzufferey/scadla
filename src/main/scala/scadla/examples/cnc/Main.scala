@@ -13,37 +13,27 @@ object Main{
   //val r = new backends.ParallelRenderer(backends.JCSG)
   
   def main(args: Array[String]) {
-  //r.toSTL(BitsHolder(4, 2, 3.5, 16, 12), "bits_holder.stl")
 
   //Spindle.objects.par.foreach{ case (name, obj) => 
-  //  r.toSTL(obj, name + ".stl")
+  //  r.toSTL(obj, "spdl-" + name + ".stl")
   //}
-  //r.toSTL(Spindle.collet, "collet.stl")
-  //r.toSTL(Spindle.spindle, "spindle.stl")
-  //r.toSTL(Spindle.colletWrench, "wrench.stl")
 
   //new Joint2DOF().parts.zipWithIndex.par.foreach{ case (p, i) =>
-  //  r.toSTL(p, "j2dof_" + i + ".stl")
+  //  r.toSTL(p, "j2dof-" + i + ".stl")
   //}
 
   //r.toSTL(Platform(4, 10, 10, 1.6), "platform.stl")
-
-  //r.view(Nema17(36))
-
-  //r.view(Frame(250, 20, Pi/4, 100))
   //r.toSTL(Frame(250, 20, Pi/4, 100), "frame.stl")
-  //r.view(Extrusion.connector(3, 5))
-  
-  //val linAct = Map(
-  //  "la-base" -> LinearActuator.basePlate,
-  //  "la-motor" -> LinearActuator.motorGear,
-  //  "la-planet" -> LinearActuator.planetGear,
-  //  "la-sun1" -> LinearActuator.sunGearPart1,
-  //  "la-sun2" -> LinearActuator.sunGearPart2)
-  //for ( (n,s) <- linAct) {
-  //  //r.view(s)
-  //  r.toSTL(s, n + ".stl")
+
+  //for ( (n,s) <- LinearActuator.parts) { //takes a bit too much memory to be done in parallel
+  //  r.toSTL(s, "la-" + n + ".stl")
   //}
+
+  //r.toSTL(LinearActuator.motorGear, "la-motor.stl")
+  //r.toSTL(LinearActuator.transmissionGear, "la-transmission.stl")
+  //r.toSTL(LinearActuator.sunGearPart1, "la-sun1.stl")
+  //r.toSTL(LinearActuator.sunGearPart2, "la-sun2.stl")
+    r.toSTL(LinearActuator.basePlate, "la-base.stl")
 
     println("work in progress")
   }
