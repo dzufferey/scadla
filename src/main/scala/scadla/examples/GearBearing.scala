@@ -47,6 +47,8 @@ class GearBearing(val outerRadius: Double,
   val helixAnglePlanet = helixAngleOuter * outerRadius / planetRadius
   val helixAngleSun = -(helixAngleOuter * outerRadius / sunRadius)
 
+  def externalRadius = outerRadius + Gear.addenum(outerRadius, nbrTeethOuter) + Gear.baseThickness
+
   //TODO check for interferences
 
   def outer = Gear.herringbone(-outerRadius, nbrTeethOuter, height, helixAngleOuter, backlash)

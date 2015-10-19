@@ -51,7 +51,7 @@ object Rack {
 
     val space = 2*toothWidth
     val teeth = for (i <- 0 until nbrTeeth) yield rackTooth.moveY(i * space)
-    val base = Cube(5, nbrTeeth * space, height).move(dedenum, -space/2, 0) //TODO why 5
+    val base = Cube(Gear.baseThickness, nbrTeeth * space, height).move(dedenum, -space/2, 0)
     base ++ teeth
   }
 

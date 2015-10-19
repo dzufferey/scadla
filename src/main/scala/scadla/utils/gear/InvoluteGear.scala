@@ -84,12 +84,13 @@ object InvoluteGear {
     if (pitch == 0) {
       val space = 2*toothWidth
       val teeth = for (i <- 0 until nbrTeeth) yield rackTooth.moveX(i * space)
-      val base = Cube((nbrTeeth+1) * space, max(dedenum+2, 5), height).move(-space/2, -max(dedenum+2, 5), 0) //TODO why 5
+      val bt = dedenum + Gear.baseThickness
+      val base = Cube((nbrTeeth+1) * space, bt, height).move(-space/2, -bt, 0)
       base ++ teeth
     } else {
       val base =
         if (pitch > 0) Cylinder(pitch + addenum, height)
-        else Tube(effectivePitch + max(addenum+2, 5), effectivePitch - dedenum, height) //TODO why 5
+        else Tube(effectivePitch + addenum+Gear.baseThickness, effectivePitch - dedenum, height)
       carve(base, pitch, nbrTeeth, rackTooth, height)
     }
   }

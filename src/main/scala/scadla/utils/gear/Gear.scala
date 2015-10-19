@@ -12,6 +12,8 @@ import scala.math._
 //  http://lcamtuf.coredump.cx/gcnc/ and
 //  http://www.hessmer.org/blog/2014/01/01/online-involute-spur-gear-builder/
 
+//TODO redesign to avoid the global variables (toothProfileAccuracy, baseThickness) maybe use trait and mixin
+
 object Gear {
 
   /** ~accuracy of the tooth profile */
@@ -20,6 +22,9 @@ object Gear {
   /** This determines the number of vertical steps for helical and herringbone gear.
    *  This should more or less corresponds to the thickness of the layer when printing */
   var zResolution = 0.2
+
+  /** only for rack and internal gears: thickness of the outer */
+  var baseThickness = 2
 
   /** default value for the addenum given the pitch and the number of teeth */
   def addenum(pitch: Double, nbrTeeth: Int) = pitch.abs * 2 / nbrTeeth
