@@ -150,8 +150,3 @@ class Joint2DOF(radius: Double = Thread.UTS._1_4) {
   )
   
 }
-
-//The part that holds the linear actuator connected to the frame
-object Gimbal2DOF {
-
-}

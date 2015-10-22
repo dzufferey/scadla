@@ -33,8 +33,21 @@ object Main{
   //r.toSTL(LinearActuator.transmissionGear, "la-transmission.stl")
   //r.toSTL(LinearActuator.sunGearPart1, "la-sun1.stl")
   //r.toSTL(LinearActuator.sunGearPart2, "la-sun2.stl")
-    r.toSTL(LinearActuator.basePlate, "la-base.stl")
+  //r.toSTL(LinearActuator.basePlate, "la-base.stl")
   //r.toSTL(LinearActuator.planetGear, "la-planet.stl")
+
+  //r.toSTL(Gimbal.inner(
+  //  LinearActuator.length + 20,                             //length
+  //  LinearActuator.gimbalWidth + 10,                        //width
+  //  28,                                                     //height
+  //  2,                                                      //rounding
+  //  5,                                                      //thickness
+  //  LinearActuator.length/2 - LinearActuator.bearingCenter, //lengthOffset
+  //  0,                                                      //widthOffset
+  //  0,                                                      //heightOffset
+  //  5,                                                      //spacing
+  //  1                                                       //retainerThickness
+  //), "gimbal.stl")
 
     println("work in progress")
   }

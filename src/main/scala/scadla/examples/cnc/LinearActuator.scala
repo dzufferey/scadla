@@ -61,10 +61,15 @@ object LinearActuator {
     0,
     tightTolerance
   )
+
+  def length = mtb + Nema14.size/2 + gb.externalRadius
+  def width = max(Nema14.size, 2*gb.externalRadius)
+  def motorCenter = mtb + gb.externalRadius
+  def bearingCenter = gb.externalRadius
   
   val basePlate1 = {
     val plateX = Nema14.size
-    val plateY = mtb + Nema14.size/2 + gb.externalRadius
+    val plateY = length
     val rc0 = roundedCubeH(plateX, plateY, plateThickness, 2).move(-Nema14.size/2, -(mtb + Nema14.size/2), 0)
     val toRemove = Union(
         Union(
