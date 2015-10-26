@@ -24,8 +24,8 @@ object LinearActuator {
   /** motor to bearing distance */
   val mtb = 45
   val bearingRadius = 16
-  val gimbalWidth = 48
-  val gimbalKnob = 4
+  val gimbalWidth = 50
+  val gimbalKnob = 7
 
   val thread = Thread.UTS._1_4
 

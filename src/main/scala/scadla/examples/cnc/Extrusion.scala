@@ -52,4 +52,19 @@ object Extrusion {
     )
   }
 
+  //TODO better name
+  def pad(length: Double, threadRadius: Double) = {
+    val bot: Double = 14
+    val top: Double = 8
+    val height: Double = 3
+    val d = 2
+    val base = Trapezoid(top, bot, length, height)
+    val chamfered = base * Cube(bot - d, length, height).moveX(d/2)
+    Difference(
+      chamfered,
+      Cylinder(threadRadius-Common.tolerance, height).move(bot/2, length/2, 0),
+      new examples.fastener.NutPlaceHolder().apply(threadRadius).move(bot/2, length/2, height-1.6*threadRadius+1)
+    )
+  }
+
 }

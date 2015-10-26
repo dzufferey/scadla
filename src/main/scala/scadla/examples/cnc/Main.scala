@@ -33,21 +33,26 @@ object Main{
   //r.toSTL(LinearActuator.transmissionGear, "la-transmission.stl")
   //r.toSTL(LinearActuator.sunGearPart1, "la-sun1.stl")
   //r.toSTL(LinearActuator.sunGearPart2, "la-sun2.stl")
-  //r.toSTL(LinearActuator.basePlate, "la-base.stl")
   //r.toSTL(LinearActuator.planetGear, "la-planet.stl")
+  //r.toSTL(LinearActuator.basePlate, "la-base.stl")
 
-  //r.toSTL(Gimbal.inner(
-  //  LinearActuator.length + 20,                             //length
-  //  LinearActuator.gimbalWidth + 10,                        //width
-  //  28,                                                     //height
-  //  2,                                                      //rounding
-  //  5,                                                      //thickness
-  //  LinearActuator.length/2 - LinearActuator.bearingCenter, //lengthOffset
-  //  0,                                                      //widthOffset
-  //  0,                                                      //heightOffset
-  //  5,                                                      //spacing
-  //  1                                                       //retainerThickness
+  //r.toSTL(Gimbal.roundedSquare(
+  //  LinearActuator.gimbalWidth + 16,                              //length
+  //  LinearActuator.length + 16 + 20,                              //width
+  //  30,                                                           //height
+  //  2,                                                            //rounding
+  //  8,                                                            //thickness
+  //  0,                                                            //lengthOffset
+  //  LinearActuator.length/2 - LinearActuator.bearingCenter - 2,   //widthOffset
+  //  0,                                                            //heightOffset
+  //  2,                                                            //knobLength
+  //  1                                                             //retainerThickness
   //), "gimbal.stl")
+
+  //r.toSTL(Extrusion(50), "extrusion.stl")
+  //r.toSTL(Extrusion.pad(10,1.5), "pad.stl")
+  //val af = new ActuatorFasterner(50, 100)
+  //r.view(af.connector(true))
 
     println("work in progress")
   }

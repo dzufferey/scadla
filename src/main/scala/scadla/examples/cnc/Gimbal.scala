@@ -51,9 +51,9 @@ object Gimbal {
       rRemove.rotateY( Pi/2).move(length-t,rWidth,rHeight)
     )
     val knob = {
-      val c1 = Cylinder(6, knobLength)
-      val c2 = Cylinder(4, knobLength+4)
-      val c3 = Cylinder(Thread.ISO.M3, knobLength+4)
+      val c1 = Cylinder(6, knobLength+1).moveZ(-1)
+      val c2 = Cylinder(4, knobLength+7)
+      val c3 = Cylinder(Thread.ISO.M3, knobLength+7)
       c1 + c2 - c3
     }
     val base3 = Union(
@@ -121,5 +121,20 @@ object Gimbal {
            retainerThickness
     )
   }
+
+  //example:
+  //val spacing = 5
+  //r.toSTL(Gimbal.inner(
+  //  LinearActuator.length + 2*spacing + 10,                 //length
+  //  LinearActuator.gimbalWidth + 2*spacing,                 //width
+  //  28,                                                     //height
+  //  2,                                                      //rounding
+  //  5,                                                      //thickness
+  //  LinearActuator.length/2 - LinearActuator.bearingCenter, //lengthOffset
+  //  0,                                                      //widthOffset
+  //  0,                                                      //heightOffset
+  //  spacing,                                                //spacing
+  //  1                                                       //retainerThickness
+  //), "gimbal.stl")
 
 }
