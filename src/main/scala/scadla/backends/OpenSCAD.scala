@@ -9,7 +9,9 @@ class OpenSCAD(header: List[String]) extends Renderer {
 
   protected val command = "openscad"
 
-  lazy val isPresent = SysCmd(Array(command, "-v"))._1 == 0
+  lazy val isPresent =
+    try SysCmd(Array(command, "-v"))._1 == 0 
+    catch { case _: Throwable => false }
 
   protected def getMultiplicity(s: Solid): Map[Solid, Int] = {
     def incr(map: Map[Solid, Int], s: Solid) = {

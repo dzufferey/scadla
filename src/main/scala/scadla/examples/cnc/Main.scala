@@ -34,7 +34,7 @@ object Main{
   //r.toSTL(LinearActuator.sunGearPart1, "la-sun1.stl")
   //r.toSTL(LinearActuator.sunGearPart2, "la-sun2.stl")
   //r.toSTL(LinearActuator.planetGear, "la-planet.stl")
-  //r.toSTL(LinearActuator.basePlate, "la-base.stl")
+    r.toSTL(LinearActuator.basePlate, "la-base.stl")
 
   //r.toSTL(Gimbal.roundedSquare(
   //  LinearActuator.gimbalWidth + 16,                              //length

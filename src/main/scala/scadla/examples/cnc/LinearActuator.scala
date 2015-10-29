@@ -11,15 +11,8 @@ import Common._
 
 object LinearActuator {
 
-/*
--transmission
-    teeth are borderline small
--does the small one fit the motor
-    a bit too snug
-*/
-
   //TODO
-  //-part to attach the gimbal
+  //-manual support for the knobs
 
   /** motor to bearing distance */
   val mtb = 45
@@ -55,11 +48,12 @@ object LinearActuator {
     bearingRadius,
     motorLength + plateThickness,
     6,
-    12,
-    24,
+    8,  //12,
+    16, //24,
     0.03,
+    toRadians(55),
     0,
-    tightTolerance
+    tolerance //tightTolerance
   )
 
   def length = mtb + Nema14.size/2 + gb.externalRadius
@@ -108,7 +102,7 @@ object LinearActuator {
   
   lazy val motorGear = {
     val g = Gear.herringbone(motorGearRadius, nbrTeethMotor, gearThickness, mHelix, tightTolerance)
-    g - bigger(motor, tolerance).moveZ(-5) //clear the flange
+    g - bigger(motor, looseTolerance).moveZ(-5) //clear the flange
   }
 
   lazy val transmissionGear = {
