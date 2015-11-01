@@ -16,9 +16,9 @@ object Rack {
              backlash: Double,
              skew: Double ) = {
     assert(pressureAngle < Pi / 2 && pressureAngle >= 0, "pressureAngle must be between in [0;π/2)")
-    val base = toothWidth + 2 * addenum * sin(pressureAngle) + backlash
-    val tip  = toothWidth - 2 * dedenum * sin(pressureAngle) + backlash
-    assert(tip > 0, "tip of the profile is negative, try decreasing the pressureAngle, or addenum/dedenum.")
+    val base = toothWidth + 2 * addenum * tan(pressureAngle) + backlash
+    val tip  = toothWidth - 2 * dedenum * tan(pressureAngle) + backlash
+    assert(tip > 0, "tip of the profile is negative ("+tip+"), try decreasing the pressureAngle, or addenum/dedenum.")
     val tHeight = addenum + dedenum + backlash
     Trapezoid(tip, base, height, tHeight, skew).rotateX(Pi/2).move(-base/2 + addenum*tan(skew), addenum, 0).rotateZ(-Pi/2)
   }
@@ -47,7 +47,7 @@ object Rack {
     assert(nbrTeeth > 0, "number of tooths must be greater than 0")
     assert(toothWidth > 0, "toothWidth must be greater than 0")
 
-    val rackTooth = tooth(toothWidth, pressureAngle, addenum, dedenum, height, backlash, skew)
+    val rackTooth = tooth(toothWidth, pressureAngle, addenum, dedenum, height, -backlash, skew)
 
     val space = 2*toothWidth
     val teeth = for (i <- 0 until nbrTeeth) yield rackTooth.moveY(i * space)

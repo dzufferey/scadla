@@ -7,30 +7,12 @@ import InlineOps._
 import Common._
 import scadla.examples.fastener._
 
-//TODO parts of attach a gimbal to the frame
-// - square that attach on two/three sides of an extrusion (two for top, three for bottom)
-// - bearing holder
-// - arm to attch the two parts
-//get the dimensions for the frame structure
-
 // dX, dZ are given from the center of the extrusion
 class ActuatorFasterner(dX: Double, dZ: Double) {
 
   assert(dX >= 20 || dZ >= 20, "too close")
   assert(dX >= 0 && dZ >= 0, "backward")
 
-  protected def distToLine(a: Double, b: Double, c: Double)(x: Double, y: Double): Double = {
-    (a*x + b*y + c).abs / sqrt(a*a + b*b)
-  }
-
-  protected def computeWidth(thickness: Double) = {
-    val t10 = 10 - thickness
-    val side1 = thickness + distToLine(dZ, -dX, 0.0)(t10,-t10)
-    val side2 = thickness + distToLine(dZ, -dX, 0.0)(-t10,t10)
-    side1 + side2
-  }
-  
-  var width = computeWidth(6.0)
   var bearingPosition = 0.5 // [0, 1]
   var thickness = 6.0
   var bearingRetainer = 2.0
@@ -65,7 +47,7 @@ class ActuatorFasterner(dX: Double, dZ: Double) {
     )
     val beam = Difference(
       beam0,
-      Cylinder(11 + looseTolerance, thickness).move( dX*bearingPosition, dZ*bearingPosition, -bearingRetainer),
+      Cylinder(11 + looseTolerance, thickness).move( dX*bearingPosition, dZ*bearingPosition, bearingRetainer),
       Cylinder(9, thickness).move( dX*bearingPosition, dZ*bearingPosition, 0),
       Cube(40, 40, thickness).move( -30, -30, 0),
       Cube(40, 40, thickness).move( dX-10, dZ-10,0)

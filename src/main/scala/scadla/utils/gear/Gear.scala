@@ -68,9 +68,10 @@ object Gear {
     Rack(toothWidth, nbrTeeth, toRadians(25), add, add, height, backlash)
   }
   
-/* some examples
+  
+  /* some examples
   def main(args: Array[String]) {
-    //val obj = spur(10, 12, 2, 0.1)
+    val obj = spur(10, 12, 2, 0.1)
     //val obj = spur(20, 30, 5, 0.1)
     //val obj = helical(10, 18, 5, 0.05, 0.1)
     //val obj = herringbone(10, 18, 5, 0.05, 0.1)
@@ -85,9 +86,9 @@ object Gear {
     //val obj = spur(-20, 30, 2, 0.1)
     //val obj = helical(-10, 18, 5, 0.05, 0.1)
     //val obj = herringbone(-10, 18, 5, 0.05, 0.1)
-    val obj = rack(2, 12, 2, 0.1)
+    //val obj = rack(2, 12, 2, 0.1)
     backends.OpenSCAD.view(obj)
   }
-*/
+  */
 
 }

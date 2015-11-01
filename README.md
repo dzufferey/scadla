@@ -116,6 +116,14 @@ Features that may (or may not) be implemented, depending on time and motivation:
   - a `Solidifiable` trait that has a `def solidify: Solid` operation which can be called implicitly
 
 * implementation
+  - try VTK as backend
+    * installation [http://www.vtk.org/Wiki/VTK/Configure_and_Build]()
+    * how to decide whether or not to compile VTK: it cannot be resolved as a MVN dependency but only a a local one ...
+      - split the project into (1) core, (2) renderers, (3) examples
+    * boolean operation [http://hdl.handle.net/10380/3262]()
+    * transform [http://www.vtk.org/doc/nightly/html/classvtkTransform.html]()
+    * convex hull [https://cmake.org/Wiki/VTK/Examples/Boneyard/Cxx/PolyData/ConvexHullDelaunay3D]()
+    * minkowski sum ???
   - backend: decomposition as a DAG and to do the rendering in parallel.
      generalize renderer into `Renderer[A]` with
       * `render(s: Solid, renderedChildren: Seq[A]): A`

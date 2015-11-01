@@ -5,10 +5,12 @@ import scadla.InlineOps._
 import scadla.utils._
 import scala.math._
 
+//TODO something is wrong with the topAngle and the topLength
+
 class Frame(var mainBeamLength: Double = 250,
             var clearance: Double = 20,
             var topAngle: Double = Pi/4,
-            var topLength: Double = 100,
+            var topLength: Double = 120,
             var connectorThickness: Double = 3,
             var connectorKnobs: Double = 5,
             var connectorBaseRatio: Double = 0.75,
@@ -18,7 +20,6 @@ class Frame(var mainBeamLength: Double = 250,
   val ew2 = ew / 2
 
   def beam(length: Double) = Extrusion(length).moveZ(clearance)
-  //protected def beam(length: Double) = Extrusion.placeHolder(length).moveZ(clearance)
 
   protected def totalLength(beamLength: Double, clearance: Double) =
     beamLength + 2 * clearance
@@ -65,11 +66,10 @@ class Frame(var mainBeamLength: Double = 250,
       beamHexaC(mainBeamLength, cl),
       beamHexaTop(topAngle, topVBeamLength, cl, mainBeamLength).moveZ(tl),
       beamHexaH(topHBeamLength, cl).moveZ(topHeight),
-      beamHexaC(topHBeamLength, cl).moveZ(topHeight) //TODO can these beams be replaced by wires ? in theory yes, but in practice ?
+      beamHexaC(topHBeamLength, cl).moveZ(topHeight)
     )
   }
   
-  //TODO the different types of connector
   //TODO the diagonal things (rigidity) → some form of static rope
 
   private def ct = connectorThickness

@@ -12,24 +12,23 @@ import Common._
 object LinearActuator {
 
   //TODO
-  //-manual support for the knobs
 
   /** motor to bearing distance */
-  val mtb = 45
-  val bearingRadius = 16
-  val gimbalWidth = 50
-  val gimbalKnob = 7
+  val mtb = 45.0
+  val bearingRadius = 16.0
+  val gimbalWidth = 50.0
+  val gimbalKnob = 7.0
 
   val thread = Thread.UTS._1_4
 
-  val motorLength = 28
-  val motorSocket = 5 //how deep the screw goes in
+  val motorLength = 28.0
+  val motorSocket = 4.0 //how deep the screw goes in
 
   val rodLead = 1.0
 
   //for the motor screw
-  val screwHead = 1.5
-  val screwLength = 12
+  val screwHead = 2.0
+  val screwLength = 12.0
 
   val plateThickness = screwLength - motorSocket + screwHead
 
@@ -38,7 +37,7 @@ object LinearActuator {
   val nbrTeethBearing = 20
 
   val tScrew = Thread.ISO.M4
-  val gearThickness = 7
+  val gearThickness = 7.0
   val bearingToGearSpace = 0.6
   val transmissionOffest = -mtb * (nbrTeethTransmission + nbrTeethBearing) / (nbrTeethMotor + nbrTeethBearing + 2*nbrTeethTransmission)
   
@@ -48,10 +47,10 @@ object LinearActuator {
     bearingRadius,
     motorLength + plateThickness,
     6,
-    8,  //12,
-    16, //24,
+    6,
+    12,
     0.03,
-    toRadians(55),
+    toRadians(60),
     0,
     tolerance //tightTolerance
   )
@@ -63,13 +62,13 @@ object LinearActuator {
   
   val basePlate1 = {
     val plateX = Nema14.size
-    val plateY = length
+    val plateY = length - gb.externalRadius
     val rc0 = roundedCubeH(plateX, plateY, plateThickness, 2).move(-Nema14.size/2, -(mtb + Nema14.size/2), 0)
     val toRemove = Union(
         Union(
           motor,
           Cylinder(11+tolerance, plateThickness),
-          Nema14.putOnScrew(Cylinder(2 * Thread.ISO.M3, screwHead))
+          Nema14.putOnScrew(Cylinder(2.1 * Thread.ISO.M3 + looseTolerance, screwHead))
         ).moveY(-mtb),
         Cylinder(gb.externalRadius - Gear.baseThickness/2, plateThickness)
       )
@@ -78,19 +77,31 @@ object LinearActuator {
   
   lazy val basePlate2 = gb.outer
 
-  lazy val basePlate = {
+  def basePlate(support: Boolean = false) = {
     val transmissionScrew = Cylinder(tScrew - tolerance, plateThickness + 1).moveY(transmissionOffest)
+    val height = plateThickness + motorLength
     val gimbalBase = {
       val c1 = Cylinder(6, gimbalWidth)
       val c2 = Cylinder(4, gimbalWidth+2*gimbalKnob).moveZ(-gimbalKnob)
       val c3 = Cylinder(Thread.ISO.M3, gimbalWidth+20).moveZ(-10)
-      c1 + c2 -c3
+      val nonOriented = c1 + c2 - c3
+      nonOriented.moveZ(-gimbalWidth/2).rotateY(Pi/2).moveZ(height/2)
     }
     val gimbalConnection = Difference(
-      gimbalBase.moveZ(-gimbalWidth/2).rotateY(Pi/2).moveZ((plateThickness+motorLength)/2),
-      Cylinder(gb.externalRadius - Gear.baseThickness/2, plateThickness+motorLength)
+      gimbalBase,
+      Cylinder(gb.externalRadius - Gear.baseThickness/2, height)
     )
-    basePlate1 + basePlate2 + gimbalConnection -transmissionScrew
+    val gimbalSupport =
+      if (support) {
+        Difference(
+          centeredCubeXY(gimbalWidth+2*gimbalKnob, 7, height/2 - Thread.ISO.M3),
+          biggerS(gimbalBase, looseTolerance),
+          Cylinder(gb.externalRadius + looseTolerance, height)
+        )
+      } else {
+        Empty
+      }
+    basePlate1 + basePlate2 + gimbalConnection -transmissionScrew + gimbalSupport
   }
 
   val motorGearRadius =        mtb * nbrTeethMotor        / (nbrTeethMotor + nbrTeethBearing + 2*nbrTeethTransmission)
@@ -143,7 +154,7 @@ object LinearActuator {
     )
     val p1 = sun * chamfer
     val p2 = (sun * chamfer.moveZ(gbh2)).moveZ(-gbh2)
-    val n = nut(thread + tolerance)
+    val n = nut(thread + looseTolerance)
     val nh2 = 0.8 * thread //nut height / 2
     val part2 = p2 - axis - n.moveZ( ceilStep(gbh2 - nh2, rodLead) - nh2 ) //try to match the lead
     val sunGear = Gear.herringbone(bearingGearRadius, nbrTeethBearing, gearThickness, bHelix, tightTolerance)
@@ -156,7 +167,7 @@ object LinearActuator {
   val planetHelper = gb.planetHelper(1, looseTolerance)
 
   lazy val parts =  Map(
-    "base"          -> basePlate,
+    "base"          -> basePlate(false),
     "motor"         -> motorGear,
     "transmission"  -> transmissionGear,
     "axle"          -> transmissionAxle,

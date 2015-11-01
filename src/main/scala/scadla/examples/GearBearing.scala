@@ -24,7 +24,8 @@ object GearBearing {
   }
 
   def main(args: Array[String]) {
-    val gears = apply(35, 10, 5, 10, 15, 0.02, toRadians(50), 5, 0.1)
+    //val gears = apply(35, 10, 5, 10, 15, 0.02, toRadians(40), 5, 0.1)
+    val gears = apply(35, 10, 5, 6, 10, 0.02, toRadians(60), 5, 0.1)
     backends.OpenSCAD.toSTL(gears.outer,  "outer.stl")
     backends.OpenSCAD.toSTL(gears.planet, "planet.stl")
     backends.OpenSCAD.toSTL(gears.sun,    "sun.stl")
@@ -42,8 +43,17 @@ class GearBearing(val outerRadius: Double,
                   val centerHexagonMinRadius: Double,
                   val backlash: Double) {
 
+  //play with addenum to allow pressureAngle > 45 degree
+  protected def addenum(pitch: Double, nbrTeeth: Int) = {
+    val default = Gear.addenum( pitch, nbrTeeth)
+    val toothWidth = pitch.abs * 2 * sin(Pi/nbrTeeth/2)
+    val coeff = min(1.0, toothWidth / 2 / default / tan(pressureAngle))
+    //println("coeff " + coeff)
+    default * coeff
+  }
+
   protected def gear(pitch: Double, nbrTeeth: Int, helix: Double) = {
-    val add = Gear.addenum( pitch, nbrTeeth)
+    val add = addenum( pitch, nbrTeeth)
     HerringboneGear(pitch, nbrTeeth, pressureAngle, add, add, height, helix, backlash)
   }
 
@@ -55,7 +65,7 @@ class GearBearing(val outerRadius: Double,
   val helixAnglePlanet = helixAngleOuter * outerRadius / planetRadius
   val helixAngleSun = -(helixAngleOuter * outerRadius / sunRadius)
 
-  def externalRadius = outerRadius + Gear.addenum(outerRadius, nbrTeethOuter) + Gear.baseThickness
+  def externalRadius = outerRadius + addenum(outerRadius, nbrTeethOuter) + Gear.baseThickness
 
   //TODO check for interferences
 
@@ -80,7 +90,7 @@ class GearBearing(val outerRadius: Double,
   }
 
   def planetHelper(baseThickness: Double, tolerance: Double) = {
-    val add = Gear.addenum(outerRadius, nbrTeethOuter) + tolerance
+    val add = addenum(outerRadius, nbrTeethOuter) + tolerance
     val planet = Cylinder(planetRadius+add, height).moveZ(baseThickness)
     val planets = positionPlanet(planet)
     Tube(outerRadius - add, sunRadius + add, height) -- planets

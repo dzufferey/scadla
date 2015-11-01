@@ -8,16 +8,13 @@ import scadla.examples.fastener._
 import Common._
 
 //The part that holds the linear actuator connected to the frame
-//basically we need to make:
-//  -frame: round, square, whatever
-//  -pin to hold the bearing
-//  -holes to hold the bearing
-//then we combine 2+ of them
 object Gimbal {
 
   //TODO parameters for the bearing size
 
-  //TODO for attaching the gimbal to an outer structure
+  //TODO make that smaller, require less material
+
+  //TODO round to reduce the footprint
 
   def roundedSquare(length: Double,
                     width: Double,
@@ -122,6 +119,7 @@ object Gimbal {
     )
   }
 
+
   //example:
   //val spacing = 5
   //r.toSTL(Gimbal.inner(
@@ -136,5 +134,27 @@ object Gimbal {
   //  spacing,                                                //spacing
   //  1                                                       //retainerThickness
   //), "gimbal.stl")
+
+  protected def halfCylinder(r1: Double, r2: Double, h: Double) = {
+    val c1 = PieSlice(r1, 0, Pi, h)
+    val c2 = PieSlice(r2, 0, Pi, h).rotateZ(Pi)
+    c1 + c2
+  }
+
+  protected def shape(maxThickness: Double, minThickness: Double,
+                      length: Double, lengthOffset: Double,
+                      width: Double, widthOffset: Double,
+                      height: Double) = {
+    def dist(center: Double, radius: Double) = {
+      val l0 = radius - center
+      val l1 = sqrt( pow(l0 - maxThickness, 2.0) + pow(height/2, 2.0))
+      min(l1, l0 - minThickness)
+    }
+    val radiusLength1 = dist(length/2 + lengthOffset, length)
+    val radiusLength2 = dist(length/2 - lengthOffset, length)
+    val radiusWidth1 = dist(width/2 + widthOffset, width)
+    val radiusWidth2 = dist(width/2 - widthOffset, width)
+    ???
+  }
 
 }

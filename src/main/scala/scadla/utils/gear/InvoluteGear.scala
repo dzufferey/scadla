@@ -76,7 +76,7 @@ object InvoluteGear {
     
     val angle = Pi / nbrTeeth //between tooths
     val effectivePitch = pitch.abs
-    val toothWidth = effectivePitch * 2 * sin(angle/2)
+    val toothWidth = effectivePitch * 2 * sin(angle/2) //TODO is that right or should we use the cordal value ?
     val ad = if (pitch >= 0) addenum else dedenum 
     val de = if (pitch >= 0) dedenum else addenum 
     val rackTooth = Rack.tooth(toothWidth, pressureAngle, ad, de, height, backlash, skew)
