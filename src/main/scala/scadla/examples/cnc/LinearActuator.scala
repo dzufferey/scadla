@@ -16,7 +16,7 @@ object LinearActuator {
   /** motor to bearing distance */
   val mtb = 45.0
   val bearingRadius = 16.0
-  val gimbalWidth = 50.0
+  val gimbalWidth = 40.0
   val gimbalKnob = 7.0
 
   val thread = Thread.UTS._1_4
@@ -49,10 +49,11 @@ object LinearActuator {
     6,
     6,
     12,
-    0.03,
-    toRadians(60),
+    0.04,
+    toRadians(50),
     0,
-    tolerance //tightTolerance
+    //tolerance
+    tightTolerance
   )
 
   def length = mtb + Nema14.size/2 + gb.externalRadius
@@ -77,30 +78,27 @@ object LinearActuator {
   
   lazy val basePlate2 = gb.outer
 
-  def basePlate(support: Boolean = false) = {
+  def basePlate(knob: Boolean = false, support: Boolean = false) = {
     val transmissionScrew = Cylinder(tScrew - tolerance, plateThickness + 1).moveY(transmissionOffest)
     val height = plateThickness + motorLength
     val gimbalBase = {
-      val c1 = Cylinder(6, gimbalWidth)
-      val c2 = Cylinder(4, gimbalWidth+2*gimbalKnob).moveZ(-gimbalKnob)
-      val c3 = Cylinder(Thread.ISO.M3, gimbalWidth+20).moveZ(-10)
-      val nonOriented = c1 + c2 - c3
-      nonOriented.moveZ(-gimbalWidth/2).rotateY(Pi/2).moveZ(height/2)
-    }
-    val gimbalConnection = Difference(
-      gimbalBase,
-      Cylinder(gb.externalRadius - Gear.baseThickness/2, height)
-    )
-    val gimbalSupport =
-      if (support) {
+        val c1 = Cylinder(6, gimbalWidth)
+        val c2 = Cylinder(4, gimbalWidth+2*gimbalKnob).moveZ(-gimbalKnob)
+        val c3 = Cylinder(Thread.ISO.M3, gimbalWidth+20).moveZ(-10)
+        val nonOriented = c1 + c2 - c3
+        nonOriented.moveZ(-gimbalWidth/2).rotateY(Pi/2).moveZ(height/2)
+      }
+    val gimbalConnection = if (knob) {
+        Difference(gimbalBase,
+          Cylinder(gb.externalRadius - Gear.baseThickness/2, height) )
+      } else Empty
+    val gimbalSupport = if (support) {
         Difference(
           centeredCubeXY(gimbalWidth+2*gimbalKnob, 7, height/2 - Thread.ISO.M3),
           biggerS(gimbalBase, looseTolerance),
           Cylinder(gb.externalRadius + looseTolerance, height)
         )
-      } else {
-        Empty
-      }
+      } else Empty
     basePlate1 + basePlate2 + gimbalConnection -transmissionScrew + gimbalSupport
   }
 
@@ -167,7 +165,7 @@ object LinearActuator {
   val planetHelper = gb.planetHelper(1, looseTolerance)
 
   lazy val parts =  Map(
-    "base"          -> basePlate(false),
+    "base"          -> basePlate(),
     "motor"         -> motorGear,
     "transmission"  -> transmissionGear,
     "axle"          -> transmissionAxle,

@@ -8,7 +8,7 @@ import scala.math._
 //TODO something is wrong with the topAngle and the topLength
 
 class Frame(var mainBeamLength: Double = 250,
-            var clearance: Double = 20,
+            var clearance: Double = 18, //for 20x20mm extrusions
             var topAngle: Double = Pi/4,
             var topLength: Double = 120,
             var connectorThickness: Double = 3,

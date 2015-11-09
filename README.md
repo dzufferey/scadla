@@ -108,14 +108,36 @@ Features that may (or may not) be implemented, depending on time and motivation:
 * features
   - geometry shader (similar to computer graphics) to modify the surface of objects, e.g., adding a pattern to a flat surface.
   - implicit surfaces, e.g., bezier, nurbs, metaballs.
+    * rendering using [marching cubes](https://en.wikipedia.org/wiki/Marching_cubes), http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7139, http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html, http://link.springer.com/article/10.1007%2FBF01900830
+    * It could be fun to try to implement that in OpenCL using [ScalaCL](https://github.com/nativelibs4java/ScalaCL)
+    * use adaptative sampling instead of a fix grid
   - modifier: Mod(fct: Point => Point, s: Solid) extends Solid
   - more operations
     * chamfer
     * making object smaller (negative minkowski sum): instead of adding some tolerance to all dimension, design your object at the right size, the make them a bit smaller so they fit together. The goal is to move the face parallel to their normal by some amount while keeping the mesh well-formed.
   - FromFile changed in FromURL
   - a `Solidifiable` trait that has a `def solidify: Solid` operation which can be called implicitly
+  - object cache:
+    * object
+      - normalized non-polyhedron AST (keep only bool-ops, other operations are cheap)
+      - scadla version
+      - renderer
+      - created
+      - last accessed
+      - how many times accessed
+      - filename (points twoard some stl.gz/bz2/xz)
+    * prefs in home as .scadla folder
+      - alternate file/folder locations
+      - cache size
+      - eviction policy (least recently used, oldest, least frequently used)
+      - index
+      - dir for the cached objects
 
 * implementation
+  - file format:
+    * OBJ parser/printer
+    * PLY parser/printer
+    * AMF printer
   - try VTK as backend
     * installation [http://www.vtk.org/Wiki/VTK/Configure_and_Build]()
     * how to decide whether or not to compile VTK: it cannot be resolved as a MVN dependency but only a a local one ...
@@ -131,10 +153,6 @@ Features that may (or may not) be implemented, depending on time and motivation:
   - built-in model viewer
     * choosing window size according to screen size, and allow resizing
     * moving the point of view
-  - for more complex surface look at marchine cube:
-    * [marching cubes](https://en.wikipedia.org/wiki/Marching_cubes), http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7139, http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html, http://link.springer.com/article/10.1007%2FBF01900830
-    * It could be fun to try to implement that in OpenCL using [ScalaCL](https://github.com/nativelibs4java/ScalaCL)
-    * use adaptative sampling instead of a fix grid
 
 * ...
 
