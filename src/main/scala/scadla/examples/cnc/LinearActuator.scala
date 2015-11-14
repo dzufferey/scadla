@@ -16,7 +16,7 @@ object LinearActuator {
   /** motor to bearing distance */
   val mtb = 45.0
   val bearingRadius = 16.0
-  val gimbalWidth = 40.0
+  val gimbalWidth = 42.0
   val gimbalKnob = 7.0
 
   val thread = Thread.UTS._1_4
@@ -40,12 +40,13 @@ object LinearActuator {
   val gearThickness = 7.0
   val bearingToGearSpace = 0.6
   val transmissionOffest = -mtb * (nbrTeethTransmission + nbrTeethBearing) / (nbrTeethMotor + nbrTeethBearing + 2*nbrTeethTransmission)
+  val height = motorLength + plateThickness
   
   val motor = Nema14(motorLength, -plateThickness-1)
 
   val gb = GearBearing(
     bearingRadius,
-    motorLength + plateThickness,
+    height,
     6,
     6,
     12,

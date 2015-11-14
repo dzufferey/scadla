@@ -25,9 +25,9 @@ object Main{
   //r.toSTL(Platform(4, 10, 10, 1.6), "platform.stl")
   //r.toSTL(Frame(250, 18, Pi/4, 120), "frame.stl")
 
-    for ( (n,s) <- LinearActuator.parts) { //takes a bit too much memory to be done in parallel
-      r.toSTL(s, "la-" + n + ".stl")
-    }
+  //for ( (n,s) <- LinearActuator.parts) { //takes a bit too much memory to be done in parallel
+  //  r.toSTL(s, "la-" + n + ".stl")
+  //}
 
   //r.toSTL(LinearActuator.motorGear, "la-motor.stl")
   //r.toSTL(LinearActuator.transmissionGear, "la-transmission.stl")
@@ -36,17 +36,9 @@ object Main{
   //r.toSTL(LinearActuator.planetGear, "la-planet.stl")
   //r.toSTL(LinearActuator.basePlate(), "la-base.stl")
 
-  //r.toSTL(Gimbal.version2inner(
-  //  LinearActuator.length + 10,                                   //length
-  //  LinearActuator.gimbalWidth,                                   //width
-  //  30,                                                           //height
-  //  LinearActuator.length/2 - LinearActuator.bearingCenter - 2,   //lengthOffset
-  //  0,                                                            //widthOffset
-  //  8,                                                            //maxThickness
-  //  5,                                                            //minThickness
-  //  2,                                                            //knobLength
-  //  1                                                             //retainerThickness
-  //), "gimbal.stl")
+  //r.toSTL(LinearActuatorBlock.gimbal, "gimbal.stl")
+  
+  //r.view(LinearActuatorBlock(true))
 
   //r.toSTL(Extrusion(50), "extrusion.stl")
   //r.toSTL(Extrusion.pad(10,1.5), "pad.stl")
