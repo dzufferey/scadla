@@ -9,7 +9,6 @@ object Main{
   val r = backends.Renderer.default
   //val r = backends.OpenSCAD
   //val r = backends.JCSG
-  //val r = new backends.ParallelRenderer(backends.OpenSCAD)
   //val r = new backends.ParallelRenderer(backends.JCSG)
   
   def main(args: Array[String]) {
@@ -23,6 +22,7 @@ object Main{
   //}
 
   //r.toSTL(Platform(4, 10, 10, 1.6), "platform.stl")
+
   //r.toSTL(Frame(250, 18, Pi/4, 120), "frame.stl")
 
   //for ( (n,s) <- LinearActuator.parts) { //takes a bit too much memory to be done in parallel
@@ -36,9 +36,7 @@ object Main{
   //r.toSTL(LinearActuator.planetGear, "la-planet.stl")
   //r.toSTL(LinearActuator.basePlate(), "la-base.stl")
 
-  //r.toSTL(LinearActuatorBlock.gimbal, "gimbal.stl")
-  
-  //r.view(LinearActuatorBlock(true))
+    r.toSTL(LinearActuatorBlock(true), "la-gimbal.stl")
 
   //r.toSTL(Extrusion(50), "extrusion.stl")
   //r.toSTL(Extrusion.pad(10,1.5), "pad.stl")

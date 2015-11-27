@@ -79,20 +79,20 @@ object LinearActuator {
   
   lazy val basePlate2 = gb.outer
 
+  def gimbalBase = {
+    val c1 = Cylinder(6, gimbalWidth)
+    val c2 = Cylinder(4, gimbalWidth+2*gimbalKnob).moveZ(-gimbalKnob)
+    val c3 = Cylinder(Thread.ISO.M3, gimbalWidth+20).moveZ(-10)
+    val nonOriented = c1 + c2 - c3
+    nonOriented.moveZ(-gimbalWidth/2).rotateY(Pi/2).moveZ(height/2)
+  }
+
+  def baseKnobs = gimbalBase - Cylinder(gb.externalRadius - Gear.baseThickness/2, height)
+
   def basePlate(knob: Boolean = false, support: Boolean = false) = {
     val transmissionScrew = Cylinder(tScrew - tolerance, plateThickness + 1).moveY(transmissionOffest)
     val height = plateThickness + motorLength
-    val gimbalBase = {
-        val c1 = Cylinder(6, gimbalWidth)
-        val c2 = Cylinder(4, gimbalWidth+2*gimbalKnob).moveZ(-gimbalKnob)
-        val c3 = Cylinder(Thread.ISO.M3, gimbalWidth+20).moveZ(-10)
-        val nonOriented = c1 + c2 - c3
-        nonOriented.moveZ(-gimbalWidth/2).rotateY(Pi/2).moveZ(height/2)
-      }
-    val gimbalConnection = if (knob) {
-        Difference(gimbalBase,
-          Cylinder(gb.externalRadius - Gear.baseThickness/2, height) )
-      } else Empty
+    val gimbalConnection = if (knob) baseKnobs else Empty
     val gimbalSupport = if (support) {
         Difference(
           centeredCubeXY(gimbalWidth+2*gimbalKnob, 7, height/2 - Thread.ISO.M3),
