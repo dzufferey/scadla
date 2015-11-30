@@ -81,7 +81,7 @@ object LinearActuator {
 
   def gimbalBase = {
     val c1 = Cylinder(6, gimbalWidth)
-    val c2 = Cylinder(4, gimbalWidth+2*gimbalKnob).moveZ(-gimbalKnob)
+    val c2 = Cylinder(4 - tolerance, gimbalWidth+2*gimbalKnob).moveZ(-gimbalKnob)
     val c3 = Cylinder(Thread.ISO.M3, gimbalWidth+20).moveZ(-10)
     val nonOriented = c1 + c2 - c3
     nonOriented.moveZ(-gimbalWidth/2).rotateY(Pi/2).moveZ(height/2)
@@ -96,7 +96,7 @@ object LinearActuator {
     val gimbalSupport = if (support) {
         Difference(
           centeredCubeXY(gimbalWidth+2*gimbalKnob, 7, height/2 - Thread.ISO.M3),
-          biggerS(gimbalBase, looseTolerance),
+          bigger(gimbalBase, 2*supportGap),
           Cylinder(gb.externalRadius + looseTolerance, height)
         )
       } else Empty

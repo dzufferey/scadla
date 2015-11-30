@@ -24,7 +24,7 @@ object Gimbal {
 
   def addKnob(shape: Solid, knobLength: Double,
               length: Double, widthOffset: Double) = {
-    val k = Cylinder(4, knobLength + 7) + Cylinder(6, knobLength)
+    val k = Cylinder(4 - tolerance, knobLength + 7) + Cylinder(6, knobLength)
     shape +
       k.rotateY(-Pi/2).move(-length/2, widthOffset, 0) +
       k.rotateY(Pi/2).move(length/2, widthOffset, 0)
