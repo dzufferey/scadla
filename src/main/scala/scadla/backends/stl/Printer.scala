@@ -89,7 +89,5 @@ object Printer {
     buffer.force
   }
 
-  def isPresent = SysCmd(Array("meshlab", "-h"))._1 == 0
-
 }
 

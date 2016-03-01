@@ -135,7 +135,6 @@ Features that may (or may not) be implemented, depending on time and motivation:
 
 * implementation
   - file format:
-    * OBJ parser/printer
     * PLY parser/printer
     * AMF printer
   - try VTK as backend
