@@ -43,13 +43,13 @@ object Gimbal {
 
     def distO(center: Double, radius: Double) = {
       val l0 = radius - center
-      val l1 = sqrt( pow(l0 - maxThickness + minThickness, 2) + pow(height/2, 2))
+      val l1 = hypot( l0 - maxThickness + minThickness, height/2)
       min(l1, l0)
     }
 
     def distI(center: Double, radius: Double) = {
       val l0 = radius - center
-      val l1 = sqrt( pow(l0 - maxThickness, 2) + pow(height/2, 2))
+      val l1 = hypot( l0 - maxThickness, height/2)
       max(l1, l0 - minThickness)
     }
     

@@ -4,7 +4,7 @@ organization := "io.github.dzufferey"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 scalacOptions in Compile ++= Seq(
     //"-Xlog-implicits",
@@ -16,11 +16,13 @@ scalacOptions in Compile ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
-  "org.scalatest" %% "scalatest" % "2.2.4" % "test",
+  "org.scalatest" %% "scalatest" % "2.2.6" % "test",
   "io.github.dzufferey" %% "misc-scala-utils" % "0.1-SNAPSHOT",
   "org.scala-lang.modules" %% "scala-pickling" % "0.10.1",
-  "org.scalafx" %% "scalafx" % "8.0.40-R8"
+  "org.scalafx" %% "scalafx" % "8.0.60-R9"
 )
+
+addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.13")
 
 fork := true
 

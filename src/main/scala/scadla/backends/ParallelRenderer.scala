@@ -25,7 +25,7 @@ class ParallelRenderer(renderer: Renderer) extends Renderer {
         protected def getRawResult = res
       }
       t.fork
-      val t2 = taskMap.putIfAbsent(s, t)
+      val t2 = taskMap.putIfAbsent(ref, t)
       if (t2 != null) {
         t.tryUnfork
         t2

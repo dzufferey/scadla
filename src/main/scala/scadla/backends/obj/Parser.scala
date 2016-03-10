@@ -7,6 +7,7 @@ import dzufferey.utils.LogLevel._
 import java.io._
 
 // https://en.wikipedia.org/wiki/Wavefront_.obj_file
+// We assume that the faces are oriented and only triangles
 
 object Parser extends JavaTokenParsers {
 
@@ -18,9 +19,9 @@ object Parser extends JavaTokenParsers {
   case class GroupDef(name: String) extends ObjCmd
 
 
-  def nonWhite: Parser[String] = """[^\s]+""".r ^^ { _.toString }
+  def nonWhite: Parser[String] = """[^\s]+""".r
 
-  def comment: Parser[String] = """#[^\n]*""".r ^^ { _.toString }
+  def comment: Parser[String] = """#[^\n]*""".r
 
   def parseVertex: Parser[Point] =
     "v" ~> repN(3, floatingPointNumber) ~ opt(floatingPointNumber) ^^ {
@@ -61,7 +62,7 @@ object Parser extends JavaTokenParsers {
     val result = parseAll(parseCmds, reader)
     if (result.successful) {
       val commands = result.get
-      assert(commands.filter{ case ObjectDef(_) | GroupDef(_) => true; case _ => false}.size == 1, "expected 1 group/object")
+      assert(commands.count{ case ObjectDef(_) | GroupDef(_) => true; case _ => false} == 1, "expected 1 group/object")
       val points: Array[Point] = commands.collect{ case VertexDef(v) => v }.toArray
       val faces = commands.collect{ case FaceDef(a,b,c) => Face(points(a-1), points(b-1), points(c-1)) }
       Polyhedron(faces)

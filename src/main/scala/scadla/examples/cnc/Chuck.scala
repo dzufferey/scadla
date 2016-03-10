@@ -39,7 +39,7 @@ object Chuck {
   }
   
   //TODO some more parameters
-  def wrench(outerRadius: Double, tolerance: Double) = {
+  def wrench(outerRadius: Double) = {
     val wall = 5
     val hex = doubleHex(Hexagon.minRadius(outerRadius) + looseTolerance, 5)
     val head = Cylinder(outerRadius + wall, 5)

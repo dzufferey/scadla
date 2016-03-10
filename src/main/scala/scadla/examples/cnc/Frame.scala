@@ -25,7 +25,7 @@ class Frame(var mainBeamLength: Double = 250,
     beamLength + 2 * clearance
 
   protected def putAtCorners(s: Solid, radius: Double) = {
-    val s2 = for (i <- 0 until 6) yield s.moveX(radius).rotateZ(i * Pi/3)
+    val s2 = for (i <- 0 until 6) yield s.moveX(radius).rotateZ(i * Pi/3) //linter:ignore ZeroDivideBy
     Union(s2:_*)
   }
 
@@ -39,7 +39,7 @@ class Frame(var mainBeamLength: Double = 250,
     putAtCorners(beam(beamLength), totalLength(beamLength, clearance))
   }
   
-  protected def beamHexaC(beamLength: Double, clearance: Double) = {
+  protected def beamHexaC(beamLength: Double) = {
     val b = beam(beamLength).rotateY(-Pi/2) //horizontal toward X axis
     putAtCorners(b, 0)
   }
@@ -63,10 +63,10 @@ class Frame(var mainBeamLength: Double = 250,
       beamHexaH(mainBeamLength, cl),
       beamHexaH(mainBeamLength, cl).moveZ(tl),
       beamHexaV(mainBeamLength, cl),
-      beamHexaC(mainBeamLength, cl),
+      beamHexaC(mainBeamLength),
       beamHexaTop(topAngle, topVBeamLength, cl, mainBeamLength).moveZ(tl),
       beamHexaH(topHBeamLength, cl).moveZ(topHeight),
-      beamHexaC(topHBeamLength, cl).moveZ(topHeight)
+      beamHexaC(topHBeamLength).moveZ(topHeight)
     )
   }
   

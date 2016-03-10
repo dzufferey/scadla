@@ -173,7 +173,7 @@ object Spindle {
     "bolt_washer_top" -> Tube(6, 4 + 2*tolerance, topBoltWasher),
     "bolt_washer_bot" -> Tube(6, 4 + 2*tolerance, bottomBoltWasher),
     "spindle_body" -> spindle,
-    "chuck_wrench" -> Chuck.wrench(13, tolerance),
+    "chuck_wrench" -> Chuck.wrench(13),
     "chuck" -> chuck.rotateX(Pi),
     "collet_inner" -> collet,
     "collet_wrench" -> colletWrench

@@ -146,7 +146,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
     def printModules(printed: Set[String]) {
       modules.find{ case (_, name) => !printed(name) } match {
         case Some((obj, name)) =>
-          writer.newLine
+          writer.newLine // linter:ignore IdenticalStatements
           writer.newLine
           writer.write("module " + name + "() {")
           writer.newLine

@@ -35,13 +35,11 @@ object InvoluteGear {
    * @param pitch the effective radius of the gear
    * @param nbrTeeth the number of tooth in the gear
    * @param rackToothProfile the profile of a tooth on a rack (infinite gear) the profile must be centered ad 0,0.
-   * @param height the height of the gear
    */
   def carve( baseShape: Solid,
              pitch: Double,
              nbrTeeth: Int,
-             rackToothProfile: Solid,
-             height: Double) = {
+             rackToothProfile: Solid) = {
     val negative = makeToothCarvingProfile(pitch, rackToothProfile)
     
     val angle = Pi / nbrTeeth //between tooths
@@ -91,7 +89,7 @@ object InvoluteGear {
       val base =
         if (pitch > 0) Cylinder(pitch + addenum, height)
         else Tube(effectivePitch + addenum+Gear.baseThickness, effectivePitch - dedenum, height)
-      carve(base, pitch, nbrTeeth, rackTooth, height)
+      carve(base, pitch, nbrTeeth, rackTooth)
     }
   }
 

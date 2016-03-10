@@ -149,7 +149,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
 
     val op = tan(angle.abs) * width / 2
     val ad = innerR
-    val hyp = sqrt(op*op + ad*ad)
+    val hyp = hypot(op, ad)
     val rth = 2*minR*sin(angle.abs) + mountThickness
 
     val lowerRing = Tube(hyp + rollerAxleRadius1 + mountThickness, centerAxleRadius, rth) 

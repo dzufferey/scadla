@@ -6,7 +6,7 @@ package object utils {
   
   def inch2mm(i: Double) = i * 25.4
 
-  def polarCoordinates(x: Double, y: Double) = (math.sqrt(x*x + y*y), math.atan2(y,x))
+  def polarCoordinates(x: Double, y: Double) = (math.hypot(x, y), math.atan2(y,x))
 
   def centeredCube(x: Double, y: Double, z:Double) = Translate(-x/2, -y/2, -z/2, Cube(x,y,z))
 

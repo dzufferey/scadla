@@ -41,7 +41,7 @@ object Platform {
         s.move( 11 +offset, radius, 0),
         s.move(-11 -offset, radius, 0)
       )
-      for (i <- 0 until 3) yield paired.rotateZ(2 * i * Pi / 3)
+      for (i <- 0 until 3) yield paired.rotateZ(2 * i * Pi / 3) //linter:ignore ZeroDivideBy
     }
     val base = Hull(place(bHolder): _*) -- place(bNeg)
     base - spindleMount(height, 0.8).move(-15, -30, 0)

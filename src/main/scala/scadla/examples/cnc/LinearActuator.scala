@@ -120,7 +120,7 @@ object LinearActuator {
     val m = 11+looseTolerance
     val i = 0.5
     val inner = Cylinder(m, gearThickness).moveZ(i) + Cylinder(m-i, m, i)
-    val top = for (k <- 0 until 12) yield PieSlice(m+i, m, Pi/12, i).moveZ(gearThickness).rotateZ(k*Pi/6)
+    val top = for (k <- 0 until 12) yield PieSlice(m+i, m, Pi/12, i).moveZ(gearThickness).rotateZ(k*Pi/6) //linter:ignore ZeroDivideBy
     g - inner ++ top
   }
 

@@ -4,8 +4,6 @@ import scadla._
 import dzufferey.utils._
 import dzufferey.utils.LogLevel._
 import java.io._
-import java.nio.{ByteBuffer,ByteOrder}
-import java.nio.channels.FileChannel
 
 object Printer {
   
