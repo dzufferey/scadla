@@ -51,6 +51,7 @@ class JCSG(numSlices: Int) extends Renderer {
     case FromFile(path, format) =>
       format match {
         case "stl" => STL.file(java.nio.file.Paths.get(path))
+        case "obj" => to(obj.Parser(path))
         case other => sys.error("unsupported format: " + other)
       }
     case Union(objs @ _*) =>            if (objs.isEmpty) empty else objs.map(to).reduce( _.union(_) )

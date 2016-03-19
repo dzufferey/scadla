@@ -112,11 +112,11 @@ Features that may (or may not) be implemented, depending on time and motivation:
     * It could be fun to try to implement that in OpenCL using [ScalaCL](https://github.com/nativelibs4java/ScalaCL)
     * use adaptative sampling instead of a fix grid
     * an alternative to the marching cubes is "sonstrained elastic surface nets" see [JSurfaceNets](https://github.com/miho/JSurfaceNets)
-  - modifier: Mod(fct: Point => Point, s: Solid) extends Solid
+  - modifier: `Mod(fct: Point => Point, s: Solid) extends Solid`
   - more operations
     * chamfer
     * making object smaller (negative minkowski sum): instead of adding some tolerance to all dimension, design your object at the right size, the make them a bit smaller so they fit together. The goal is to move the face parallel to their normal by some amount while keeping the mesh well-formed.
-  - FromFile changed in FromURL
+  - FromFile changed to FromURL
   - a `Solidifiable` trait that has a `def solidify: Solid` operation which can be called implicitly
   - object cache:
     * object
@@ -136,8 +136,7 @@ Features that may (or may not) be implemented, depending on time and motivation:
 
 * implementation
   - file format:
-    * PLY parser/printer
-    * AMF printer
+    * PLY parser (this format is evil!!!)
   - try VTK as backend
     * installation [http://www.vtk.org/Wiki/VTK/Configure_and_Build]()
     * how to decide whether or not to compile VTK: it cannot be resolved as a MVN dependency but only a a local one ...
@@ -153,6 +152,18 @@ Features that may (or may not) be implemented, depending on time and motivation:
   - built-in model viewer
     * choosing window size according to screen size, and allow resizing
     * moving the point of view
+
+* GUI
+ - try to avoid the serialization when launching the GUI
+ - more robust way to transfer data between the main program and the GUI
+
+* Assemblies: group of object linked by joints (can move), the goal is to make it easier to visualized larger projects and make sure everything fits/move properly
+  - better notation for the connections
+  - joint: what about time transformers (for min-max travel)
+  - part: rendered part (visibility and serialization)
+  - GUI: sliders for time and expansion
+
+* Documentation and tutorials
 
 * ...
 

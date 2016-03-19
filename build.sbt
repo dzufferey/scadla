@@ -16,6 +16,7 @@ scalacOptions in Compile ++= Seq(
 
 libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
+  "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
   "org.scalatest" %% "scalatest" % "2.2.6" % "test",
   "io.github.dzufferey" %% "misc-scala-utils" % "0.1-SNAPSHOT",
   "org.scala-lang.modules" %% "scala-pickling" % "0.10.1",
