@@ -48,11 +48,10 @@ class JCSG(numSlices: Int) extends Renderer {
       val is = Array.ofDim[Array[Integer]](triangles.size)
       triangles.zipWithIndex.foreach { case (Face(a,b,c), i) => is(i) = Array(idx(a), idx(b), idx(c)) }
       new JPolyhedron(vs, is).toCSG()
-    case FromFile(path, format) =>
+    case f @ FromFile(path, format) =>
       format match {
         case "stl" => STL.file(java.nio.file.Paths.get(path))
-        case "obj" => to(obj.Parser(path))
-        case other => sys.error("unsupported format: " + other)
+        case _ => to(f.load)
       }
     case Union(objs @ _*) =>            if (objs.isEmpty) empty else objs.map(to).reduce( _.union(_) )
     case Intersection(objs @ _*) =>     if (objs.isEmpty) empty else objs.map(to).reduce( _.intersect(_) )

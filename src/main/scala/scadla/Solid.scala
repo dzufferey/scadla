@@ -6,11 +6,17 @@ sealed abstract class Solid
 case class Cube(width: Double, depth: Double, height: Double) extends Solid
 case class Sphere(radius: Double) extends Solid
 case class Cylinder(radiusBot: Double, radiusTop: Double, height: Double) extends Solid
-case class FromFile(path: String, format: String = "stl") extends Solid
+case class FromFile(path: String, format: String = "stl") extends Solid {
+  def load: Polyhedron = format match {
+    case "stl" => backends.stl.Parser(path)
+    case "obj" => backends.obj.Parser(path)
+    case "amf" => backends.amf.Parser(path)
+    case other => sys.error("parsing " + other + " not yet supported")
+  }
+}
 case object Empty extends Solid
 case class Polyhedron(faces: Iterable[Face]) extends Solid {
   def indexed = Polyhedron.indexed(this)
-  def boundingBox = Polyhedron.boundingBox(this)
 }
 
 //operations
@@ -62,18 +68,5 @@ object Polyhedron {
     (indexed, faces.map{ case Face(p1,p2,p3) => (idx(p1),idx(p2),idx(p3)) }) 
   }
   def indexed(p: Polyhedron): (IndexedSeq[Point], Iterable[(Int,Int,Int)]) = indexed(p.faces)
-
-  def boundingBox(faces: Iterable[Face]): ((Double,Double),(Double,Double),(Double,Double)) = {
-    val init = (Double.MaxValue, Double.MinValue)
-    def updt(f: Face, proj: Point => Double, acc: (Double,Double)) = {
-      ( math.min(acc._1, math.min(proj(f.p1), math.min(proj(f.p2), proj(f.p3)))),
-        math.max(acc._2, math.max(proj(f.p1), math.max(proj(f.p2), proj(f.p3)))) )
-    }
-    faces.foldLeft((init,init,init))( (acc,f) =>
-      ( updt(f, p => p.x, acc._1),
-        updt(f, p => p.y, acc._2),
-        updt(f, p => p.z, acc._3) ) )
-  }
-  def boundingBox(p: Polyhedron): ((Double,Double),(Double,Double),(Double,Double)) = boundingBox(p.faces)
 
 }

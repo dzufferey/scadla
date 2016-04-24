@@ -19,7 +19,75 @@ case class Face(p1: Point, p2: Point, p3: Point) {
 case class Matrix(m00: Double, m01: Double, m02: Double, m03:Double,
                   m10: Double, m11: Double, m12: Double, m13:Double,
                   m20: Double, m21: Double, m22: Double, m23:Double,
-                  m30: Double, m31: Double, m32: Double, m33:Double)
+                  m30: Double, m31: Double, m32: Double, m33:Double) {
+
+  private def prod(r: Seq[Double], c: Seq[Double]): Double = {
+    r(0)*c(0) + r(1)*c(1) + r(2)*c(2) + r(3)*c(3)
+  }
+
+  def row(i: Int) = i match {
+    case 0 => Seq(m00, m01, m02, m03)
+    case 1 => Seq(m10, m11, m12, m13)
+    case 2 => Seq(m20, m21, m22, m23)
+    case 3 => Seq(m30, m31, m32, m33)
+    case _ => sys.error("0 ≤ " + i + " ≤ 3")
+  }
+
+  def col(i: Int) = i match {
+    case 0 => Seq(m00, m10, m20, m30)
+    case 1 => Seq(m01, m11, m21, m31)
+    case 2 => Seq(m02, m12, m22, m32)
+    case 3 => Seq(m03, m13, m23, m33)
+    case _ => sys.error("0 ≤ " + i + " ≤ 3")
+  }
+
+  def *(m: Matrix): Matrix = {
+    def p(r: Int, c: Int) = prod(row(r), m.col(c))
+    Matrix(
+      p(0, 0), p(0, 1), p(0, 2), p(0, 3),
+      p(1, 0), p(1, 1), p(1, 2), p(1, 3),
+      p(2, 0), p(2, 1), p(2, 2), p(2, 3),
+      p(3, 0), p(3, 1), p(3, 2), p(3, 3)
+    )
+  }
+
+  def *(p: Point): Point = {
+    val extended = Seq(p.x, p.y, p.z, 1)
+    val x = prod(row(0), extended)
+    val y = prod(row(1), extended)
+    val z = prod(row(2), extended)
+    val w = prod(row(3), extended)
+    Point(x/w, y/w, z/w)
+  }
+
+  def *(q: Quaternion): Matrix = this * q.toMatrix
+}
+
+object Matrix {
+  def unit = Matrix(1, 0, 0, 0,
+                    0, 1, 0, 0,
+                    0, 0, 1, 0,
+                    0, 0, 0, 1)
+  def rotation(x: Double, y: Double, z: Double) = {
+    val qx = Quaternion.mkRotation(x, Vector(1,0,0))
+    val qy = Quaternion.mkRotation(y, Vector(0,1,0))
+    val qz = Quaternion.mkRotation(z, Vector(0,0,1))
+    val q = qx * (qy * qz)
+    q.toMatrix
+  }
+
+  def mirror(_x: Double, _y: Double, _z: Double) = {
+    val v = Vector(_x,_y,_z).unit
+    val x = v.x
+    val y = v.y
+    val z = v.z
+    Matrix(1-2*x*x,  -2*y*x,  -2*z*x, 0,
+            -2*x*y, 1-2*y*y,  -2*z*y, 0,
+            -2*x*z,  -2*y*z, 1-2*z*z, 0,
+                 0,       0,       0, 1)
+  }
+
+}
 
 case class Vector(x: Double, y: Double, z: Double) {
   def +(v: Vector): Vector = Vector(x+v.x, y+v.y, z+v.z)

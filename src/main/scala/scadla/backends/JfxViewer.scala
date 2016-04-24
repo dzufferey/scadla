@@ -2,6 +2,7 @@ package scadla.backends
 
 import scadla._
 import scadla.assembly._
+import scadla.utils.box._
 import dzufferey.utils.SysCmd
 
 import scalafx.Includes._
@@ -114,21 +115,19 @@ class JfxViewerApp extends JFXApp {
      
       val obj = readPolyFromStdIn
       
-      val ((minX,maxX), 
-           (minY,maxY),
-           (minZ,maxZ)) = obj.boundingBox
+      val box = obj.boundingBox
      
       //center at origin
       val centered = new Group(obj.mesh) {
-        translateX = - (maxX - minX) / 2
-        translateY = - (maxY - minY) / 2
-        translateZ = - (maxZ - minZ) / 2
+        translateX = - box.x.center
+        translateY = - box.y.center
+        translateZ = - box.z.center
       }
       //scale to camera FOV
       val scaled = new Group(centered) {
-        val sX = 600 / (maxX - minX)
-        val sY = 600 / (maxY - minY)
-        val sZ = 600 / (maxZ - minZ)
+        val sX = 600 / box.x.size
+        val sY = 600 / box.y.size
+        val sZ = 600 / box.z.size
         val s = math.min(sX, math.min(sY, sZ))
         scaleX = s
         scaleY = s
@@ -217,7 +216,7 @@ sealed abstract class JfxViewerObj {
   def parameters: List[(String, Double, Double)] //name, min, max
   def setParameters(params: List[Double]): Unit
   def mesh: Node
-  def boundingBox: ((Double,Double),(Double,Double),(Double,Double))
+  def boundingBox: Box
 }
 case class JfxViewerObjPoly(p: Polyhedron) extends JfxViewerObj {
   def parameters = Nil
@@ -275,41 +274,21 @@ case class JfxViewerObjAssembly(a: Assembly) extends JfxViewerObj {
   def boundingBox = {
     import math.{min, max}
     val bbs = a.at(0).map{ case (frame, poly) =>
-      val ((x1,x2), (y1,y2), (z1,z2)) = JfxViewerObj.getBoundingBox(poly)
-      val v0 = frame.directTo(Point(x1,y1,z1))
-      val vs = List(Point(x1,y1,z2),Point(x1,y2,z1),Point(x1,y2,z2),
-                    Point(x2,y1,z1),Point(x2,y1,z2),Point(x2,y2,z1),Point(x2,y2,z2))
-      vs.foldLeft(((v0.x,v0.x),(v0.y,v0.y),(v0.y,v0.z)))( (acc, p) => {
-        val p0 = frame.directTo(p)
-        ((min(acc._1._1, p0.x), max(acc._1._2, p0.x)),
-         (min(acc._2._1, p0.y), max(acc._2._2, p0.y)),
-         (min(acc._3._1, p0.z), max(acc._3._2, p0.z)))
-      })
+      val bb = JfxViewerObj.getBoundingBox(poly)
+      val vs = bb.corners.map(frame.directTo)
+      BoundingBox(vs)
     }
-    if (bbs.isEmpty) {
-      ( (0.0, 1.0),
-        (0.0, 1.0),
-        (0.0, 1.0) )
-    } else bbs.reduce( (b1, b2) => {
-      ((min(b1._1._1, b2._1._1), max(b1._1._2, b2._1._2)),
-       (min(b1._2._1, b2._2._1), max(b1._2._2, b2._2._2)),
-       (min(b1._3._1, b2._3._1), max(b1._3._2, b2._3._2)))
-    })
+    if (bbs.isEmpty) Box.unit
+    else bbs.reduce( _ hull _ )
   }
 }
 
 object JfxViewerObj {
 
   def getBoundingBox(obj: Polyhedron) = {
-    if (obj.faces.isEmpty) {
-      (
-        (0.0, 1.0),
-        (0.0, 1.0),
-        (0.0, 1.0)
-      )
-    } else {
-      obj.boundingBox
-    }
+    val b = BoundingBox(obj)
+    if (b.isEmpty) Box.unit
+    else b
   }
 
   def objToMeshView(obj: Polyhedron) = {
