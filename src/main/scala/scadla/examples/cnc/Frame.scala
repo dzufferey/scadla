@@ -74,7 +74,7 @@ class Frame(var mainBeamLength: Double = 250,
 
   private def ct = connectorThickness
   protected def c0 = Extrusion.connector(connectorThickness, connectorKnobs, connectorTolerance)
-  protected def c0Base = centeredCubeXY(ew, ew, connectorThickness).moveZ(-connectorThickness)
+  protected def c0Base = CenteredCube.xy(ew, ew, connectorThickness).moveZ(-connectorThickness)
   protected def c0Hole = Cylinder(Thread.ISO.M5, connectorThickness+2).moveZ(-connectorThickness-1)
 
   protected def connectorCorner = {

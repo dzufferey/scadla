@@ -36,7 +36,7 @@ object Collet {
 
   //TODO some more parameters
   def wrench(outer: Double, inner: Double, nbrSlits: Int, screwRadius: Double) = {
-    val base = roundedCubeH(60, 20, 5, 3).move(-30, -10, 0)
+    val base = RoundedCubeH(60, 20, 5, 3).move(-30, -10, 0)
     val t = screwRadius //Thread.ISO.M2
     val screw = Cylinder(t+tolerance, 5)
     val hole = Hull(screw.moveX(inner + t), screw.moveX(outer - t))

@@ -101,7 +101,7 @@ object Spindle {
         Hull(bot, subTtop),
         top
       )
-    val nm3 = bigger(Hull(nut.M3, nut.M3.moveX(5)), 0.4)
+    val nm3 = Bigger(Hull(nut.M3, nut.M3.moveX(5)), 0.4)
     val screw_hole = Cylinder(Thread.ISO.M3, 10)
     val fasteners = Seq(
       screw_hole.move( 3.25, 3.25, 0),

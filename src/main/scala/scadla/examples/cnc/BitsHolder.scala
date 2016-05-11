@@ -13,7 +13,7 @@ object BitsHolder {
     val x = cols * separation
     val y = rows * separation
     val z = height
-    val base = roundedCube(x,y,z+rounding, rounding).moveZ(-rounding) * Cube(x, y, z)
+    val base = RoundedCube(x,y,z+rounding, rounding).moveZ(-rounding) * Cube(x, y, z)
     val holes = for (i <- 0 until cols; j <- 0 until rows) yield {
       val mx = separation/2 + i * separation
       val my = separation/2 + j * separation

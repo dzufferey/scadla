@@ -92,7 +92,7 @@ object NemaStepper {
              axisFlat: Double,
              axisLengthFront: Double,
              axisLengthBack: Double ) = {
-    val base = centeredCubeXY(side, side, length).moveZ(-length)
+    val base = CenteredCube.xy(side, side, length).moveZ(-length)
     val withFlange = if (flangeDepth > 0) base + Cylinder(flangeRadius, flangeDepth) else base
     val screw = Cylinder(screwSize, screwLength.abs)
     val screws = putOnScrew(screwSeparation, screw)

@@ -65,7 +65,7 @@ object LinearActuator {
   val basePlate1 = {
     val plateX = Nema14.size
     val plateY = length - gb.externalRadius
-    val rc0 = roundedCubeH(plateX, plateY, plateThickness, 2).move(-Nema14.size/2, -(mtb + Nema14.size/2), 0)
+    val rc0 = RoundedCubeH(plateX, plateY, plateThickness, 2).move(-Nema14.size/2, -(mtb + Nema14.size/2), 0)
     val toRemove = Union(
         Union(
           motor,
@@ -95,8 +95,8 @@ object LinearActuator {
     val gimbalConnection = if (knob) baseKnobs else Empty
     val gimbalSupport = if (support) {
         Difference(
-          centeredCubeXY(gimbalWidth+2*gimbalKnob, 7, height/2 - Thread.ISO.M3),
-          bigger(gimbalBase, 2*supportGap),
+          CenteredCube.xy(gimbalWidth+2*gimbalKnob, 7, height/2 - Thread.ISO.M3),
+          Bigger(gimbalBase, 2*supportGap),
           Cylinder(gb.externalRadius + looseTolerance, height)
         )
       } else Empty
@@ -112,7 +112,7 @@ object LinearActuator {
   
   lazy val motorGear = {
     val g = Gear.herringbone(motorGearRadius, nbrTeethMotor, gearThickness, mHelix, tightTolerance)
-    g - bigger(motor, looseTolerance).moveZ(-5) //clear the flange
+    g - Bigger(motor, looseTolerance).moveZ(-5) //clear the flange
   }
 
   lazy val transmissionGear = {

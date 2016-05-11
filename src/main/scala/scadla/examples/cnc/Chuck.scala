@@ -43,7 +43,7 @@ object Chuck {
     val wall = 5
     val hex = doubleHex(Hexagon.minRadius(outerRadius) + looseTolerance, 5)
     val head = Cylinder(outerRadius + wall, 5)
-    val handle = roundedCubeH(outerRadius*6, outerRadius*2, 5, 3)
+    val handle = RoundedCubeH(outerRadius*6, outerRadius*2, 5, 3)
     head + handle.moveY(-outerRadius) - hex
   }
 

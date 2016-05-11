@@ -111,8 +111,7 @@ Features that may (or may not) be implemented, depending on time and motivation:
     * rendering using [marching cubes](https://en.wikipedia.org/wiki/Marching_cubes), http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7139, http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html, http://link.springer.com/article/10.1007%2FBF01900830
     * It could be fun to try to implement that in OpenCL using [ScalaCL](https://github.com/nativelibs4java/ScalaCL)
     * use adaptative sampling instead of a fix grid
-    * an alternative to the marching cubes is "sonstrained elastic surface nets" see [JSurfaceNets](https://github.com/miho/JSurfaceNets)
-  - modifier: `Mod(fct: Point => Point, s: Solid) extends Solid`
+    * an alternative to the marching cubes is "constrained elastic surface nets" see [JSurfaceNets](https://github.com/miho/JSurfaceNets)
   - more operations
     * chamfer
     * making object smaller (negative minkowski sum): instead of adding some tolerance to all dimension, design your object at the right size, the make them a bit smaller so they fit together. The goal is to move the face parallel to their normal by some amount while keeping the mesh well-formed.
@@ -137,6 +136,7 @@ Features that may (or may not) be implemented, depending on time and motivation:
 * implementation
   - file format:
     * PLY parser (this format is evil!!!)
+  - InBox: Polyhedron, multiply, hull
   - try VTK as backend
     * installation [http://www.vtk.org/Wiki/VTK/Configure_and_Build]()
     * how to decide whether or not to compile VTK: it cannot be resolved as a MVN dependency but only a a local one ...

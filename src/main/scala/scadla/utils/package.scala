@@ -6,48 +6,9 @@ package object utils {
   
   def inch2mm(i: Double) = i * 25.4
 
+  def mm2inch(i: Double) = i / 25.4
+
   def polarCoordinates(x: Double, y: Double) = (math.hypot(x, y), math.atan2(y,x))
-
-  def centeredCube(x: Double, y: Double, z:Double) = Translate(-x/2, -y/2, -z/2, Cube(x,y,z))
-
-  def centeredCubeXY(x: Double, y: Double, z:Double) = Translate(-x/2, -y/2, 0, Cube(x,y,z))
-
-  def centeredCubeXZ(x: Double, y: Double, z:Double) = Translate(-x/2, 0, -z/2, Cube(x,y,z))
-  
-  def centeredCubeYZ(x: Double, y: Double, z:Double) = Translate(0, -y/2, -z/2, Cube(x,y,z))
-
-  def centeredCubeX(x: Double, y: Double, z:Double) = Translate(-x/2, 0, 0, Cube(x,y,z))
-
-  def centeredCubeY(x: Double, y: Double, z:Double) = Translate(0, -y/2, 0, Cube(x,y,z))
-  
-  def centeredCubeZ(x: Double, y: Double, z:Double) = Translate(0, 0, -z/2, Cube(x,y,z))
-
-  def biggerS(obj: Solid, s: Double) = Minkowski(obj, Sphere(s))
-
-  def bigger(obj: Solid, s: Double) = Minkowski(obj, centeredCube(s,s,s))
-
-  def roundedCube(x: Double, y: Double, z: Double, r: Double) = {
-    if (r > 0) {
-      val d = 2*r
-      assert(d < x && d < y && d < z, "roundedCube, radius should be less than x/2, y/2, z/2.")
-      val c = Translate(r, r, r, Cube(x - d, y - d, z - d))
-      Minkowski(c, Sphere(r))
-    } else {
-      Cube(x,y,z)
-    }
-  }
-
-  def roundedCubeH(x: Double, y: Double, z: Double, r: Double) = {
-    if (r > 0) {
-      val h = z/2
-      val d = 2*r
-      assert(d < x && d < y, "roundedCube, radius should be less than x/2, y/2.")
-      val c = Translate(r, r, 0, Cube(x - d, y - d, h))
-      Minkowski(c, Cylinder(r, h))
-    } else {
-      Cube(x,y,z)
-    }
-  }
   
   def traverse(f: Solid => Unit, s: Solid): Unit = s match {
     case Translate(x, y, z, s2) =>  traverse(f, s2); f(s)

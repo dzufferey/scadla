@@ -61,7 +61,7 @@ object Gimbal {
     val radiusLength1 = distI(length/2 + lengthOffset, length)
     val radiusLength2 = distI(length/2 - lengthOffset, length)
 
-    val outer = halfCylinder( radiusWidth1, radiusWidth2, length).rotateY(Pi/2) * centeredCubeYZ(length, width, height)
+    val outer = halfCylinder( radiusWidth1, radiusWidth2, length).rotateY(Pi/2) * CenteredCube.yz(length, width, height)
     val inner = halfCylinder( radiusLength1, radiusLength2, innerWidth).
                   moveZ(-innerWidth/2).
                     rotateZ(-Pi/2).
@@ -69,7 +69,7 @@ object Gimbal {
                         move( length/2+lengthOffset, widthOffset, 0)
     
     val x0 = outer - inner
-    val x1 = x0 - centeredCubeYZ(length-2*maxThickness, innerWidth, height).moveX(maxThickness)
+    val x1 = x0 - CenteredCube.yz(length-2*maxThickness, innerWidth, height).moveX(maxThickness)
     x1.moveX(-length/2) //center the object at (0,0,0)
   }
   

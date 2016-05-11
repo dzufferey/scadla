@@ -34,9 +34,9 @@ object LinearActuatorBlock {
 
   def support = {
     val simpler = g + LinearActuator.baseKnobs + Cylinder(LinearActuator.gb.externalRadius, LinearActuator.height)
-    val b = bigger(simpler, 2*supportGap)
-    val c1 = centeredCubeXY(7, 9, height/2 - 1.5)
-    val c2 = centeredCubeXY(8, 15, height/2 + 11) - centeredCube(10,4,4).moveZ(height/2)
+    val b = Bigger(simpler, 2*supportGap)
+    val c1 = CenteredCube.xy(7, 9, height/2 - 1.5)
+    val c2 = CenteredCube.xy(8, 15, height/2 + 11) - CenteredCube(10,4,4).moveZ(height/2)
     val cs = Union(
       c1.moveY(  lengthO/2.0 - lengthOffset + 4.5),
       c1.moveY(- lengthO/2.0 - lengthOffset - 4.5),

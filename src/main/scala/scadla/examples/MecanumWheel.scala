@@ -6,7 +6,7 @@ import utils._
 import InlineOps._
 
 /** A class for the small rollers in the mecanum wheel */
-class Roller(height: Double, maxOuterRadius: Double,minOuterRadius: Double, innerRadius: Double) {
+class Roller(height: Double, maxOuterRadius: Double, minOuterRadius: Double, innerRadius: Double) {
 
   val axis = 0.5
   val h = height - 2*axis
@@ -59,7 +59,7 @@ class Roller(height: Double, maxOuterRadius: Double,minOuterRadius: Double, inne
     }
     val grooves = {
       val w = wall * 0.4
-      val groove = centeredCubeXZ(w,l*(2+height),w).rotateY(Pi/4).moveZ(distToWall)
+      val groove = CenteredCube.xz(w,l*(2+height),w).rotateY(Pi/4).moveZ(distToWall)
       val gs = for (i <- 0 until (k-1)) yield groove.moveX( distToWall + (i+0.5)*step)
       Union(gs:_*)
     }
@@ -132,7 +132,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
   
   protected def rollersForCarving = {
     val r1 = Hull(roller.solid, roller.solid.moveX(2*maxR))
-    val r2 = bigger(r1, rollerRimGap).moveZ(-rollerHeight/2)
+    val r2 = Bigger(r1, rollerRimGap).moveZ(-rollerHeight/2)
     val c = Cylinder(rollerAxleRadius1, axleHeight).moveZ(-axleHeight/2)
     placeOnRim(r2 + c)
   }
@@ -181,7 +181,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     val knobs = for(i <- 0 until nbrHoles) yield knob.move(knobX, 0, width/2).rotate(0, 0, i*angle)
 
     val lowerWithKnobs = lowerHalf ++ knobs
-    val upperWithKnobs = upperHalf -- knobs.map(bigger(_, 2*tolerance))
+    val upperWithKnobs = upperHalf -- knobs.map(Bigger(_, 2*tolerance))
 
     (lowerWithKnobs, upperWithKnobs)
   }
