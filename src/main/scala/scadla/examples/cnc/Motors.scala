@@ -5,6 +5,7 @@ import scadla.InlineOps._
 import scadla.utils._
 import scala.math._
 
+//TODO move that to the lib
 //place holder for NEMA stepper motors
 
 object Nema14 {

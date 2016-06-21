@@ -8,6 +8,7 @@ import scadla.examples.fastener._
 import Common._
 
 //The part that holds the linear actuator connected to the frame
+//TODO split in multiple parts connected with dovetail (and screw) for easier printing
 object Gimbal {
 
   def carveBearing(shape: Solid, retainerThickness: Double,

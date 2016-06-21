@@ -1,5 +1,7 @@
 package scadla
 
+import math._
+
 package object utils {
 
   import scadla._
@@ -102,6 +104,23 @@ package object utils {
     }
     sCurr
   }
+
+  /** return a value ∈ [min,max] which is a multiple of step (or min, max) */
+  def round(value: Double, min: Double, max: Double, step: Double): Double = {
+    val stepped = math.rint(value / step) * step
+    math.min(max, math.max(min, stepped))
+  }
+
+  /** https://en.wikipedia.org/wiki/Chord_(geometry) */
+  def chord(angle: Double) = 2*sin(angle/2)
+
+  /** https://en.wikipedia.org/wiki/Apothem */
+  def apothem(nbrSides: Int, sideLength: Double) = sideLength / (2 * tan(Pi / nbrSides))
+  def apothemFromR(nbrSides: Int, maxRadius: Double) = maxRadius * cos(Pi / nbrSides)
+
+  def incribedRadius(nbrSides: Int, sideLength: Double) = sideLength / tan(Pi / nbrSides) / 2
+
+  def circumscribedRadius(nbrSides: Int, sideLength: Double) = sideLength / sin(Pi / nbrSides) / 2
 
 }
 

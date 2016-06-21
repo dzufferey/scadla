@@ -11,170 +11,155 @@ import Common._
 
 object LinearActuator {
 
-  //TODO
-
-  /** motor to bearing distance */
-  val mtb = 45.0
-  val bearingRadius = 16.0
-  val gimbalWidth = 42.0
-  val gimbalKnob = 7.0
-
-  val thread = Thread.UTS._1_4
-
-  val motorLength = 28.0
-  val motorSocket = 4.0 //how deep the screw goes in
-
+  val rodThread = Thread.UTS._1_4
   val rodLead = 1.0
 
-  //for the motor screw
+  // motor
+  val motorSocket = 4.0 //how deep the screw goes in
+  val motor = Nema14(28, 0)
+
+  // the screws holding the motors
   val screwHead = 2.0
   val screwLength = 12.0
+  val motorScrew = Union(Cylinder(Thread.ISO.M3 + looseTolerance, screwLength),
+                         Cylinder(2.1 * Thread.ISO.M3 + looseTolerance, screwHead))
+
+  // BB: airsoft ∅ is 6mm, 0.177 cal ∅ is 4.5
+  val bbRadius = 3.0
+  val bb = Sphere(bbRadius)
+
+  val gearHeight = 10
+  val nbrTeethMotor = 8
+  val nbrTeethRod = 3 * nbrTeethMotor
+
+  val groveDepth = bbRadius - 0.5
+  val groveRadiusBase = adjustGroveRadius( 2 * rodThread + 3)
+  val groveRadiusSupport = adjustGroveRadius(Nema14.size/2 - 6)
+  
+  // to attach to the gimbal
+  val gimbalWidth = Nema14.size + 4
+  val gimbalKnob = 7.0
 
   val plateThickness = screwLength - motorSocket + screwHead
 
-  val nbrTeethMotor = 10
-  val nbrTeethTransmission = 26
-  val nbrTeethBearing = 20
-
-  val tScrew = Thread.ISO.M4
-  val gearThickness = 7.0
-  val bearingToGearSpace = 0.6
-  val transmissionOffest = -mtb * (nbrTeethTransmission + nbrTeethBearing) / (nbrTeethMotor + nbrTeethBearing + 2*nbrTeethTransmission)
-  val height = motorLength + plateThickness
-  
-  val motor = Nema14(motorLength, -plateThickness-1)
-
-  val gb = GearBearing(
-    bearingRadius,
-    height,
-    6,
-    6,
-    12,
-    0.04,
-    toRadians(50),
-    0,
-    //tolerance
-    tightTolerance
-  )
-
-  def length = mtb + Nema14.size/2 + gb.externalRadius
-  def width = max(Nema14.size, 2*gb.externalRadius)
-  def motorCenter = mtb + gb.externalRadius
-  def bearingCenter = gb.externalRadius
-  
-  val basePlate1 = {
-    val plateX = Nema14.size
-    val plateY = length - gb.externalRadius
-    val rc0 = RoundedCubeH(plateX, plateY, plateThickness, 2).move(-Nema14.size/2, -(mtb + Nema14.size/2), 0)
-    val toRemove = Union(
-        Union(
-          motor,
-          Cylinder(11+tolerance, plateThickness),
-          Nema14.putOnScrew(Cylinder(2.1 * Thread.ISO.M3 + looseTolerance, screwHead))
-        ).moveY(-mtb),
-        Cylinder(gb.externalRadius - Gear.baseThickness/2, plateThickness)
-      )
-    rc0 - toRemove
-  }
-  
-  lazy val basePlate2 = gb.outer
-
-  def gimbalBase = {
-    val c1 = Cylinder(6, gimbalWidth)
-    val c2 = Cylinder(4 - tolerance, gimbalWidth+2*gimbalKnob).moveZ(-gimbalKnob)
-    val c3 = Cylinder(Thread.ISO.M3, gimbalWidth+20).moveZ(-10)
-    val nonOriented = c1 + c2 - c3
-    nonOriented.moveZ(-gimbalWidth/2).rotateY(Pi/2).moveZ(height/2)
+  // make sures the BBs fit nicely
+  def adjustGroveRadius(radius: Double): Double = {
+    assert(radius > bbRadius)
+    // find n such that the circumscribed radius is the closest to the given radius
+    val sideLength = 2*bbRadius + looseTolerance
+    val nD = Pi / asin(sideLength / (2 *radius))
+    val n = nD.toInt // rounding to nearest regular polygon
+    circumscribedRadius(n, sideLength)
   }
 
-  def baseKnobs = gimbalBase - Cylinder(gb.externalRadius - Gear.baseThickness/2, height)
+  def grove(radius: Double, depth: Double, angle: Double = Pi/2) = {
+    val width = depth / tan(Pi/2 - angle/2)
+    val outer = Cylinder(radius + width, radius, depth)
+    val inner = Cylinder(radius - width, radius, depth)
+    outer - inner
+  }
+  
+  val motorYOffset = 21.5
+  def length = motorYOffset + Nema14.size
+  def width = Nema14.size
 
   def basePlate(knob: Boolean = false, support: Boolean = false) = {
-    val transmissionScrew = Cylinder(tScrew - tolerance, plateThickness + 1).moveY(transmissionOffest)
-    val height = plateThickness + motorLength
-    val gimbalConnection = if (knob) baseKnobs else Empty
-    val gimbalSupport = if (support) {
-        Difference(
-          CenteredCube.xy(gimbalWidth+2*gimbalKnob, 7, height/2 - Thread.ISO.M3),
-          Bigger(gimbalBase, 2*supportGap),
-          Cylinder(gb.externalRadius + looseTolerance, height)
-        )
+    val plateX = width
+    val plateY = length
+    val n14s2 = Nema14.size/2
+    val gimbalMount = if (knob) {
+        val thr = Thread.ISO.M3
+        val w2k = gimbalWidth+2*gimbalKnob
+        val c1 = Cylinder(6, gimbalWidth)
+        val c2 = Cylinder(4 - tolerance, w2k).moveZ(-gimbalKnob)
+        val c3 = Cylinder(thr, gimbalWidth+20).moveZ(-10)
+        val nonOriented = c1 + c2 - c3
+        val oriented = nonOriented.moveZ(-gimbalWidth/2).rotateY(Pi/2).moveZ(plateThickness/2)
+        val trimmed = oriented * CenteredCube.xy(w2k, w2k, plateThickness)
+        if (support) {
+          val beam = CenteredCube.xy(w2k, 7, plateThickness / 2 - thr).moveZ(plateThickness / 2 + thr)
+          Union(
+            trimmed,
+            beam - Bigger(trimmed, 2*supportGap)
+          )
+        } else {
+          trimmed
+        }
       } else Empty
-    basePlate1 + basePlate2 + gimbalConnection -transmissionScrew + gimbalSupport
+    val base = Union(
+        RoundedCubeH(plateX, plateY, plateThickness, 3).move(-n14s2, -(motorYOffset + n14s2), 0),
+        gimbalMount
+      )
+    val motorMount =
+      Union(
+        //motor,
+        Cylinder(8, 1),
+        Cylinder(8, 11+tolerance, plateThickness - 4).moveZ(1),
+        Cylinder(11+tolerance, 3).moveZ(plateThickness - 3),
+        Nema14.putOnScrew(motorScrew)
+      )
+    val rodHole = Cylinder(rodThread + 1, plateThickness)
+    val gap = 0 // 0.5
+    val pillarHeight = gearHeight + 2 - gap
+    val pillar = {
+      val p = Cylinder(3, pillarHeight)
+      val h = Cylinder(1, 5) // hole for self tapping screw
+      (p - h).moveZ(-pillarHeight)
+    }
+    val supportPillars = {
+      val s1 = width - 6
+      NemaStepper.putOnScrew(s1, pillar)
+    }
+    Union(
+      Difference(
+        base,
+        motorMount.moveY(-motorYOffset),
+        rodHole,
+        grove(groveRadiusBase, groveDepth)
+      ),
+      supportPillars
+    )
   }
 
-  val motorGearRadius =        mtb * nbrTeethMotor        / (nbrTeethMotor + nbrTeethBearing + 2*nbrTeethTransmission)
-  val transmissionGearRadius = mtb * nbrTeethTransmission / (nbrTeethMotor + nbrTeethBearing + 2*nbrTeethTransmission)
-  val bearingGearRadius =      mtb * nbrTeethBearing      / (nbrTeethMotor + nbrTeethBearing + 2*nbrTeethTransmission)
-  val tHelix = -0.02
-  val mHelix = -tHelix * transmissionGearRadius / motorGearRadius
-  val bHelix = -tHelix * transmissionGearRadius / bearingGearRadius
+  val supportPlate = {
+    val height = 4
+    Difference(
+      RoundedCubeH(width, width, height, 3).move(-width/2,-width/2,0),
+      NemaStepper.putOnScrew(width - 6, Cylinder(1, height)),
+      Cylinder(rodThread + 1, height),
+      grove(groveRadiusSupport, groveDepth)
+    )
+  }
+  
+  val motorGearRadius = motorYOffset * nbrTeethMotor / (nbrTeethMotor + nbrTeethRod)
+  val rodGearRadius =   motorYOffset * nbrTeethRod   / (nbrTeethMotor + nbrTeethRod)
+  val mHelix = -0.1
+  val rHelix = -mHelix * motorGearRadius / rodGearRadius
   
   lazy val motorGear = {
-    val g = Gear.herringbone(motorGearRadius, nbrTeethMotor, gearThickness, mHelix, tightTolerance)
+    val g = Gear.herringbone(motorGearRadius, nbrTeethMotor, gearHeight, mHelix, tightTolerance)
     g - Bigger(motor, looseTolerance).moveZ(-5) //clear the flange
   }
 
-  lazy val transmissionGear = {
-    val g = Gear.herringbone(transmissionGearRadius, nbrTeethTransmission, gearThickness, tHelix, tightTolerance)
-    val m = 11+looseTolerance
-    val i = 0.5
-    val inner = Cylinder(m, gearThickness).moveZ(i) + Cylinder(m-i, m, i)
-    val top = for (k <- 0 until 12) yield PieSlice(m+i, m, Pi/12, i).moveZ(gearThickness).rotateZ(k*Pi/6) //linter:ignore ZeroDivideBy
-    g - inner ++ top
-  }
-
-  val transmissionWasher = Tube(6, 4 + looseTolerance, bearingToGearSpace)
-  
-  val transmissionAxle = {
-    val c1 = Cylinder(4 - tightTolerance/2, gearThickness + bearingToGearSpace + 1)
-    val c2 = Cylinder(6, 1)
-    val c3 = Cylinder(tScrew + looseTolerance, gearThickness + bearingToGearSpace + 2)
-    c1 + c2 - c3
-  }
-
-  lazy val planetGear = gb.planet
-
-  def ceilStep(length: Double, step: Double): Double = {
-    (length / step).ceil * step
-  }
-
-  lazy val (sunGearPart1, sunGearPart2) = {
-    val axis = Cylinder(thread + 3 * looseTolerance, motorLength + plateThickness + 2).moveZ(-1)
-    val sun = gb.sun
-    val gbh2 = gb.height/2
-    val add = Gear.addenum(gb.sunRadius, gb.nbrTeethSun)
-    val o = gb.sunRadius + add + 0.1
-    val i = gb.sunRadius - add
-    val chamfer = Union(
-        Cylinder(o, gbh2 - 4*add).moveZ(2*add), 
-        Cylinder(i, o, 2*add),
-        Cylinder(o, i, 2*add).moveZ(gbh2-2*add)
+  lazy val rodGear = {
+    val n = nut(rodThread + looseTolerance)
+    val nh = 1.6 * rodThread //nut height
+    val g = Gear.herringbone(rodGearRadius, nbrTeethRod, gearHeight, rHelix, tightTolerance)
+    Difference(
+      g,
+      Cylinder(rodThread + 1, gearHeight),
+      grove(groveRadiusBase, groveDepth),
+      grove(groveRadiusSupport, groveDepth).mirror(0,0,1).moveZ(gearHeight),
+      n.moveZ( gearHeight / 2 + 1),
+      n.moveZ( gearHeight / 2 - 1 - nh)
     )
-    val p1 = sun * chamfer
-    val p2 = (sun * chamfer.moveZ(gbh2)).moveZ(-gbh2)
-    val n = nut(thread + looseTolerance)
-    val nh2 = 0.8 * thread //nut height / 2
-    val part2 = p2 - axis - n.moveZ( ceilStep(gbh2 - nh2, rodLead) - nh2 ) //try to match the lead
-    val sunGear = Gear.herringbone(bearingGearRadius, nbrTeethBearing, gearThickness, bHelix, tightTolerance)
-    val h = gearThickness + bearingToGearSpace
-    val p1g = p1.moveZ(h) + Cylinder(i, h) + sunGear - axis
-    val part1 = p1g - n.moveZ( h + gbh2 - nh2 - ceilStep(h + gbh2 - nh2, rodLead) )
-    (part1, part2)
   }
-
-  val planetHelper = gb.planetHelper(1, looseTolerance)
-
+  
   lazy val parts =  Map(
     "base"          -> basePlate(),
     "motor"         -> motorGear,
-    "transmission"  -> transmissionGear,
-    "axle"          -> transmissionAxle,
-    "washer"        -> transmissionWasher,
-    "planet"        -> planetGear, //need 6 copies of that one
-    "sun1"          -> sunGearPart1,
-    "sun2"          -> sunGearPart2,
-    "helper"        -> planetHelper
+    "support"       -> supportPlate,
+    "gear"          -> rodGear
   )
 
 }

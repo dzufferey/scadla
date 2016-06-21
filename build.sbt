@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.6" % "test",
   "io.github.dzufferey" %% "misc-scala-utils" % "0.1-SNAPSHOT",
   "org.scala-lang.modules" %% "scala-pickling" % "0.10.1",
-  "org.scalafx" %% "scalafx" % "8.0.60-R9"
+  "org.scalafx" %% "scalafx" % "8.0.92-R10"
 )
 
 addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.13")
