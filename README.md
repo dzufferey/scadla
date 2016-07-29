@@ -115,7 +115,7 @@ Features that may (or may not) be implemented, depending on time and motivation:
   - more operations
     * chamfer
     * making object smaller (negative minkowski sum): instead of adding some tolerance to all dimension, design your object at the right size, the make them a bit smaller so they fit together. The goal is to move the face parallel to their normal by some amount while keeping the mesh well-formed.
-  - FromFile changed to FromURL
+  - cahnge FromFile to FromURL
   - a `Solidifiable` trait that has a `def solidify: Solid` operation which can be called implicitly
   - object cache:
     * object
