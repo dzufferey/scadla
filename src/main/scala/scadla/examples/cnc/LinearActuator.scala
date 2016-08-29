@@ -8,11 +8,19 @@ import InlineOps._
 import scadla.examples.fastener._
 import scadla.examples.GearBearing
 import Common._
+import scadla.examples.reach3D.SpoolHolder
+
+
+//TODO need to add some springy thing on one nut to reduce the backlash (preload)
 
 object LinearActuator {
 
   val rodThread = Thread.UTS._1_4
   val rodLead = 1.0
+
+  val motorYOffset = 21.5
+  def length = motorYOffset + Nema14.size
+  def width = Nema14.size
 
   // motor
   val motorSocket = 4.0 //how deep the screw goes in
@@ -24,44 +32,32 @@ object LinearActuator {
   val motorScrew = Union(Cylinder(Thread.ISO.M3 + looseTolerance, screwLength),
                          Cylinder(2.1 * Thread.ISO.M3 + looseTolerance, screwHead))
 
-  // BB: airsoft ∅ is 6mm, 0.177 cal ∅ is 4.5
-  val bbRadius = 3.0
-  val bb = Sphere(bbRadius)
+  val bbRadius = 3.0 // airsoft ∅ is 6mm
+  val bearingGapBase = 3.5
+  val bearingGapSupport = 2.5
 
   val gearHeight = 10
-  val nbrTeethMotor = 8
-  val nbrTeethRod = 3 * nbrTeethMotor
+  val nbrTeethMotor = 14
+  val nbrTeethRod = 2 * nbrTeethMotor
 
-  val groveDepth = bbRadius - 0.5
-  val groveRadiusBase = adjustGroveRadius( 2 * rodThread + 3)
-  val groveRadiusSupport = adjustGroveRadius(Nema14.size/2 - 6)
+  val motorGearRadius = motorYOffset * nbrTeethMotor / (nbrTeethMotor + nbrTeethRod)
+  val rodGearRadius =   motorYOffset * nbrTeethRod   / (nbrTeethMotor + nbrTeethRod)
+  val mHelix = -0.1
+  val rHelix = -mHelix * motorGearRadius / rodGearRadius
+  
+  val grooveDepthBase = bbRadius / cos(Pi/4) - bearingGapBase / 2
+  val grooveDepthSupport = bbRadius / cos(Pi/4) - bearingGapSupport / 2
+  val grooveRadiusBase = SpoolHolder.adjustGrooveRadius(nut.maxOuterRadius(rodThread + looseTolerance) + grooveDepthBase + 1) // +1 for the adjust radius
+  val grooveRadiusSupport = SpoolHolder.adjustGrooveRadius(rodGearRadius - Gear.addenum(rodGearRadius, nbrTeethRod) - grooveDepthSupport)
+
+  val grooveBase = SpoolHolder.flatGroove(grooveRadiusBase, grooveDepthBase)
+  val grooveSupport = SpoolHolder.flatGroove(grooveRadiusSupport, grooveDepthSupport)
   
   // to attach to the gimbal
   val gimbalWidth = Nema14.size + 4
   val gimbalKnob = 7.0
 
   val plateThickness = screwLength - motorSocket + screwHead
-
-  // make sures the BBs fit nicely
-  def adjustGroveRadius(radius: Double): Double = {
-    assert(radius > bbRadius)
-    // find n such that the circumscribed radius is the closest to the given radius
-    val sideLength = 2*bbRadius + looseTolerance
-    val nD = Pi / asin(sideLength / (2 *radius))
-    val n = nD.toInt // rounding to nearest regular polygon
-    circumscribedRadius(n, sideLength)
-  }
-
-  def grove(radius: Double, depth: Double, angle: Double = Pi/2) = {
-    val width = depth / tan(Pi/2 - angle/2)
-    val outer = Cylinder(radius + width, radius, depth)
-    val inner = Cylinder(radius - width, radius, depth)
-    outer - inner
-  }
-  
-  val motorYOffset = 21.5
-  def length = motorYOffset + Nema14.size
-  def width = Nema14.size
 
   def basePlate(knob: Boolean = false, support: Boolean = false) = {
     val plateX = width
@@ -99,11 +95,10 @@ object LinearActuator {
         Nema14.putOnScrew(motorScrew)
       )
     val rodHole = Cylinder(rodThread + 1, plateThickness)
-    val gap = 0 // 0.5
-    val pillarHeight = gearHeight + 2 - gap
+    val pillarHeight = gearHeight + bearingGapBase + bearingGapSupport
     val pillar = {
       val p = Cylinder(3, pillarHeight)
-      val h = Cylinder(1, 5) // hole for self tapping screw
+      val h = Cylinder(1.25, pillarHeight) // hole for self tapping screw
       (p - h).moveZ(-pillarHeight)
     }
     val supportPillars = {
@@ -115,26 +110,21 @@ object LinearActuator {
         base,
         motorMount.moveY(-motorYOffset),
         rodHole,
-        grove(groveRadiusBase, groveDepth)
+        grooveBase
       ),
       supportPillars
-    )
+    ).rotateX(Pi)
   }
 
   val supportPlate = {
     val height = 4
     Difference(
       RoundedCubeH(width, width, height, 3).move(-width/2,-width/2,0),
-      NemaStepper.putOnScrew(width - 6, Cylinder(1, height)),
+      NemaStepper.putOnScrew(width - 6, Cylinder(1.25, height)),
       Cylinder(rodThread + 1, height),
-      grove(groveRadiusSupport, groveDepth)
-    )
+      grooveSupport
+    ).rotateX(Pi)
   }
-  
-  val motorGearRadius = motorYOffset * nbrTeethMotor / (nbrTeethMotor + nbrTeethRod)
-  val rodGearRadius =   motorYOffset * nbrTeethRod   / (nbrTeethMotor + nbrTeethRod)
-  val mHelix = -0.1
-  val rHelix = -mHelix * motorGearRadius / rodGearRadius
   
   lazy val motorGear = {
     val g = Gear.herringbone(motorGearRadius, nbrTeethMotor, gearHeight, mHelix, tightTolerance)
@@ -148,11 +138,11 @@ object LinearActuator {
     Difference(
       g,
       Cylinder(rodThread + 1, gearHeight),
-      grove(groveRadiusBase, groveDepth),
-      grove(groveRadiusSupport, groveDepth).mirror(0,0,1).moveZ(gearHeight),
+      grooveBase,
+      grooveSupport.mirror(0,0,1).moveZ(gearHeight),
       n.moveZ( gearHeight / 2 + 1),
       n.moveZ( gearHeight / 2 - 1 - nh)
-    )
+    ).rotateX(Pi)
   }
   
   lazy val parts =  Map(
