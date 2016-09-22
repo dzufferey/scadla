@@ -1,4 +1,4 @@
-package scadla.examples.cnc
+package scadla.examples.extrusion
 
 import scadla._
 import scadla.InlineOps._
@@ -6,7 +6,7 @@ import scadla.utils._
 import scala.math._
 
 //place holder for 20x20mm aluminium extrusions
-object Extrusion {
+object _2020 {
 
   val width = 20
 
@@ -37,7 +37,7 @@ object Extrusion {
 
   def connector(plateThicknesss: Double,
                 knobHeight: Double,
-                tolerance: Double = Common.tightTolerance) = {
+                tolerance: Double) = {
     val base = CenteredCube.xy(20, 20, plateThicknesss + knobHeight).moveZ(-plateThicknesss)
     val negative = Bigger(apply(knobHeight), tolerance).moveZ(tolerance/2)
     val hole = Cylinder(Thread.ISO.M5, knobHeight + plateThicknesss + 1).moveZ(-plateThicknesss-1)
@@ -53,7 +53,7 @@ object Extrusion {
   }
 
   //TODO better name
-  def pad(length: Double, threadRadius: Double) = {
+  def pad(length: Double, threadRadius: Double, tolerance: Double) = {
     val bot: Double = 14
     val top: Double = 8
     val height: Double = 3
@@ -62,7 +62,7 @@ object Extrusion {
     val chamfered = base * Cube(bot - d, length, height).moveX(d/2)
     Difference(
       chamfered,
-      Cylinder(threadRadius-Common.tolerance, height).move(bot/2, length/2, 0),
+      Cylinder(threadRadius-tolerance, height).move(bot/2, length/2, 0),
       new examples.fastener.NutPlaceHolder().apply(threadRadius).move(bot/2, length/2, height-1.6*threadRadius+1)
     )
   }

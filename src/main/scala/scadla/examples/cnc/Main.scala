@@ -27,8 +27,8 @@ object Main{
 
   //r.toSTL(LinearActuatorBlock(true), "la-gimbal.stl")
 
-  //r.toSTL(Extrusion(50), "extrusion.stl")
-  //r.toSTL(Extrusion.pad(10,1.5), "pad.stl")
+  //r.toSTL(scadla.examples.extrusion._2020(50), "extrusion.stl")
+  //r.toSTL(scadla.examples.extrusion._2020.pad(10,1.5,Common.tolerance), "pad.stl")
   //val af = new ActuatorFasterner(120 * sin(Pi/4), 120 * cos(Pi/4))
   //r.toSTL(af.connector(true), "connector1.stl")
   //r.toSTL(af.connector(false), "connector2.stl")

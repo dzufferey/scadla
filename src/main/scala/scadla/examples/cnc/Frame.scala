@@ -4,6 +4,7 @@ import scadla._
 import scadla.InlineOps._
 import scadla.utils._
 import scala.math._
+import scadla.examples.extrusion._2020
 
 //TODO something is wrong with the topAngle and the topLength
 
@@ -16,10 +17,10 @@ class Frame(var mainBeamLength: Double = 250,
             var connectorBaseRatio: Double = 0.75,
             var connectorTolerance: Double = Common.tightTolerance) {
 
-  val ew = Extrusion.width
+  val ew = _2020.width
   val ew2 = ew / 2
 
-  def beam(length: Double) = Extrusion(length).moveZ(clearance)
+  def beam(length: Double) = _2020(length).moveZ(clearance)
 
   protected def totalLength(beamLength: Double, clearance: Double) =
     beamLength + 2 * clearance
@@ -73,7 +74,7 @@ class Frame(var mainBeamLength: Double = 250,
   //TODO the diagonal things (rigidity) → some form of static rope
 
   private def ct = connectorThickness
-  protected def c0 = Extrusion.connector(connectorThickness, connectorKnobs, connectorTolerance)
+  protected def c0 = _2020.connector(connectorThickness, connectorKnobs, connectorTolerance)
   protected def c0Base = CenteredCube.xy(ew, ew, connectorThickness).moveZ(-connectorThickness)
   protected def c0Hole = Cylinder(Thread.ISO.M5, connectorThickness+2).moveZ(-connectorThickness-1)
 
