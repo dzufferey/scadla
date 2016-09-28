@@ -8,14 +8,14 @@ import scadla.examples.extrusion._2020
 
 //TODO something is wrong with the topAngle and the topLength
 
-class Frame(var mainBeamLength: Double = 250,
-            var clearance: Double = 18, //for 20x20mm extrusions
-            var topAngle: Double = Pi/4,
-            var topLength: Double = 120,
-            var connectorThickness: Double = 3,
-            var connectorKnobs: Double = 5,
-            var connectorBaseRatio: Double = 0.75,
-            var connectorTolerance: Double = Common.tightTolerance) {
+class Frame(val mainBeamLength: Double = 250,
+            val clearance: Double = 18, //for 20x20mm extrusions
+            val topAngle: Double = Pi/4,
+            val topLength: Double = 120,
+            val connectorThickness: Double = 3,
+            val connectorKnobs: Double = 5,
+            val connectorBaseRatio: Double = 0.75,
+            val connectorTolerance: Double = Common.tightTolerance) {
 
   val ew = _2020.width
   val ew2 = ew / 2
