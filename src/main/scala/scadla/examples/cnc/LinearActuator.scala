@@ -146,7 +146,7 @@ object LinearActuator {
   }
   
   lazy val parts =  Map(
-    "base"          -> basePlate(),
+    "base"          -> basePlate(true, true),
     "motor"         -> motorGear,
     "support"       -> supportPlate,
     "gear"          -> rodGear

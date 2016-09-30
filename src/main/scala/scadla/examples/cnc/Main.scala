@@ -37,7 +37,7 @@ object Main{
   //  r.toSTL(s, "la-" + n + ".stl")
   //}
 
-    r.view(Frame2.skeleton)
+    r.view(Frame2.connector1)
 
     println("work in progress")
   }
