@@ -25,14 +25,14 @@ object Frame2 {
     Union(s2:_*)
   }
 
+  val screwOffsetY = 12
   protected def screws = {
-    val offsetY = 12
     val s = Cylinder(boltSize + Common.tolerance, 30)
     Union(
-      s.move(30,offsetY,-10),
-      s.move(90,offsetY,-10),
-      s.rotateY(Pi/2).move(-10,offsetY+2,30).rotateZ(-Pi/6),
-      s.rotateY(Pi/2).move(-10,offsetY+2,90).rotateZ(-Pi/6)
+      s.move(30,screwOffsetY,-10),
+      s.move(90,screwOffsetY,-10),
+      s.rotateY(Pi/2).move(-10,screwOffsetY+2,30).rotateZ(-Pi/6),
+      s.rotateY(Pi/2).move(-10,screwOffsetY+2,90).rotateZ(-Pi/6)
     )
   }
 
@@ -44,7 +44,11 @@ object Frame2 {
     val offset = 5
     val v = { // vertical beam
       val x = t(vBeamLength).moveX(-10).rotateZ(Pi/2)
-      x - screws.rotateZ(Pi/2 + Pi/6)
+      Difference(
+        x,
+        screws.moveY(-1.85).rotateZ(Pi/2 + Pi/6),
+        screws.moveY(-1.85).rotateX(Pi).rotateZ(-Pi/2 -Pi/6).moveZ(vBeamLength)
+      )
     }
     val s = { // top horizontal beam
       val length = hBeamLength * l2 / l1
@@ -57,7 +61,13 @@ object Frame2 {
       val x = l(hBeamLength) // horizontal L beam
       val y = Cube(20,20,40).move(-20, 0,-20) + Cube(20, 20, 20).move(0,0,-20)
       val y2 = y.moveX(offset+0.5)
-      x - y2.rotateY(-Pi/6) - y2.mirror(1,0,0).rotateY(7*Pi/6).moveZ(hBeamLength)
+      Difference(
+        x,
+        y2.rotateY(-Pi/6),
+        y2.mirror(1,0,0).rotateY(7*Pi/6).moveZ(hBeamLength),
+        screws.rotateX(-Pi/2).rotateY(-Pi/2).moveZ(2),
+        screws.rotateX( Pi/2).rotateY( Pi/2).moveZ(hBeamLength-2)
+      )
     }
     Union(
       putAtCorners(v, l1),
@@ -71,10 +81,10 @@ object Frame2 {
   def connector1 = {
     val thickness = 5
     val offsetY = 10 * sin(Pi/6)
-    val c = Cube(100, 18,100) // L are 2mm
-    val c2 = Bigger(Cube(100, 40,100), 1.5) // T are 3mm
+    val c = Cube(100, 18,100).move(0, 2, 2) // L are 2mm
+    val c2 = Cube(100, 40,120)
     val corner = Union(
-        c2.moveX(-100).rotateZ(-Pi/6),
+        Bigger(c2, 1.5).moveX(-100).rotateZ(-Pi/6), // T are 3mm
         c2.moveX(-100).rotateZ(5*Pi/6)
       ).moveY(offsetY)
     val base = Difference(
@@ -86,16 +96,17 @@ object Frame2 {
       )
     val diagonal = {
       val x = CenteredCube.xz(125, thickness, 125).rotateY(Pi/4) - CenteredCube.xz(100, thickness, 100).rotateY(Pi/4) 
-      val y1 = PieSlice(50, 50 - thickness, Pi/4, thickness).rotateX(Pi/2).rotateY(3*Pi/4).move(102,thickness,50)
+      val y1 = PieSlice(50, 50 - thickness, Pi/4, thickness).rotateX(Pi/2).rotateY(3*Pi/4).move(101,thickness,49)
       val y2 = PieSlice(50, 50 - thickness, Pi/4, thickness).rotateX(Pi/2).rotateY(4*Pi/4).move(48, thickness, 104)
-      (x + y1 + y2) * c - corner
+      val z1 = CenteredCube(30, 30, 30).rotate(Pi/4,Pi/4,0).move(68, thickness-1,-10)
+      val z2 = CenteredCube(30, 30, 30).rotate(Pi/4,Pi/4,0).move(-7, thickness-1, 65)
+      (x + y1 + y2 + z1 + z2) * c - corner
     }
     val angle = {
       val x = sqrt(2) * 25
       CenteredCube(x,x,x).rotate(Pi/4,Pi/4,0) * c - corner
     }
-    base + diagonal + angle - screws.move(0, 0, 2)
-    // TODO fix to take into account the extrusion thickness!!
+    base + diagonal + angle - screws
   }
   
   // part to attach the T and L profiles (mirror of connector1)
@@ -105,10 +116,19 @@ object Frame2 {
 
   // foot that contains/cover the nuts and bolts
   def foot = {
-    //TODO profile to poor oogoo
     val base = RoundedCubeH(80, 20, 5, 5)
     val c = Cylinder(2*boltSize, 3)
-    base.moveX(20) - screws - c.move(30, 12, 0) - c.move(90, 12, 0)
+    base.moveX(20) - screws - c.move(30, screwOffsetY, 0) - c.move(90, screwOffsetY, 0)
+  }
+
+  def assembled = {
+    Union(
+      skeleton,
+      putAtCorners(connector1.move( 2,-3,0).rotateZ(2*Pi/3), hBeamLength),
+      putAtCorners(connector2.move(-2,-3,0).rotateZ(  Pi/3), hBeamLength),
+      putAtCorners(connector1.rotateY(Pi).move(-2,-3,vBeamLength).rotateZ(  Pi/3), hBeamLength),
+      putAtCorners(connector2.rotateY(Pi).move( 2,-3,vBeamLength).rotateZ(2*Pi/3), hBeamLength)
+    )
   }
 
   //TODO part to connect the skeleton
