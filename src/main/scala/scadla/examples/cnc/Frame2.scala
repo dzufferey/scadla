@@ -15,10 +15,11 @@ object Frame2 {
   val hBeamLength: Double = 300
   val topAngle: Double = Pi/4
   val topLength: Double = 120 //TODO does it need to be that long
+  val thickness = 5 // for the connector
 
   def t = T(20, 20, 3)(_)
   def l = L(20, 20, 2)(_)
-  def b(length: Double) = Cube(20, 2, length)
+  def b(length: Double) = Cube(20, 4, length)
 
   protected def putAtCorners(s: Solid, radius: Double) = {
     val s2 = for (i <- 0 until 6) yield s.moveX(radius).rotateZ(i * Pi/3) //linter:ignore ZeroDivideBy
@@ -53,9 +54,10 @@ object Frame2 {
     val s = { // top horizontal beam
       val length = hBeamLength * l2 / l1
       val x = b(length)
-      val y = Cube(60, 3,40).move(-30, 0,-40).rotateY(-Pi/6).moveZ(offset)
-      val z = Cube(60, 3,40).moveX(-30).rotateY(Pi/6).moveZ(length-offset)
-      x - y - z
+      val y = Cube(60, 3,40).move(-30, 0,-40).rotateY(-Pi/6).moveZ(offset-1) //XXX 1 ?
+      val z = Cube(60, 3,40).moveX(-30).rotateY(Pi/6).moveZ(length-offset+1) //XXX 1 ?
+      val s = Cylinder(boltSize+Common.tolerance, 10).rotateX(-Pi/2).moveX(screwOffsetY)
+      x - y - z - s.moveZ(30+offset-3) - s.moveZ(length-30-offset+3) //TODOwhy 3 ?
     }
     val h = {
       val x = l(hBeamLength) // horizontal L beam
@@ -73,13 +75,12 @@ object Frame2 {
       putAtCorners(v, l1),
       putAtCorners(h.rotateX(Pi/2).moveX(-3).rotateZ(7*Pi/6), l1),
       putAtCorners(h.rotateY(-Pi/2).rotateX(-Pi/2).move(hBeamLength,-3,0).rotateZ(4*Pi/6).moveZ(z1), l1),
-      putAtCorners(s.rotateX(Pi/2).rotateZ(7*Pi/6).moveZ(z2), l2)
+      putAtCorners(s.moveX(-3).rotateX(Pi/2).rotateZ(7*Pi/6).moveZ(z2), l2)
     )
   }
-
+    
   // part to attach the T and L profiles
   def connector1 = {
-    val thickness = 5
     val offsetY = 10 * sin(Pi/6)
     val c = Cube(100, 18,100).move(0, 2, 2) // L are 2mm
     val c2 = Cube(100, 40,120)
@@ -114,6 +115,33 @@ object Frame2 {
     connector1.mirror(1,0,0)
   }
 
+  // part to attach the beams at the top to the L/T beams
+  def connector3 = {
+    val bottom = {
+      val screwOffsetX = 28
+      val x = Cube(50, 20, thickness) - Cylinder(boltSize+Common.tolerance, thickness).move(screwOffsetX, screwOffsetY, 0)
+      val y = Cube(50, 20, thickness).moveX(-50) - Cylinder(boltSize+Common.tolerance, thickness).move(-screwOffsetX, screwOffsetY, 0)
+      Union(
+        x.moveY(-10).rotateZ( Pi/6),
+        y.moveY(-10).rotateZ(-Pi/6),
+        Cylinder(10, thickness)
+      )
+    }
+    val middle = {
+      val t = 12.0
+      Hull(
+        RoundedCubeH(t, 24, thickness, t/2 - 0.1),
+        RoundedCubeH(t, 24, thickness, t/2 - 0.1).move(0, cos(topAngle) * topLength, sin(topAngle) * topLength - thickness)
+      ).move(-t/2, -10, 0)
+    }
+    val top = {
+      val delta = 5*tan(Pi/6)
+      val x = bottom + CenteredCube.x(10, 20 + delta, thickness + 4).moveY(-11.5+delta)
+      x.move(0, cos(topAngle) * topLength, sin(topAngle) * topLength - thickness)
+    }
+    (bottom + middle + top).moveY(10)
+  }
+
   // foot that contains/cover the nuts and bolts
   def foot = {
     val base = RoundedCubeH(80, 20, 5, 5)
@@ -127,7 +155,8 @@ object Frame2 {
       putAtCorners(connector1.move( 2,-3,0).rotateZ(2*Pi/3), hBeamLength),
       putAtCorners(connector2.move(-2,-3,0).rotateZ(  Pi/3), hBeamLength),
       putAtCorners(connector1.rotateY(Pi).move(-2,-3,vBeamLength).rotateZ(  Pi/3), hBeamLength),
-      putAtCorners(connector2.rotateY(Pi).move( 2,-3,vBeamLength).rotateZ(2*Pi/3), hBeamLength)
+      putAtCorners(connector2.rotateY(Pi).move( 2,-3,vBeamLength).rotateZ(2*Pi/3), hBeamLength),
+      putAtCorners(connector3.move( 0, -2, vBeamLength).rotateZ(Pi/2), hBeamLength)
     )
   }
 
