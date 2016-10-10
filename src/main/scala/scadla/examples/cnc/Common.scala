@@ -11,7 +11,7 @@ object Common {
   val tolerance      = 0.15
   val looseTolerance = 0.22
 
-  val supportGap = 0.3
+  val supportGap = 0.2
   
   val nut = new NutPlaceHolder(looseTolerance)
   val bearing = {

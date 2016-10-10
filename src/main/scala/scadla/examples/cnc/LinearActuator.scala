@@ -15,7 +15,7 @@ import scadla.examples.reach3D.SpoolHolder
 
 object LinearActuator {
 
-  val rodThread = Thread.UTS._1_4
+  val rodThread = Thread.ISO.M6
   val rodLead = 1.0
 
   val motorYOffset = 21.5
@@ -126,30 +126,34 @@ object LinearActuator {
     ).rotateX(Pi)
   }
   
-  lazy val motorGear = {
+  def motorGear(support: Boolean) = {
     val g = Gear.herringbone(motorGearRadius, nbrTeethMotor, gearHeight, mHelix, tightTolerance)
-    g - Bigger(motor, looseTolerance).moveZ(-5) //clear the flange
+    val done = g - Bigger(motor, looseTolerance).moveZ(-5) //clear the flange
+    if (support) done.moveZ(0.2) + Cylinder(motorGearRadius + 2, 0.2)
+    else done
   }
 
-  lazy val rodGear = {
+  def rodGear(support: Boolean) = {
     val n = nut(rodThread + looseTolerance)
     val nh = 1.6 * rodThread //nut height
     val g = Gear.herringbone(rodGearRadius, nbrTeethRod, gearHeight, rHelix, tightTolerance)
-    Difference(
-      g,
-      Cylinder(rodThread + 1, gearHeight),
-      grooveBase,
-      grooveSupport.mirror(0,0,1).moveZ(gearHeight),
-      n.moveZ( gearHeight / 2 + 1),
-      n.moveZ( gearHeight / 2 - 1 - nh)
-    ).rotateX(Pi)
+    val done = Difference(
+        g,
+        Cylinder(rodThread + 1, gearHeight),
+        grooveBase,
+        grooveSupport.mirror(0,0,1).moveZ(gearHeight),
+        n.moveZ( gearHeight / 2 + 1),
+        n.moveZ( gearHeight / 2 - 1 - nh)
+      )
+    if (support) (done + Cylinder(nh+2, 0.2).moveZ(gearHeight / 2 - 1)).moveZ(0.2) + Cylinder(rodGearRadius + 2, 0.2)
+    else done
   }
   
-  lazy val parts =  Map(
-    "base"          -> basePlate(true, true),
-    "motor"         -> motorGear,
-    "support"       -> supportPlate,
-    "gear"          -> rodGear
+  def parts(support: Boolean) =  Map(
+    "base"          -> (() => basePlate(true, support)),
+    "motor"         -> (() => motorGear(support)),
+    "support"       -> (() => supportPlate),
+    "gear"          -> (() => rodGear(support))
   )
 
 }

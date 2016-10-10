@@ -4,379 +4,215 @@ import scadla._
 import scadla.InlineOps._
 import scadla.utils._
 import scala.math._
-import scadla.examples.extrusion._2020
+import scadla.examples.extrusion._
 
-//TODO something is wrong with the topAngle and the topLength
-
-class Frame(val mainBeamLength: Double = 250,
-            val clearance: Double = 18, //for 20x20mm extrusions
-            val topAngle: Double = Pi/4,
-            val topLength: Double = 120,
-            val connectorThickness: Double = 3,
-            val connectorKnobs: Double = 5,
-            val connectorBaseRatio: Double = 0.75,
-            val connectorTolerance: Double = Common.tightTolerance) {
-
-  val ew = _2020.width
-  val ew2 = ew / 2
-
-  def beam(length: Double) = _2020(length).moveZ(clearance)
-
-  protected def totalLength(beamLength: Double, clearance: Double) =
-    beamLength + 2 * clearance
-
-  protected def putAtCorners(s: Solid, radius: Double) = {
-    val s2 = for (i <- 0 until 6) yield s.moveX(radius).rotateZ(i * Pi/3) //linter:ignore ZeroDivideBy
-    Union(s2:_*)
-  }
-
-  protected def beamHexaH(beamLength: Double, clearance: Double) = {
-    val b = beam(beamLength).rotateX(-Pi/2) //horizontal toward Y axis
-    val beamAtCorner = b.rotateZ(Pi/6)
-    putAtCorners(beamAtCorner, totalLength(beamLength, clearance))
-  }
-
-  protected def beamHexaV(beamLength: Double, clearance: Double) = {
-    putAtCorners(beam(beamLength), totalLength(beamLength, clearance))
-  }
-  
-  protected def beamHexaC(beamLength: Double) = {
-    val b = beam(beamLength).rotateY(-Pi/2) //horizontal toward X axis
-    putAtCorners(b, 0)
-  }
-
-  protected def beamHexaTop(tiltAngle: Double,
-                            beamLength: Double,
-                            clearance: Double,
-                            mainBeamLength: Double) = {
-    val b = beam(beamLength).rotateY(-tiltAngle) //tilting toward center
-    putAtCorners(b, totalLength(mainBeamLength, clearance))
-  }
-
-  private def cl = clearance
-  def tl = totalLength( mainBeamLength, clearance)
-  def topHeight = tl + cos(topAngle) * topLength
-  def topVBeamLength = topLength - 2 * cl
-  def topHBeamLength = tl - topLength * sin(topAngle) - 2 * cl
-
-  def skeleton = {
-    Union(
-      beamHexaH(mainBeamLength, cl),
-      beamHexaH(mainBeamLength, cl).moveZ(tl),
-      beamHexaV(mainBeamLength, cl),
-      beamHexaC(mainBeamLength),
-      beamHexaTop(topAngle, topVBeamLength, cl, mainBeamLength).moveZ(tl),
-      beamHexaH(topHBeamLength, cl).moveZ(topHeight),
-      beamHexaC(topHBeamLength).moveZ(topHeight)
-    )
-  }
-  
-  //TODO the diagonal things (rigidity) → some form of static rope
-
-  private def ct = connectorThickness
-  protected def c0 = _2020.connector(connectorThickness, connectorKnobs, connectorTolerance)
-  protected def c0Base = CenteredCube.xy(ew, ew, connectorThickness).moveZ(-connectorThickness)
-  protected def c0Hole = Cylinder(Thread.ISO.M5, connectorThickness+2).moveZ(-connectorThickness-1)
-
-  protected def connectorCorner = {
-    val α = atan2(ew2, cl) - 1e-6
-    val β = Pi/3 - 2 * α
-    val inner = (cl - ct) / cos(α)
-    val outer = cl / cos(α)
-    val p = PieSlice(outer, inner, β, ew)
-    p.rotateZ(α).moveZ(-ew2)
-  }
-
-  protected def connectorCornerHalf = {
-    val α = atan2(ew2, cl) - 1e-6
-    val β = Pi/3 - 2 * α
-    val inner = (cl - ct) / cos(α)
-    val outer = cl / cos(α)
-    val p = PieSlice(outer, inner, β/2, ew)
-    (p.rotateZ(α).moveZ(-ew2),
-     p.rotateZ(α + β/2 - 5e-7).moveZ(-ew2))
-  }
-  
-  //the corners' corners
-  protected def connectorCornerTriple = {
-    val (ch1, ch2) = connectorCornerHalf
-    val c0 = ch1.moveZ(ew2)
-    val c1 = ch2.moveZ(ew2)
-    val c2 = connectorCorner.moveZ(-ew2).rotateX(Pi/2)
-    val c3 = connectorCorner.moveZ(ew2).rotate(Pi/2, 0, Pi/3)
-    Union(c0 * c2, c1 * c3)
-  }
-  protected def connectorCornerDouble = {
-    val c0 = connectorCorner.moveZ(ew2)
-    val c1 = connectorCorner.moveZ(-ew2).rotateX(Pi/2)
-    val c2 = connectorCorner.moveY(ew2 * (sqrt(2) - 1))rotateX(Pi/4)
-    Intersection(c0, c1, c2)
-  }
-
-
-  def connectorPositions(s: Solid, idx: Int) = {
-    val ta = topAngle
-    val ba = topAngle + Pi
-    idx match {
-      case 0 => s.moveZ(cl).rotate(   0,    0,     0)  // 0 top
-      case 1 => s.moveZ(cl).rotate(   0, Pi/2,     0)  // 1 middle center
-      case 2 => s.moveZ(cl).rotate(   0, Pi/2,  Pi/3)  // 2 middle left
-      case 3 => s.moveZ(cl).rotate(   0, Pi/2, -Pi/3)  // 3 middle right
-      case 4 => s.moveZ(cl).rotate(   0,   Pi,     0)  // 4 bottom
-      case 5 => s.moveZ(cl).rotate(   0,   ta,     0)  // 5 top inclined
-      case 6 => s.moveZ(cl).rotate(   0,   ba,     0)  // 6 bottom inclined
-      case other => sys.error("out of bounds: " + other)
-    }
-  }
-  
-  def connectorAt(idx: Int) = connectorPositions(c0, idx)
-  def connectorBaseAt(idx: Int) = connectorPositions(c0Base, idx)
-  def connectorHoleAt(idx: Int) = connectorPositions(c0Hole, idx)
-
-  def cornerAt(idx: Int) = {
-    val c = connectorCorner
-    idx match {
-      case  0 => c.rotate(    0,     0,     0)  //  0  middle left
-      case  1 => c.rotate(   Pi,     0,     0)  //  1  middle right
-      case  2 => c.rotate( Pi/2,     0,     0)  //  2  middle up center
-      case  3 => c.rotate( Pi/2,     0,  Pi/3)  //  3  middle up left
-      case  4 => c.rotate( Pi/2,     0, -Pi/3)  //  4  middle up right
-      case  5 => c.rotate(-Pi/2,     0,     0)  //  5  middle down center
-      case  6 => c.rotate(-Pi/2,     0,  Pi/3)  //  6  middle down left
-      case  7 => c.rotate(-Pi/2,     0, -Pi/3)  //  7  middle down right
-      case  8 => c.rotate(    0, -Pi/2,    Pi)  //  8  top right
-      case  9 => c.rotate( Pi/2, -Pi/2,    Pi)  //  9  top center
-      case 10 => c.rotate(   Pi, -Pi/2,    Pi)  // 10  top left
-      case 11 => c.rotate(    0,  Pi/2,    Pi)  // 11  bottom right
-      case 12 => c.rotate( Pi/2,  Pi/2,    Pi)  // 12  bottom center
-      case 13 => c.rotate(   Pi,  Pi/2,    Pi)  // 13  bottom left
-    }
-  }
-  
-  def cornerDoubleAt(idx: Int) = {
-    val c = connectorCornerDouble
-    idx match {
-      case 0 => c.rotate(   0,-Pi/2,  -Pi)  //  0  up ???
-      case 1 => c.rotate(   0,-Pi/2,-Pi/2)  //  1  up ???
-      case 2 => c.rotate(   0, Pi/2,  -Pi)  //  2  down ???
-      case 3 => c.rotate(   0, Pi/2,-Pi/2)  //  3  down ???
-      case other => sys.error("out of bounds: " + other)
-    }
-  }
-
-  def cornerTripleAt(idx: Int) = {
-    val c = connectorCornerTriple
-    idx match {
-      case 0 => c.rotate(   0,   0, -Pi/3)  //  0  middle up left
-      case 1 => c.rotate(   0,   0,     0)  //  1  middle up right
-      case 2 => c.rotate(  Pi,   0,     0)  //  2  middle down left
-      case 3 => c.rotate(  Pi,   0,  Pi/3)  //  3  middle down right
-      case other => sys.error("out of bounds: " + other)
-    }
-  }
-
-  def innerBase = c0Base.scale(connectorBaseRatio,connectorBaseRatio,1).moveZ(-ct)
-
-  def connectorBottom = {
-
-    val base = {
-      val b0 = Cube(ct, ew, ct).move(ew2, -ew2, -ct)
-      val b1 = b0.moveZ(cl).rotateY(Pi/2)
-      Hull(
-        b0.move(-ew, 0, -ew2),
-        b1,
-        b1.rotateZ( Pi/3),
-        b1.rotateZ(-Pi/3)
-      ).moveZ(ct)
-    }
-
-    val outer = Hull(
-      connectorBaseAt(0),
-      connectorBaseAt(1),
-      connectorBaseAt(2),
-      connectorBaseAt(3),
-      cornerAt(0),
-      cornerAt(1),
-      cornerAt(2),
-      cornerAt(3),
-      cornerAt(4),
-      cornerAt(8),
-      cornerAt(9),
-      cornerAt(10),
-      cornerTripleAt(0),
-      cornerTripleAt(1),
-      cornerDoubleAt(0),
-      cornerDoubleAt(1)
-    )
-
-    val inner = {
-      val i0 = Hull(
-        connectorPositions(innerBase, 0),
-        connectorPositions(innerBase, 1),
-        connectorPositions(innerBase, 2),
-        connectorPositions(innerBase, 3)
-      )
-      Hull(
-        i0,
-        i0.move(-3*ct, 0, 0),
-        i0.move(-2*ct, ct, 0),
-        i0.move(-2*ct,-ct, 0)
-      )
-    }
-
-
-    val pSize = 5.0
-    val p0 = {
-      val c = Cube(pSize, pSize, cl+ew2)
-      Intersection(c, c.rotateZ(Pi/4)).move(-pSize/2, -pSize/2, -ew2)
-    }
-    val pillars = Union(
-      p0.move(-ew2+pSize/2, -ew2+pSize/2, 0),
-      p0.move(-ew2+pSize/2,  ew2-pSize/2, 0)
-    )
-
-    Union(
-      base,
-      pillars,
-      connectorAt(0),
-      connectorAt(1),
-      connectorAt(2),
-      connectorAt(3),
-      Difference(
-        outer,
-        inner,
-        connectorHoleAt(0),
-        connectorHoleAt(1),
-        connectorHoleAt(2),
-        connectorHoleAt(3)
-      )
-      //TODO to attach cables
-      //TODO hole at bottom for screwdriver
-    )
-  }
-  
-  def connectorMiddle = {
-    val outer = Hull(
-      connectorBaseAt(2),
-      connectorBaseAt(3),
-      connectorBaseAt(4),
-      connectorBaseAt(5),
-      cornerAt(5),
-      cornerAt(6),
-      cornerAt(7),
-      cornerTripleAt(2),
-      cornerTripleAt(3),
-      cornerAt(11),
-      cornerAt(12),
-      cornerAt(13),
-      cornerDoubleAt(2),
-      cornerDoubleAt(3)
-    )
-    val inner = {
-      val i0 = Hull(
-        connectorPositions(innerBase, 2),
-        connectorPositions(innerBase, 3),
-        connectorPositions(innerBase, 4),
-        connectorPositions(innerBase, 5)
-      )
-      Hull(
-        i0,
-        i0.move(-3*ct, 0, 0),
-        i0.move(-2*ct, ct, 0),
-        i0.move(-2*ct,-ct, 0),
-        i0.move(-ct*cos(topAngle), 0, ct*sin(topAngle))
-      )
-    }
-    Union(
-      connectorAt(2),
-      connectorAt(3),
-      connectorAt(4),
-      connectorAt(5),
-      Difference(
-        outer,
-        inner,
-        connectorHoleAt(2),
-        connectorHoleAt(3),
-        connectorHoleAt(4),
-        connectorHoleAt(5)
-      )
-    )
-  }
-
-  def connectorTop = {
-    //the part marked with X should be replaced by a cable hook if we decide to replace the top beams with a cable
-    val inner = {
-      val i0 = Hull(
-        connectorPositions(innerBase, 1), // X
-        connectorPositions(innerBase, 2),
-        connectorPositions(innerBase, 3),
-        connectorPositions(innerBase, 6)
-      )
-      Hull(
-        i0,
-        i0.move(0, 0, 3*ct),
-        i0.move(-ct*cos(topAngle), 0, ct*sin(topAngle))
-      )
-    }
-
-    Union(
-      connectorAt(1), // X
-      connectorAt(2),
-      connectorAt(3),
-      connectorAt(6),
-      Difference(
-        Hull(
-          connectorBaseAt(1), // X
-          connectorBaseAt(2),
-          connectorBaseAt(3),
-          connectorBaseAt(6),
-          cornerAt(0),
-          cornerAt(1),
-          cornerAt(5),
-          cornerAt(6),
-          cornerAt(7),
-          cornerTripleAt(2),
-          cornerTripleAt(3)
-        ),
-        connectorHoleAt( 1), // X
-        connectorHoleAt( 2),
-        connectorHoleAt( 3),
-        connectorHoleAt( 6),
-        inner
-      )
-    )
-  }
-
-  def connectorCenter = {
-    val c1 = c0.rotateY( Pi/2)
-    putAtCorners(c1, cl) + putAtCorners(connectorCorner, 0)
-  }
-
-  def connections = {
-    Union(
-      connectorCenter,
-      connectorCenter.moveZ(topHeight),
-      putAtCorners(connectorBottom,-tl),
-      putAtCorners(connectorMiddle,-tl).moveZ(tl),
-      putAtCorners(connectorTop,-topHBeamLength-2*cl).moveZ(topHeight)
-    )
-  }
-
-  def full = skeleton + connections
-
-
-}
 
 object Frame {
 
-  def apply(mainBeamLength: Double,
-            clearance: Double,
-            topAngle: Double,
-            topLength: Double) = {
-    val f = new Frame(mainBeamLength, clearance, topAngle, topLength)
-    //f.connections
-    //f.skeleton
-      f.full
+  val boltSize = Thread.ISO.M5
+
+  val vBeamLength: Double = 400
+  val hBeamLength: Double = 300
+  val topAngle: Double = Pi/4
+  val topLength: Double = 120 //TODO does it need to be that long
+  val thickness = 5 // for the connector
+
+  def t = T(20, 20, 3)(_)
+  def l = L(20, 20, 2)(_)
+  def b(length: Double) = Cube(20, 4, length)
+
+  protected def putAtCorners(s: Solid, radius: Double) = {
+    val s2 = for (i <- 0 until 2) yield s.moveX(radius).rotateZ(i * Pi/3) //linter:ignore ZeroDivideBy
+    Union(s2:_*)
   }
+
+  val screwOffsetY1 = 12
+  val screwOffsetY2 = 14
+  protected def screws = {
+    val s = Cylinder(boltSize + Common.tolerance, 30)
+    Union(
+      s.move(30,screwOffsetY1,-10),
+      s.move(90,screwOffsetY1,-10),
+      s.rotateY(Pi/2).move(-10,screwOffsetY2,30).rotateZ(-Pi/6),
+      s.rotateY(Pi/2).move(-10,screwOffsetY2,90).rotateZ(-Pi/6)
+    )
+  }
+
+  // vetical beam (T profile)
+  def vBeam = {
+    val x = t(vBeamLength).moveX(-10).rotateZ(Pi/2)
+    Difference(
+      x,
+      screws.moveY(-2.2).rotateZ(4*Pi/6), //XXX 2.2 ?
+      screws.moveY(-2.2).rotateX(Pi).rotateZ(-4*Pi/6).moveZ(vBeamLength)
+    )
+  }
+
+  // top horizontal beam (flat)
+  //TODO could we modify the top conector and the offset to make the cut 90°
+  def tBeam = {
+    val offset = 5
+    val l1 = hBeamLength
+    val l2 = hBeamLength - cos(topAngle) * topLength
+    val length = hBeamLength * l2 / l1
+    val x = b(length)
+    val y = Cube(60, 4,40).move(-30, 0,-40).rotateY(-Pi/6).moveZ(offset-1) //XXX 1 ?
+    val z = Cube(60, 4,40).moveX(-30).rotateY(Pi/6).moveZ(length-offset+1) //XXX 1 ?
+    val s = Cylinder(boltSize+Common.tolerance, 10).rotateX(-Pi/2).moveX(screwOffsetY1)
+    x - y - z - s.moveZ(27+offset-1) - s.moveZ(length-27-offset+1) //XXX 1 ? (27 is same as connector3)
+  }
+
+  // horizontal beam (L profile)
+  def hBeam = {
+    val x = l(hBeamLength)
+    val y = Cube(20,20,20+8.5).move(-20, 0,-20) + Cube(20, 20, 20).move(0,0,-20)
+    val y2 = y.rotateY(-Pi/6).moveX(2 + 8.5 * sin(Pi/6)) // 8.5 is T bottom part
+    Difference(
+      x,
+      y2,
+      y2.mirror(0,0,1).moveZ(hBeamLength),
+      screws.rotateX(-Pi/2).rotateY(-Pi/2).moveZ(1), //XXX 1 ?
+      screws.rotateX( Pi/2).rotateY( Pi/2).moveZ(hBeamLength-1) //XXX 1 ?
+    )
+  }
+
+  val effectiveFrameRadius = hBeamLength + 3 + 1.5 * tan(Pi/6) + 1.5 / cos(Pi/6) // additional factor because the hBeams are offset
+
+  def skeleton = {
+    val z1 = vBeamLength
+    val z2 = z1 + topLength * sin(topAngle)
+    val l1 = effectiveFrameRadius
+    val l2 = l1 - cos(topAngle) * topLength
+    val hBeamZeroAtCorner = hBeam.moveX(- 2 - 8.5 * sin(Pi/6))
+    Union(
+      putAtCorners(vBeam, l1),
+      putAtCorners(hBeamZeroAtCorner.rotateX(Pi/2).rotateZ(7*Pi/6).move(-3, 1.5, 0), l1),
+      putAtCorners(hBeamZeroAtCorner.moveZ(-hBeamLength).rotateY(-Pi/2).rotateX(-Pi/2).rotateZ(4*Pi/6).move(-3, 1.5, z1), l1),
+      putAtCorners(tBeam.moveX(-3).rotateX(Pi/2).rotateZ(7*Pi/6).moveZ(z2), l2)
+    )
+  }
+    
+  // part to attach the T and L profiles
+  // XXX this has a thickness of 3 instead of 5 !!!
+  // XXX does not touch the back of the L profile (only the bottom)
+  def connector1 = {
+    val offsetY = 10 * sin(Pi/6)
+    val profileRadiusT = 2
+    val profileRadiusL = 4
+    val c = {
+      val x = Cube(100, 18,100)
+      val y = PieSlice(profileRadiusL + 10, profileRadiusL, Pi/2, 100).rotateZ(-Pi/2).rotateY(Pi/2).move(0, profileRadiusL, profileRadiusL)
+      (x - y).move(0, 2*cos(Pi/3), 2) // L are 2mm, XXX close but not quite right
+    }
+    val c2 = Cube(100,40,120)
+    val corner = {
+      val b1 = 3.0 // T are 3mm
+      val b2 = 1.5 // T has 1mm more than L, XXX 1.5 ???
+      Union(
+        Bigger(c2,b1).moveX(-100).rotateZ(-Pi/6),
+        Bigger(c2,b2).moveX(-100).rotateZ(5*Pi/6),
+        PieSlice(profileRadiusT + 10, profileRadiusT, Pi/2, 120).move(-b1/2-profileRadiusT, -b2/2-profileRadiusT, 0).rotateZ(5*Pi/6)
+      ).moveY(offsetY)
+    }
+    val base = Difference(
+        c,
+        corner,
+        c2.move(10+thickness, 0, thickness),
+        c2.move(thickness, 0, thickness).rotateZ(-Pi/6).moveY(offsetY),
+        c2.move(-50,0,thickness).rotateZ(-Pi/6).moveY(20+offsetY)
+      )
+    val diagonal = {
+      val x = CenteredCube.xz(125, thickness, 125).rotateY(Pi/4) - CenteredCube.xz(100, thickness, 100).rotateY(Pi/4) 
+      val y1 = PieSlice(50, 50 - thickness, Pi/4, thickness).rotateX(Pi/2).rotateY(3*Pi/4).move(101,thickness,49)
+      val y2 = PieSlice(50, 50 - thickness, Pi/4, thickness).rotateX(Pi/2).rotateY(4*Pi/4).move(48, thickness, 104)
+      val z1 = CenteredCube(30, 30, 30).rotate(Pi/4,Pi/4,0).move(68, thickness-1,-10)
+      val z2 = CenteredCube(30, 30, 30).rotate(Pi/4,Pi/4,0).move(-7, thickness-1, 65)
+      (x + y1 + y2 + z1 + z2) * c - corner
+    }
+    val angle = {
+      val x = sqrt(2) * 25
+      CenteredCube(x,x,x).rotate(Pi/4,Pi/4,0) * c - corner
+    }
+    base + diagonal + angle - screws
+  }
+  
+  // part to attach the T and L profiles (mirror of connector1)
+  def connector2 = {
+    connector1.mirror(1,0,0)
+  }
+
+  // part to attach the beams at the top to the L/T beams
+  def connector3 = {
+    //TODO make the bottom part take the 2 screws
+    val bottom = {
+      val screwOffsetX = 27
+      val x = Cube(50, 20, thickness) - Cylinder(boltSize+Common.tolerance, thickness).move(screwOffsetX, screwOffsetY1, 0)
+      val y = Cube(50, 20, thickness).moveX(-50) - Cylinder(boltSize+Common.tolerance, thickness).move(-screwOffsetX, screwOffsetY1, 0)
+      Union(
+        x.moveY(-10).rotateZ( Pi/6),
+        y.moveY(-10).rotateZ(-Pi/6),
+        Cylinder(10, thickness)
+      )
+    }
+    val middle = {
+      val t = 12.0
+      Hull(
+        RoundedCubeH(t, 24, thickness, t/2 - 0.1),
+        RoundedCubeH(t, 24, thickness, t/2 - 0.1).move(0, cos(topAngle) * topLength, sin(topAngle) * topLength - thickness)
+      ).move(-t/2, -10, 0)
+    }
+    val top = {
+      val delta = 5*tan(Pi/6)
+      val x = bottom + CenteredCube.x(10, 20 + delta, thickness + 4).moveY(-11.5+delta)
+      x.move(0, cos(topAngle) * topLength, sin(topAngle) * topLength - thickness)
+    }
+    (bottom + middle + top).moveY(10)
+  }
+
+  // foot that contains/cover the nuts and bolts
+  def foot = {
+    val base = RoundedCubeH(80, 20, 5, 5)
+    val c = Cylinder(2*boltSize, 3)
+    base.moveX(20) - screws - c.move(30, screwOffsetY1, 0) - c.move(90, screwOffsetY1, 0)
+  }
+
+  //TODO make a part that goes between the feet and the frame to keep the 2π/3 angle
+
+  def assembled = {
+    val x = 1.1
+    val y = -3.0
+    val l = effectiveFrameRadius
+    Union(
+      skeleton,
+      putAtCorners(connector1.move( x,y,0).rotateZ(2*Pi/3), l),
+      putAtCorners(connector2.move(-x,y,0).rotateZ(  Pi/3), l),
+      putAtCorners(connector1.rotateY(Pi).move(-x,y,vBeamLength).rotateZ(  Pi/3), l),
+      putAtCorners(connector2.rotateY(Pi).move( x,y,vBeamLength).rotateZ(2*Pi/3), l),
+      putAtCorners(connector3.move( 0, -2, vBeamLength).rotateZ(Pi/2), l)
+      //TODO add feets
+    )
+  }
+
+  def hBeamJig1 = {
+    Difference(
+      Cube(30, 30, 20).move(-5, -5, 0),
+      Bigger(l(20), 0.6),
+      PieSlice(5, 2.7, Pi/2, 20).rotateZ(Pi).move(5,5,0),
+      hBeam.scaleY(100).move(0, -5, 5),
+      Cube(5,30,15).move(-5, -5, 11.2),
+      Cube(5,30,15).move(20, -5, 12.92)
+    )
+  }
+
+  def hBeamJig2 = {
+    Difference(
+      Cube(30, 30, 20).move(-5, -5, 0),
+      hBeamJig1,
+      Bigger(l(40), 0.6),
+      PieSlice(5, 2.7, Pi/2, 40).rotateZ(Pi).move(5,5,0)
+    ).rotateY(Pi)
+  }
+
+  //TODO from the skeleton, get template to cut the stock and mark/drill the holes
 
 }

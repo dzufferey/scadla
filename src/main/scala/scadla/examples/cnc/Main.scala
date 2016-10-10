@@ -33,11 +33,13 @@ object Main{
   //r.toSTL(af.connector(true), "connector1.stl")
   //r.toSTL(af.connector(false), "connector2.stl")
 
-  //for ( (n,s) <- LinearActuator.parts.par) {
-  //  r.toSTL(s, "la-" + n + ".stl")
+  //for ( (n,s) <- LinearActuator.parts(true).par) {
+  //  r.toSTL(s(), "la-" + n + ".stl")
   //}
 
-    r.view(Frame2.assembled)
+    r.view(Frame.assembled)
+  //r.toSTL(Frame.hBeamJig1, "jig1.stl")
+  //r.toSTL(Frame.hBeamJig2, "jig2.stl")
 
     println("work in progress")
   }
