@@ -47,7 +47,7 @@ object LinearActuator {
   
   val grooveDepthBase = bbRadius / cos(Pi/4) - bearingGapBase / 2
   val grooveDepthSupport = bbRadius / cos(Pi/4) - bearingGapSupport / 2
-  val grooveRadiusBase = SpoolHolder.adjustGrooveRadius(nut.maxOuterRadius(rodThread + looseTolerance) + grooveDepthBase + 1) // +1 for the adjust radius
+  val grooveRadiusBase = SpoolHolder.adjustGrooveRadius(nut.maxOuterRadius(rodThread) + grooveDepthBase + 1) // +1 for the adjust radius
   val grooveRadiusSupport = SpoolHolder.adjustGrooveRadius(rodGearRadius - Gear.addenum(rodGearRadius, nbrTeethRod) - grooveDepthSupport)
 
   val grooveBase = SpoolHolder.flatGroove(grooveRadiusBase, grooveDepthBase)
@@ -90,8 +90,8 @@ object LinearActuator {
       Union(
         //motor,
         Cylinder(8, 1),
-        Cylinder(8, 11+tolerance, plateThickness - 4).moveZ(1),
-        Cylinder(11+tolerance, 3).moveZ(plateThickness - 3),
+        Cylinder(8, 11.5, plateThickness - 4).moveZ(1),
+        Cylinder(11.5, 3).moveZ(plateThickness - 3),
         Nema14.putOnScrew(motorScrew)
       )
     val rodHole = Cylinder(rodThread + 1, plateThickness)
@@ -128,13 +128,13 @@ object LinearActuator {
   
   def motorGear(support: Boolean) = {
     val g = Gear.herringbone(motorGearRadius, nbrTeethMotor, gearHeight, mHelix, tightTolerance)
-    val done = g - Bigger(motor, looseTolerance).moveZ(-5) //clear the flange
+    val done = g - Bigger(motor, 2.2*tolerance).moveZ(-5) //clear the flange
     if (support) done.moveZ(0.2) + Cylinder(motorGearRadius + 2, 0.2)
     else done
   }
 
   def rodGear(support: Boolean) = {
-    val n = nut(rodThread + looseTolerance)
+    val n = nut(rodThread)
     val nh = 1.6 * rodThread //nut height
     val g = Gear.herringbone(rodGearRadius, nbrTeethRod, gearHeight, rHelix, tightTolerance)
     val done = Difference(
