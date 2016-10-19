@@ -16,7 +16,7 @@ object Frame {
   val hBeamLength: Double = 300
   val topAngle: Double = Pi/4
   val topLength: Double = 120 //TODO does it need to be that long
-  val thickness = 5 // for the connector
+  val thickness = 3 // for the connector
 
   def t = T(20, 20, 3)(_)
   def l = L(20, 20, 2)(_)
@@ -97,45 +97,45 @@ object Frame {
   }
     
   // part to attach the T and L profiles
-  // XXX this has a thickness of 3 instead of 5 !!!
-  // XXX does not touch the back of the L profile (only the bottom)
   def connector1 = {
-    val offsetY = 10 * sin(Pi/6)
     val profileRadiusT = 2
     val profileRadiusL = 4
     val c = {
-      val x = Cube(100, 18,100)
+      val x = Cube(100,18,100) // L are 2mm
       val y = PieSlice(profileRadiusL + 10, profileRadiusL, Pi/2, 100).rotateZ(-Pi/2).rotateY(Pi/2).move(0, profileRadiusL, profileRadiusL)
-      (x - y).move(0, 2, 2) // L are 2mm
+      (x - y)
     }
     val c2 = Cube(100,40,120)
+    val offsetY = 8.5 * sin(Pi/6) // 8.5 is T bottom part
     val corner = {
-      val b1 = 3.0 // T are 3mm
-      val b2 = 1.0 // T has 1mm more than L
       Union(
-        Bigger(c2,b1).moveX(-100).rotateZ(-Pi/6),
-        Bigger(c2,b2).moveX(-100).rotateZ(5*Pi/6),
-        PieSlice(profileRadiusT + 10, profileRadiusT, Pi/2, 120).move(-b1/2-profileRadiusT, -b2/2-profileRadiusT, 0).rotateZ(5*Pi/6)
-      ).moveY(offsetY)
+        c2.moveX(-100).rotateZ(-Pi/6).moveY(offsetY),
+        c2.moveX(-100).rotateZ(5*Pi/6).moveY(offsetY),
+        PieSlice(profileRadiusT + 10, profileRadiusT, Pi/2, 120).move(-profileRadiusT, -profileRadiusT, 0).rotateZ(5*Pi/6).moveY(offsetY)
+      )
     }
     val base = Difference(
         c,
         corner,
         c2.move(10+thickness, 0, thickness),
-        c2.move(thickness, 0, thickness).rotateZ(-Pi/6).moveY(offsetY),
-        c2.move(-50,0,thickness).rotateZ(-Pi/6).moveY(20+offsetY)
+        c2.move(thickness, 0, thickness).rotateZ(-Pi/6),
+        c2.move(-50,0,thickness).rotateZ(-Pi/6).moveY(22.6)
       )
     val diagonal = {
-      val x = CenteredCube.xz(125, thickness, 125).rotateY(Pi/4) - CenteredCube.xz(100, thickness, 100).rotateY(Pi/4) 
-      val y1 = PieSlice(50, 50 - thickness, Pi/4, thickness).rotateX(Pi/2).rotateY(3*Pi/4).move(101,thickness,49)
-      val y2 = PieSlice(50, 50 - thickness, Pi/4, thickness).rotateX(Pi/2).rotateY(4*Pi/4).move(48, thickness, 104)
-      val z1 = CenteredCube(30, 30, 30).rotate(Pi/4,Pi/4,0).move(68, thickness-1,-10)
-      val z2 = CenteredCube(30, 30, 30).rotate(Pi/4,Pi/4,0).move(-7, thickness-1, 65)
+      val blank = CenteredCube.xz(125, thickness, 125).rotateY(Pi/4)  
+      val x = blank - CenteredCube.xz(100, thickness, 100).rotateY(Pi/4) 
+      val p = PieSlice(50, 50 - thickness, Pi/4, thickness).rotateX(Pi/2)
+      val y1 = p.rotateY(3*Pi/4).move(101,thickness,49)
+      val y2 = p.rotateY(4*Pi/4).move(48, thickness, 104)
+      val cy = Cylinder(5, 50)
+      val h = Hull(cy, cy.moveX(10))
+      val z1 = h.rotateZ(Pi/2).rotateX(Pi/4).move(68, 7, -15*sin(Pi/4) + thickness) * blank.scaleY(10)
+      val z2 = h.rotate(Pi/2,0,2*Pi/6).move(0, thickness/sqrt(2), 55 + thickness) * blank.scaleY(10)
       (x + y1 + y2 + z1 + z2) * c - corner
     }
     val angle = {
-      val x = sqrt(2) * 25
-      CenteredCube(x,x,x).rotate(Pi/4,Pi/4,0) * c - corner
+      val x = 30
+      CenteredCube(x,x,x).rotate(Pi/4,Pi/4,0).moveY(-5) * c - corner
     }
     base + diagonal + angle - screws
   }
@@ -215,8 +215,8 @@ object Frame {
   def anglePlate = {
     val q1 = Quaternion.mkRotation( Pi/6, Vector(0,0,1))
     val q2 = Quaternion.mkRotation(-Pi/6, Vector(0,0,1))
-    val c1 = Cylinder(10, 3)
-    val c2 = Cylinder(boltSize + tolerance, 3)
+    val c1 = Cylinder(10, thickness)
+    val c2 = Cylinder(boltSize + tolerance, thickness)
     val positions1 = Seq(
       Vector( screwOffsetX1, 10, 0).rotateBy(q1),
       Vector( screwOffsetX2, 10, 0).rotateBy(q1),
@@ -237,14 +237,19 @@ object Frame {
     val x = 1.1
     val y = -3.0
     val l = effectiveFrameRadius
+    val c1CornerAt0 = connector1.move(0, -8.5 * sin(Pi/6), 2)
+    val c2CornerAt0 = connector2.move(0, -8.5 * sin(Pi/6), 2)
     Union(
       skeleton,
-    //putAtCorners(connector1.move( x,y,0).rotateZ(2*Pi/3), l),
-    //putAtCorners(connector2.move(-x,y,0).rotateZ(  Pi/3), l),
-    //putAtCorners(connector1.rotateY(Pi).move(-x,y,vBeamLength).rotateZ(  Pi/3), l),
-    //putAtCorners(connector2.rotateY(Pi).move( x,y,vBeamLength).rotateZ(2*Pi/3), l),
-      putAtCorners(connector3.move( 0, y-2, vBeamLength).rotateZ(Pi/2), l), //XXX 2?
-      putAtCorners(anglePlate.move(0,y-2,-3).rotateZ(Pi/2), l) //XXX 2?
+      putAtCorners(c1CornerAt0.rotateZ(2*Pi/3).move(-3, 1.5, 0), l),
+      putAtCorners(c2CornerAt0.rotateZ(  Pi/3).move(-3,-1.5, 0), l),
+      putAtCorners(c1CornerAt0.rotateY(Pi).rotateZ(  Pi/3).move(-3,-1.5, vBeamLength), l),
+      putAtCorners(c2CornerAt0.rotateY(Pi).rotateZ(2*Pi/3).move(-3, 1.5, vBeamLength), l),
+      putAtCorners(connector3.rotateZ(Pi/2).move(5, 0, vBeamLength), l), //XXX 5?
+      putAtCorners(anglePlate.rotateZ(Pi/2).move(5, 0, -thickness), l), //XXX 5?
+      //XXX to see where the holes should be
+      putAtCorners(screws.move(0,-5,0).rotateZ(2*Pi/3), l), //XXX 5?
+      putAtCorners(screws.mirror(1,0,0).move(0,-5,0).rotateZ(  Pi/3), l) //XXX 5?
       //TODO add feets
     )
   }
