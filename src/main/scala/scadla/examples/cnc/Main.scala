@@ -38,6 +38,8 @@ object Main{
   //}
 
     r.view(Frame.assembled)
+  //r.toSTL(Frame.hBeam, "hBeam.stl")
+  //r.toSTL(Frame.foot(true), "foot.stl")
   //r.toSTL(Frame.hBeamJig1, "jig1.stl")
   //r.toSTL(Frame.hBeamJig2, "jig2.stl")
 

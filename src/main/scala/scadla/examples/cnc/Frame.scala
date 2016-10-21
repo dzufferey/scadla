@@ -27,17 +27,17 @@ object Frame {
     Union(s2:_*)
   }
 
-  val screwOffsetY1 = 12
-  val screwOffsetY2 = 14
-  val screwOffsetX1 = 30
-  val screwOffsetX2 = 90
+  val screwOffsetY1 =  8
+  val screwOffsetY2 = 12
+  val screwOffsetX1 = 35
+  val screwOffsetX2 = 95
   protected def screws = {
-    val s = Cylinder(boltSize + tolerance, 30)
+    val s = Cylinder(boltSize + tolerance, 30).moveZ(-10)
     Union(
-      s.move(screwOffsetX1,screwOffsetY1,-10),
-      s.move(screwOffsetX2,screwOffsetY1,-10),
-      s.rotateY(Pi/2).move(-10,screwOffsetY2,screwOffsetX1).rotateZ(-Pi/6),
-      s.rotateY(Pi/2).move(-10,screwOffsetY2,screwOffsetX2).rotateZ(-Pi/6)
+      s.move(screwOffsetX1,screwOffsetY1,0),
+      s.move(screwOffsetX2,screwOffsetY1,0),
+      s.rotateY(Pi/2).move(0,screwOffsetY2,screwOffsetX1).rotateZ(-Pi/6),
+      s.rotateY(Pi/2).move(0,screwOffsetY2,screwOffsetX2).rotateZ(-Pi/6)
     )
   }
 
@@ -46,8 +46,8 @@ object Frame {
     val x = t(vBeamLength).moveX(-10).rotateZ(Pi/2)
     Difference(
       x,
-      screws.moveY(-2.2).rotateZ(4*Pi/6), //XXX 2.2 ?
-      screws.moveY(-2.2).rotateX(Pi).rotateZ(-4*Pi/6).moveZ(vBeamLength)
+      screws.rotateZ(4*Pi/6),
+      screws.rotateX(Pi).rotateZ(-4*Pi/6).moveZ(vBeamLength)
     )
   }
 
@@ -59,24 +59,27 @@ object Frame {
     val l2 = hBeamLength - cos(topAngle) * topLength
     val length = hBeamLength * l2 / l1
     val x = b(length)
-    val y = Cube(60, 4,40).move(-30, 0,-40).rotateY(-Pi/6).moveZ(offset-1) //XXX 1 ?
-    val z = Cube(60, 4,40).moveX(-30).rotateY(Pi/6).moveZ(length-offset+1) //XXX 1 ?
+    val y = Cube(60, 4,40).move(-30, 0,-40).rotateY(-Pi/6).moveZ(offset)
+    val z = Cube(60, 4,40).moveX(-30).rotateY(Pi/6).moveZ(length-offset)
     val s = Cylinder(boltSize+tolerance, 10).rotateX(-Pi/2).moveX(screwOffsetY1)
-    x - y - z - s.moveZ(27+offset-1) - s.moveZ(length-27-offset+1) //XXX 1 ? (27 is same as connector3)
+    x - y - z - s.moveZ(27+offset) - s.moveZ(length-27-offset) //XXX 27 is same as connector3
   }
 
   // horizontal beam (L profile)
-  // TODO the bottom beams should get an additional hole in the middle to attach things
   def hBeam = {
     val x = l(hBeamLength)
     val y = Cube(20,20,20+8.5).move(-20, 0,-20) + Cube(20, 20, 20).move(0,0,-20)
-    val y2 = y.rotateY(-Pi/6).moveX(2 + 8.5 * sin(Pi/6)) // 8.5 is T bottom part
+    val offsetX = 2 + 8.5 * sin(Pi/6) // 8.5 is T bottom part
+    val y2 = y.rotateY(-Pi/6).moveX(offsetX)
+    val p = Vector(3, 1.5, 0).rotateBy(Quaternion.mkRotation(Pi/6, Vector(0,0,1)))
+    val s = screws.move(-p.y, offsetX - p.x, 0)
     Difference(
       x,
+      Cylinder(1, 4).rotateX(-Pi/2).move(15, -1, hBeamLength/2), // middle mark
       y2,
       y2.mirror(0,0,1).moveZ(hBeamLength),
-      screws.rotateX(-Pi/2).rotateY(-Pi/2).moveZ(1), //XXX 1 ?
-      screws.rotateX( Pi/2).rotateY( Pi/2).moveZ(hBeamLength-1) //XXX 1 ?
+      s.rotateX(-Pi/2).rotateY(-Pi/2),
+      s.rotateX( Pi/2).rotateY( Pi/2).moveZ(hBeamLength)
     )
   }
 
@@ -137,7 +140,9 @@ object Frame {
       val x = 30
       CenteredCube(x,x,x).rotate(Pi/4,Pi/4,0).moveY(-5) * c - corner
     }
-    base + diagonal + angle - screws
+    val q = Quaternion.mkRotation(-2*Pi/3, Vector(0,0,1))
+    val p = Vector(-3, 1.5, 0).rotateBy(q)
+    base + diagonal + angle - screws.move(-p.x, 8.5 * sin(Pi/6) - p.y, -2)
   }
   
   // part to attach the T and L profiles (mirror of connector1)
@@ -187,23 +192,25 @@ object Frame {
 
   // foot that contains/cover the nuts and bolts, plastic + silicone
   def foot(withMould: Boolean = false) = {
+    val delta = 10
+    val length = (screwOffsetX1 - screwOffsetX2).abs + 2 * delta
     val b0 = Minkowski(
       Cylinder(3, 5, 3.9),
-      Cube(70, 6, 0.1)
+      Cube(length - 10, 6, 0.1)
     ).move(5, 7, 0)
     val bt = boltSize + tolerance
     val bt2 = 2*boltSize + tolerance
     val c = Cylinder(bt2, 2).moveZ(3) + Cylinder(bt, 10)
     val screwPos = Seq(
-        Vector(screwOffsetX1-20, screwOffsetY1, 0),
-        Vector(screwOffsetX2-20, screwOffsetY1, 0)
+        Vector(delta, screwOffsetY1, 0),
+        Vector(length - delta, screwOffsetY1, 0)
       )
     val b1 = b0 -- screwPos.map(s => c.move(s))
     val t = Trapezoid(1, 1.5, 30, 1).move(-0.5, -5, 3)
     val b2 = b1 -- Range(1, 10).map(i => t.moveX(i * 10))
     if (withMould) {
       val t = 0.8
-      val r = RoundedCubeH(80, 20, 6-t/2, 5)
+      val r = RoundedCubeH(length, 20, 6-t/2, 5)
       val outer = Bigger(r, t) - r.scaleZ(2).moveZ(0.2) -- screwPos.map(s => c.move(s).moveZ(-1))
       b2 + outer ++ screwPos.map(s => Tube(bt2+0.4, bt2, 4).moveZ(2).move(s))
     } else {
@@ -217,11 +224,12 @@ object Frame {
     val q2 = Quaternion.mkRotation(-Pi/6, Vector(0,0,1))
     val c1 = Cylinder(10, thickness)
     val c2 = Cylinder(boltSize + tolerance, thickness)
+    val offsetY = 5.5
     val positions1 = Seq(
-      Vector( screwOffsetX1, 10, 0).rotateBy(q1),
-      Vector( screwOffsetX2, 10, 0).rotateBy(q1),
-      Vector(-screwOffsetX1, 10, 0).rotateBy(q2),
-      Vector(-screwOffsetX2, 10, 0).rotateBy(q2)
+      Vector( screwOffsetX1, offsetY, 0).rotateBy(q1),
+      Vector( screwOffsetX2, offsetY, 0).rotateBy(q1),
+      Vector(-screwOffsetX1, offsetY, 0).rotateBy(q2),
+      Vector(-screwOffsetX2, offsetY, 0).rotateBy(q2)
     )
     val positions2 = Seq(
       Vector( screwOffsetX1, screwOffsetY1, 0).rotateBy(q1),
@@ -245,12 +253,13 @@ object Frame {
       putAtCorners(c2CornerAt0.rotateZ(  Pi/3).move(-3,-1.5, 0), l),
       putAtCorners(c1CornerAt0.rotateY(Pi).rotateZ(  Pi/3).move(-3,-1.5, vBeamLength), l),
       putAtCorners(c2CornerAt0.rotateY(Pi).rotateZ(2*Pi/3).move(-3, 1.5, vBeamLength), l),
-      putAtCorners(connector3.rotateZ(Pi/2).move(5, 0, vBeamLength), l), //XXX 5?
-      putAtCorners(anglePlate.rotateZ(Pi/2).move(5, 0, -thickness), l), //XXX 5?
+      putAtCorners(connector3.rotateZ(Pi/2).moveZ(vBeamLength), l),
+      putAtCorners(anglePlate.rotateZ(Pi/2).moveZ(-thickness), l),
+      putAtCorners(foot(true).rotateX(Pi).move(screwOffsetX1-10,16,-thickness).rotateZ(2*Pi/3), l),
+      putAtCorners(foot(true).rotateX(Pi).move(-screwOffsetX2-10,16,-thickness).rotateZ(Pi/3), l)
       //XXX to see where the holes should be
-      putAtCorners(screws.move(0,-5,0).rotateZ(2*Pi/3), l), //XXX 5?
-      putAtCorners(screws.mirror(1,0,0).move(0,-5,0).rotateZ(  Pi/3), l) //XXX 5?
-      //TODO add feets
+      //putAtCorners(screws.rotateZ(2*Pi/3), l),
+      //putAtCorners(screws.mirror(1,0,0).rotateZ(  Pi/3), l)
     )
   }
 
@@ -275,5 +284,10 @@ object Frame {
   }
 
   //TODO from the skeleton, get template to cut the stock and mark/drill the holes
+  //in OpenSCAD:
+  //  projection(cut = false) rotate([90,0,0]) {
+  //      import("hBeam.stl");
+  //  }
+
 
 }
