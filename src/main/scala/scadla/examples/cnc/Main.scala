@@ -38,6 +38,9 @@ object Main{
   //}
 
     r.view(Frame.assembled)
+  //r.toSTL(Frame.connector1, "connector1.stl")
+  //r.toSTL(Frame.connector2, "connector2.stl")
+  //r.toSTL(Frame.connector3, "connector3.stl")
   //r.toSTL(Frame.hBeam, "hBeam.stl")
   //r.toSTL(Frame.foot(true), "foot.stl")
   //r.toSTL(Frame.hBeamJig1, "jig1.stl")
