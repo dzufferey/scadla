@@ -58,10 +58,9 @@ object LinearActuator {
   val gimbalKnob = 7.0
 
   val plateThickness = screwLength - motorSocket + screwHead
+  val pillarHeight = gearHeight + bearingGapBase + bearingGapSupport
 
   def basePlate(knob: Boolean = false, support: Boolean = false) = {
-    val plateX = width
-    val plateY = length
     val n14s2 = Nema14.size/2
     val gimbalMount = if (knob) {
         val thr = Thread.ISO.M3
@@ -83,7 +82,7 @@ object LinearActuator {
         }
       } else Empty
     val base = Union(
-        RoundedCubeH(plateX, plateY, plateThickness, 3).move(-n14s2, -(motorYOffset + n14s2), 0),
+        RoundedCubeH(width, length, plateThickness, 3).move(-n14s2, -(motorYOffset + n14s2), 0),
         gimbalMount
       )
     val motorMount =
@@ -95,7 +94,6 @@ object LinearActuator {
         Nema14.putOnScrew(motorScrew)
       )
     val rodHole = Cylinder(rodThread + 1, plateThickness)
-    val pillarHeight = gearHeight + bearingGapBase + bearingGapSupport
     val pillar = {
       val p = Cylinder(3, pillarHeight)
       val h = Cylinder(1.25, pillarHeight) // hole for self tapping screw
@@ -116,8 +114,9 @@ object LinearActuator {
     ).rotateX(Pi)
   }
 
+  val supportHeight = 4
   val supportPlate = {
-    val height = 4
+    val height = supportHeight
     Difference(
       RoundedCubeH(width, width, height, 3).move(-width/2,-width/2,0),
       NemaStepper.putOnScrew(width - 6, Cylinder(1.25, height)),
@@ -147,6 +146,33 @@ object LinearActuator {
       )
     if (support) (done + Cylinder(nh+2, 0.2).moveZ(gearHeight / 2 - 1)).moveZ(0.2) + Cylinder(rodGearRadius + 2, 0.2)
     else done
+  }
+
+  def gimbal = {
+    val extraLength = 3.0 // space for the wiring
+    // side of the motor
+    val ySide1 = Nema14.size / 2.0 + motorYOffset
+    val zSide1 = plateThickness / 2.0 + 30 //nema height
+    val lengthSide1 = hypot(ySide1, zSide1) + extraLength
+    // side of the gear
+    val ySide2 = Nema14.size / 2.0
+    val zSide2 = plateThickness / 2.0 + pillarHeight + supportHeight + 2 //screw head
+    val lengthSide2 = hypot(ySide2, zSide2)
+    val effectiveLength = lengthSide1 + lengthSide2
+    //Console.println("lengthSide1: " + lengthSide1)
+    //Console.println("lengthSide2: " + lengthSide2)
+    val offset = (lengthSide1 - lengthSide2) / 2.0
+    Gimbal.version2inner(
+      effectiveLength,  //length
+      gimbalWidth - 2,  //width
+      30,               //height
+      offset,           //lengthOffset
+      0,                //widthOffset
+      8,                //maxThickness
+      5,                //minThickness
+      1,                //retainerThickness
+      2                 //knobLength
+    )
   }
   
   def parts(support: Boolean) =  Map(

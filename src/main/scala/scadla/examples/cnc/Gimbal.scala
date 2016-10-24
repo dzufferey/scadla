@@ -9,6 +9,9 @@ import Common._
 
 //The part that holds the linear actuator connected to the frame
 //TODO split in multiple parts connected with dovetail (and screw) for easier printing
+//TODO contact between the knobs and the side (add some interference)
+//TODO holes in the knob
+//TODO print dimensions (inner, outerm etc.)
 object Gimbal {
 
   def carveBearing(shape: Solid, retainerThickness: Double,

@@ -37,6 +37,8 @@ object Main{
   //  r.toSTL(s(), "la-" + n + ".stl")
   //}
 
+  //r.view(LinearActuator.gimbal.rotateZ(-Pi/2).move(0,12,-5) + LinearActuator.basePlate(true, false))
+
     r.view(Frame.assembled)
   //r.toSTL(Frame.connector1, "connector1.stl")
   //r.toSTL(Frame.connector2, "connector2.stl")
