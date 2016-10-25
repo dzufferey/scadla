@@ -20,4 +20,10 @@ object Common {
   }
   val threading = new MetricThread(tolerance)
 
+  // wood screws that can be used to hold multiples palstic parts together
+  val woodScrewRadius = Thread.ISO.M3 - 0.5 // for 3mm wood screws
+  val woodScrewHeadHeight = 2
+  val woodScrewHeadRadius = 3
+  val woodScrewLength = 18
+
 }

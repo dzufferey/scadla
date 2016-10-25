@@ -15,7 +15,7 @@ object Frame {
   val vBeamLength: Double = 600
   val hBeamLength: Double = 300
   val topAngle: Double = Pi/4
-  val topLength: Double = 120 //TODO does it need to be that long
+  val topLength: Double = 100 //TODO does it need to be that long
   val thickness = 4 // for the connector
 
   def t = T(20, 20, 3)(_)
@@ -165,7 +165,7 @@ object Frame {
       ).move(-t/2, 50, 0)
       val z = Hull(
         RoundedCubeH(40, t, thickness, t/2 - 0.1).move(-20, 5, 0),
-        RoundedCubeH(t, t, thickness, t/2 - 0.1).move(-t/2, 5-20*sin(topLength), -20)
+        RoundedCubeH(t, t, thickness, t/2 - 0.1).move(-t/2, 5-20*sin(topAngle), -20)
       ).move(0, cos(topAngle) * topLength + t/2, sin(topAngle) * topLength - thickness)
       x + y + z
     }
@@ -282,6 +282,19 @@ object Frame {
       Bigger(l(40), 0.6),
       PieSlice(5, 2.7, Pi/2, 40).rotateZ(Pi).move(5,5,0)
     ).rotateY(Pi)
+  }
+
+  def connector1WithSupport= {
+    val c = connector1.rotateX(Pi/2)
+    val base = Union(
+      Cube(98.5, 2, 2).move(1.5, 0.25, 0),
+      Cube(5, 99.75, 4).move(1.5, 0.25, 0)
+    ).mirror(0, 1, 0)
+    c + (base - c.moveZ(- 1.2 * supportGap))
+  }
+
+  def connector2WithSupport = {
+    connector1WithSupport.mirror(1,0,0)
   }
 
   //TODO from the skeleton, get template to cut the stock and mark/drill the holes

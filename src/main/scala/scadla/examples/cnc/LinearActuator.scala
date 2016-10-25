@@ -162,7 +162,7 @@ object LinearActuator {
     //Console.println("lengthSide1: " + lengthSide1)
     //Console.println("lengthSide2: " + lengthSide2)
     val offset = (lengthSide1 - lengthSide2) / 2.0
-    Gimbal.version2inner(
+    Gimbal.inner(
       effectiveLength,  //length
       gimbalWidth - 2,  //width
       30,               //height
