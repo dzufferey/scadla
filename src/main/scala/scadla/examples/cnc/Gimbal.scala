@@ -130,8 +130,9 @@ class Gimbal(
     if (support) {
       def addSupport(s: Solid) = {
         val under = Cube(height, innerWidth, maxThickness - minThickness).moveY(-width/2 + (width-innerWidth)/2)
-        val sb = Bigger(s, 2*supportGap)
-        s + (under - sb)
+        val sb1 = Bigger(s, 2*supportGap)
+        val sb2 = Minkowski(s, Cylinder(1.5 * supportGap, 0.0625))
+        s + (under - sb1 - sb2)
       }
       Seq(
         ps(0).rotateX(-Pi/2),

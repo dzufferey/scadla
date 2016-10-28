@@ -37,8 +37,7 @@ object Main{
   //  r.toSTL(s(), "la-" + n + ".stl")
   //}
 
-  //r.view(LinearActuator.gimbal.rotateZ(-Pi/2).move(0,12,-5) + LinearActuator.basePlate(true, false))
-
+  //r.view(LinearActuator.assembled())
   //LinearActuator.gimbal.parts(true).zipWithIndex.par.foreach{ case (s, i) => r.toSTL(s, "gimbal_" + i + ".stl") }
 
     r.view(Frame.assembled)
@@ -46,6 +45,8 @@ object Main{
   //r.toSTL(Frame.connector2WithSupport, "connectorS2.stl")
   //r.toSTL(Frame.connector3, "connector3.stl")
   //r.toSTL(Frame.hBeam, "hBeam.stl")
+  //r.toSTL(Frame.vBeam, "vBeam.stl")
+  //r.toSTL(Frame.tBeam, "tBeam.stl")
   //r.toSTL(Frame.foot(true), "foot.stl")
   //r.toSTL(Frame.hBeamJig1, "jig1.stl")
   //r.toSTL(Frame.hBeamJig2, "jig2.stl")

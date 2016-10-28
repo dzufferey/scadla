@@ -148,30 +148,37 @@ object LinearActuator {
     else done
   }
 
-  def gimbal = {
+  val gimbalLength1 = {
     val extraLength = 3.0 // space for the wiring
     // side of the motor
     val ySide1 = Nema14.size / 2.0 + motorYOffset
     val zSide1 = plateThickness / 2.0 + 30 //nema height
-    val lengthSide1 = hypot(ySide1, zSide1) + extraLength
+    hypot(ySide1, zSide1) + extraLength
+  }
+
+  val gimbalLength2 = {
     // side of the gear
     val ySide2 = Nema14.size / 2.0
     val zSide2 = plateThickness / 2.0 + pillarHeight + supportHeight + 2 //screw head
-    val lengthSide2 = hypot(ySide2, zSide2)
-    val effectiveLength = lengthSide1 + lengthSide2
-    //Console.println("lengthSide1: " + lengthSide1)
-    //Console.println("lengthSide2: " + lengthSide2)
-    val offset = (lengthSide1 - lengthSide2) / 2.0
+    hypot(ySide2, zSide2)
+  }
+
+  val gimbalLength = gimbalLength1 + gimbalLength2
+
+  val gimbalOffset = (gimbalLength1 - gimbalLength2) / 2.0
+
+  def gimbal = {
+    val retainerThickness = 1
     Gimbal.inner(
-      effectiveLength,  //length
-      gimbalWidth - 2,  //width
-      30,               //height
-      offset,           //lengthOffset
-      0,                //widthOffset
-      8,                //maxThickness
-      5,                //minThickness
-      1,                //retainerThickness
-      2                 //knobLength
+      gimbalLength, //length
+      gimbalWidth - 2*retainerThickness,  //width
+      30,   //height
+      gimbalOffset, //lengthOffset
+      0,    //widthOffset
+      8,    //maxThickness
+      5,    //minThickness
+      retainerThickness,    //retainerThickness
+      2     //knobLength
     )
   }
   
@@ -181,5 +188,23 @@ object LinearActuator {
     "support"       -> (() => supportPlate),
     "gear"          -> (() => rodGear(support))
   )
+
+  // ¬centered → axis of the actuator is at 0
+  //  centered → center of mass is at 0
+  def assembled(withGears: Boolean = true, centered: Boolean = false) = {
+    val block = Union(
+      basePlate(true, false),
+      supportPlate.rotateX(Pi).moveZ(pillarHeight),
+      if (withGears) motorGear(false).move(0, motorYOffset, bearingGapBase) else Empty,
+      if (withGears) rodGear(false).moveZ(bearingGapBase) else Empty,
+      gimbal.model.rotateZ(-Pi/2).move(0,gimbalOffset,-plateThickness/2)
+    ).moveZ(plateThickness/2)
+    if (centered) {
+      block.moveY(-gimbalOffset)
+    } else {
+      block
+    }
+  }
+
 
 }

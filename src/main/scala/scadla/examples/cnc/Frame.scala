@@ -7,6 +7,11 @@ import scala.math._
 import scadla.examples.extrusion._
 import Common._
 
+// TODO
+// - the parts holding the linear actuator
+// - finalize connector3 w.r.t the parts holding the linear actuator
+// - round the top of connector3
+// - how to print connector3 without too much support ?
 
 object Frame {
 
@@ -15,7 +20,7 @@ object Frame {
   val vBeamLength: Double = 600
   val hBeamLength: Double = 300
   val topAngle: Double = Pi/4
-  val topLength: Double = 100 //TODO does it need to be that long
+  val topLength: Double = 90
   val thickness = 4 // for the connector
 
   def t = T(20, 20, 3)(_)
@@ -51,18 +56,6 @@ object Frame {
     )
   }
 
-  // top horizontal beam (flat)
-  val tBeamOffset = 12.2
-  val tBeamScrewOffset = 37
-  def tBeam = {
-    val l1 = effectiveFrameRadius
-    val l2 = effectiveFrameRadius - cos(topAngle) * topLength
-    val length = effectiveFrameRadius * l2 / l1 - 2*tBeamOffset
-    val x = b(length)
-    val s = Cylinder(boltSize+tolerance, 10).rotateX(-Pi/2).moveX(10)
-    x - s.moveZ(tBeamScrewOffset-tBeamOffset) - s.moveZ(length-tBeamScrewOffset+tBeamOffset)
-  }
-
   // horizontal beam (L profile)
   def hBeam = {
     val x = l(hBeamLength)
@@ -82,6 +75,20 @@ object Frame {
   }
 
   val effectiveFrameRadius = hBeamLength + 3 + 1.5 * tan(Pi/6) + 1.5 / cos(Pi/6) // additional factor because the hBeams are offset
+
+  // top horizontal beam (flat)
+  val tBeamOffset = 12.2
+  val tBeamScrewOffset = 37
+  val tBeamLength = {
+    val l1 = effectiveFrameRadius
+    val l2 = effectiveFrameRadius - cos(topAngle) * topLength
+    effectiveFrameRadius * l2 / l1 - 2*tBeamOffset
+  }
+  def tBeam = {
+    val x = b(tBeamLength)
+    val s = Cylinder(boltSize+tolerance, 10).rotateX(-Pi/2).moveX(10)
+    x - s.moveZ(tBeamScrewOffset-tBeamOffset) - s.moveZ(tBeamLength-tBeamScrewOffset+tBeamOffset)
+  }
 
   def skeleton = {
     val z1 = vBeamLength
@@ -250,14 +257,22 @@ object Frame {
     val l = effectiveFrameRadius
     val c1CornerAt0 = connector1.move(0, -8.5 * sin(Pi/6), 2)
     val c2CornerAt0 = connector2.move(0, -8.5 * sin(Pi/6), 2)
+    val la = LinearActuator.assembled(false, true).rotateZ(Pi/2).rotateX(-Pi/4)
+    val laOffset = 10
+    val laY = -cos(topAngle) * (topLength - laOffset)/2
+    val laZ = sin(topAngle) * (topLength - laOffset)/2
     Union(
+      // metal profiles
       skeleton,
+      // plastic parts
       putAtCorners(c1CornerAt0.rotateZ(2*Pi/3).move(-3, 1.5, 0), l),
       putAtCorners(c2CornerAt0.rotateZ(  Pi/3).move(-3,-1.5, 0), l),
       putAtCorners(c1CornerAt0.rotateY(Pi).rotateZ(  Pi/3).move(-3,-1.5, vBeamLength), l),
       putAtCorners(c2CornerAt0.rotateY(Pi).rotateZ(2*Pi/3).move(-3, 1.5, vBeamLength), l),
       putAtCorners(connector3.rotateZ(Pi/2).moveZ(vBeamLength), l),
-      putAtCorners(foot(true).rotateY(Pi).rotateZ(Pi/2), l)
+      putAtCorners(foot(true).rotateY(Pi).rotateZ(Pi/2), l),
+      // motors and stuff
+      putAtCorners(la.move(-hBeamLength/2, laY, vBeamLength + laZ).rotateZ(-Pi/3), l)
       // to see where the holes should be
       //putAtCorners(screws.rotateZ(2*Pi/3), l),
       //putAtCorners(screws.mirror(1,0,0).rotateZ(  Pi/3), l)
