@@ -9,9 +9,6 @@ import Common._
 
 // TODO
 // - the parts holding the linear actuator
-// - finalize connector3 w.r.t the parts holding the linear actuator
-// - round the top of connector3
-// - how to print connector3 without too much support ?
 
 object Frame {
 
@@ -20,7 +17,8 @@ object Frame {
   val vBeamLength: Double = 600
   val hBeamLength: Double = 300
   val topAngle: Double = Pi/4
-  val topLength: Double = 90
+  val topLength: Double = 80
+  val laOffset = 0 // downward offset the LA from the center of topLength
   val thickness = 4 // for the connector
 
   def t = T(20, 20, 3)(_)
@@ -32,10 +30,10 @@ object Frame {
     Union(s2:_*)
   }
 
-  val screwOffsetY1 =  8
-  val screwOffsetY2 = 12
-  val screwOffsetX1 = 35
-  val screwOffsetX2 = 95
+  val screwOffsetY1 =  8.0
+  val screwOffsetY2 = 12.0
+  val screwOffsetX1 = 35.0
+  val screwOffsetX2 = 95.0
   protected def screws = {
     val s = Cylinder(boltSize + tolerance, 30).moveZ(-10)
     Union(
@@ -161,28 +159,33 @@ object Frame {
     val bottom = anglePlate
     val middle = {
       val t = 12.0
+      val t2 = 8.0
       val x = Hull(
         RoundedCubeH(t, 56, thickness, t/2 - 0.1).moveY(5),
         RoundedCubeH(t, 17, thickness, t/2 - 0.1).move(0, cos(topAngle) * topLength + t/2, sin(topAngle) * topLength - thickness)
       ).moveX(-t/2)
       val y = Hull(
-        RoundedCubeH(t, t, topLength/2.65, t/2 - 0.1),
-        RoundedCubeH(t, t, thickness, t/2 - 0.1).moveX( 65),
-        RoundedCubeH(t, t, thickness, t/2 - 0.1).moveX(-65)
-      ).move(-t/2, 50, 0)
+        RoundedCubeH(t2, t2, topLength/2.65, t2/2 - 0.1),
+        RoundedCubeH(t2, t2, thickness, t2/2 - 0.1).moveX( 63),
+        RoundedCubeH(t2, t2, thickness, t2/2 - 0.1).moveX(-63)
+      ).move(-t2/2, 54, 0)
       val z = Hull(
-        RoundedCubeH(40, t, thickness, t/2 - 0.1).move(-20, 5, 0),
-        RoundedCubeH(t, t, thickness, t/2 - 0.1).move(-t/2, 5-20*sin(topAngle), -20)
-      ).move(0, cos(topAngle) * topLength + t/2, sin(topAngle) * topLength - thickness)
+        RoundedCubeH(40, t2, thickness, t2/2 - 0.1).move(-20, 5, 0),
+        RoundedCubeH(t2, t2, thickness, t2/2 - 0.1).move(-t2/2, 5-20*sin(topAngle), -20)
+      ).move(0, cos(topAngle) * topLength + t2, sin(topAngle) * topLength - thickness)
       x + y + z
     }
     val top = {
       val bt = boltSize + tolerance
       val d = 1.0
-      val l = 50
+      val l = 45
       val o = 20 * sin(Pi/6)
-      val x = Cube(l-o, 20, thickness).moveX(o) - Cylinder(bt, thickness).move(tBeamScrewOffset, 10, 0)
-      val y = Cube(l-o, 20, thickness).moveX(-l) - Cylinder(bt, thickness).move(-tBeamScrewOffset, 10, 0)
+      val c = Cube(l-o-10, 20, thickness)
+      val cx = c + Cylinder(10, thickness).move(l-o-10, 10, 0)
+      val cy = c.moveX(10) + Cylinder(10, thickness).move(10, 10, 0)
+      val cbt = Cylinder(bt, thickness)
+      val x = cx.moveX(o) - cbt.move(tBeamScrewOffset, 10, 0)
+      val y = cy.moveX(-l) - cbt.move(-tBeamScrewOffset, 10, 0)
       val z = Bigger(PieSlice(20-d,0,Pi/3,thickness+3).rotateZ(-4*Pi/6), d)
       val res = Union(
         x.rotateZ( Pi/6),
@@ -192,13 +195,6 @@ object Frame {
       res.move(0, cos(topAngle) * topLength, sin(topAngle) * topLength - thickness)
     }
     bottom + middle + top
-  }
-
-  // foot that contains/cover the nuts and bolts, plastic only
-  def simpleFoot = {
-    val base = RoundedCubeH(80, 20, 5, 5)
-    val c = Cylinder(2*boltSize + tolerance, 3) + Cylinder(boltSize + tolerance, 10)
-    base.moveX(20) - c.move(screwOffsetX1, screwOffsetY1, 0) - c.move(screwOffsetX2, screwOffsetY1, 0)
   }
 
   // part that goes between the feet and the frame to keep the 2π/3 angle
@@ -250,6 +246,50 @@ object Frame {
     }
   }
 
+  def actuatorConnector1 = {
+    val bottomY = -15.5
+    val bottomZ = thickness
+    val topY = -cos(topAngle) * topLength - 12.5
+    val topZ = sin(topAngle) * topLength -4 // 4 to account for the top profile
+    val laY = -cos(topAngle) * (topLength - laOffset)/2
+    val laZ = sin(topAngle) * (topLength - laOffset)/2
+    val bearingThickness = 7
+    val retainerThickness = LinearActuator.retainerThickness
+    val totalThickness = bearingThickness + retainerThickness
+    val c = Cube(totalThickness, 20, thickness)
+    val threadFactor = 1.6
+    val screwOffset = bottomY + screwOffsetY1 - 0.5 //XXX 0.5
+    val body0 = Hull(
+        c.move(0, bottomY, bottomZ),
+        c.move(0, topY, topZ),
+        Cylinder(11 + thickness, totalThickness).rotateY(Pi/2).move(0, laY, laZ)
+      )
+    val spaceForM3 = 3 + 2 * Thread.ISO.M3
+    val body1 = Union(
+        body0,
+        // part to attach on top
+        Cube(totalThickness, 20 + thickness + spaceForM3, thickness).move(0, topY - spaceForM3, topZ),
+        Cube(totalThickness, 20 + thickness + spaceForM3, thickness).move(0, topY - spaceForM3, topZ + thickness + 4),
+        Cube(totalThickness, thickness, 4 + thickness + 10).move(0, topY + 20, topZ - 10)
+      )
+    val body2 = Difference(
+        body1,
+        // space for the bearing
+        Cylinder(11 + looseTolerance, totalThickness).rotateY(Pi/2).move(retainerThickness, laY, laZ),
+        Cylinder(8 , totalThickness).rotateY(Pi/2).move(0, laY, laZ),
+        // for the bottom screw
+        CenteredCube.y(totalThickness, threadFactor * 2 * boltSize + looseTolerance, (threadFactor + 0.2) * boltSize).move(0, screwOffset, bottomZ + thickness),
+        CenteredCube.y(totalThickness, 2 * (boltSize + tolerance), thickness).move(0, screwOffset, bottomZ),
+        // for the top screw
+        Cylinder(Thread.ISO.M3 + tightTolerance, 4 + 2 * thickness).move(totalThickness/2, topY - 1 - Thread.ISO.M3, topZ)
+      )
+    body2
+  }
+  
+  def actuatorConnector2 = {
+    actuatorConnector1.mirror(1,0,0)
+  }
+
 
   def assembled = {
     val x = 1.1
@@ -258,7 +298,7 @@ object Frame {
     val c1CornerAt0 = connector1.move(0, -8.5 * sin(Pi/6), 2)
     val c2CornerAt0 = connector2.move(0, -8.5 * sin(Pi/6), 2)
     val la = LinearActuator.assembled(false, true).rotateZ(Pi/2).rotateX(-Pi/4)
-    val laOffset = 10
+    val laX = -hBeamLength/2 - 3
     val laY = -cos(topAngle) * (topLength - laOffset)/2
     val laZ = sin(topAngle) * (topLength - laOffset)/2
     Union(
@@ -272,7 +312,9 @@ object Frame {
       putAtCorners(connector3.rotateZ(Pi/2).moveZ(vBeamLength), l),
       putAtCorners(foot(true).rotateY(Pi).rotateZ(Pi/2), l),
       // motors and stuff
-      putAtCorners(la.move(-hBeamLength/2, laY, vBeamLength + laZ).rotateZ(-Pi/3), l)
+      putAtCorners(la.move(laX, laY, vBeamLength + laZ).rotateZ(-Pi/3), l),
+      putAtCorners(actuatorConnector1.move(laX + 53, 0, vBeamLength).rotateZ(-Pi/3), l),
+      putAtCorners(actuatorConnector2.move(laX - 53, 0, vBeamLength).rotateZ(-Pi/3), l)
       // to see where the holes should be
       //putAtCorners(screws.rotateZ(2*Pi/3), l),
       //putAtCorners(screws.mirror(1,0,0).rotateZ(  Pi/3), l)
@@ -303,9 +345,9 @@ object Frame {
     val c = connector1.rotateX(Pi/2)
     val base = Union(
       Cube(98.5, 2, 2).move(1.5, 0.25, 0),
-      Cube(5, 99.75, 4).move(1.5, 0.25, 0)
+      Cube(3.8, 99.74, 4).move(1.5, 0.25, 0)
     ).mirror(0, 1, 0)
-    c + (base - c.moveZ(- 1.2 * supportGap))
+    c + (base - c.moveZ(- 1.3 * supportGap))
   }
 
   def connector2WithSupport = {

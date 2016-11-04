@@ -167,8 +167,9 @@ object LinearActuator {
 
   val gimbalOffset = (gimbalLength1 - gimbalLength2) / 2.0
 
+  val retainerThickness = 1
+
   def gimbal = {
-    val retainerThickness = 1
     Gimbal.inner(
       gimbalLength, //length
       gimbalWidth - 2*retainerThickness,  //width

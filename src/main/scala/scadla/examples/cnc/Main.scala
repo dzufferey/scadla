@@ -44,6 +44,8 @@ object Main{
   //r.toSTL(Frame.connector1WithSupport, "connectorS1.stl")
   //r.toSTL(Frame.connector2WithSupport, "connectorS2.stl")
   //r.toSTL(Frame.connector3, "connector3.stl")
+  //r.toSTL(Frame.actuatorConnector1, "actuatorConnector1.stl")
+  //r.toSTL(Frame.actuatorConnector2, "actuatorConnector2.stl")
   //r.toSTL(Frame.hBeam, "hBeam.stl")
   //r.toSTL(Frame.vBeam, "vBeam.stl")
   //r.toSTL(Frame.tBeam, "tBeam.stl")
