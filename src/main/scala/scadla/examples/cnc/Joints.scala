@@ -23,7 +23,7 @@ import Common._
  *      2 * M3 washer
  *      4 * M2 washer
  */
-class Joint2DOF(radius: Double = Thread.UTS._1_4) {
+class Joint2DOF(radius: Double = Thread.ISO.M6) {
 
   import Thread.ISO.{M2,M3,M4}
   protected val m2t = M2 + tolerance

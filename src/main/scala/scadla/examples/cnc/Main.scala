@@ -21,7 +21,11 @@ object Main{
   //  r.toSTL(p, "j2dof-" + i + ".stl")
   //}
 
-  //r.toSTL(Platform(4, 10, 10, 1.6), "platform.stl")
+  //r.view(Platform())
+  //r.toSTL(Platform(), "platform.stl")
+  //r.toSTL(Platform.verticalBushing2Rod(), "p2r.stl")
+  //r.toSTL(Platform.verticalBushing2Platform(), "p2p.stl")
+
 
   //r.toSTL(Frame(250, 18, Pi/4, 120), "frame.stl")
 

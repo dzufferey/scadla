@@ -38,11 +38,11 @@ object Parser {
       Logger("amf.Parser", Warning, "more than one mesh. taking only the first.")
     }
     val mesh = meshes.head
-    val vertex = (mesh \ "vertices" \ "vertex").map(parseVertex).toSeq
+    val vertex = (mesh \ "vertices" \ "vertex").map(parseVertex)
     val faces = (mesh \ "volume" \ "triangle").map( t =>
       parseFace(t) match {
         case (a,b,c) => Face(vertex(a), vertex(b), vertex(c))
-      }).toSeq
+      })
     Polyhedron(faces)
   }
 

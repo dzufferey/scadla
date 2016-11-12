@@ -8,7 +8,15 @@ import scadla.examples.extrusion._
 import Common._
 
 // TODO
-// - the parts holding the linear actuator
+// - the parts for the cable to improve the rigidity
+
+// idea for a simpler frame:
+// - the main part is just a box
+// - only the top has the hex part
+//      -----
+//      |/ \|
+//      |\ /|
+//      -----
 
 object Frame {
 
