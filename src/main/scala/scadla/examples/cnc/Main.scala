@@ -21,13 +21,14 @@ object Main{
   //  r.toSTL(p, "j2dof-" + i + ".stl")
   //}
 
-  //r.view(Platform())
-  //r.toSTL(Platform(), "platform.stl")
+  //r.view(Platform.with608Bearings())
+  //r.toSTL(Platform.with608Bearings(), "platform.stl")
   //r.toSTL(Platform.verticalBushing2Rod(), "p2r.stl")
   //r.toSTL(Platform.verticalBushing2Platform(), "p2p.stl")
 
-
-  //r.toSTL(Frame(250, 18, Pi/4, 120), "frame.stl")
+  //Frame.cableTensioner.zipWithIndex.foreach{ case (s,i) => r.toSTL(s, "cableTensioner_" + i + ".stl") }
+  //r.view(Frame.cableAttachPoint(0))
+  //Frame.cableAttachPoint.zipWithIndex.foreach{ case (s,i) => r.toSTL(s, "cableAttach_" + i + ".stl") }
 
   //r.toSTL(LinearActuatorBlock(true), "la-gimbal.stl")
 
@@ -44,7 +45,7 @@ object Main{
   //r.view(LinearActuator.assembled())
   //LinearActuator.gimbal.parts(true).zipWithIndex.par.foreach{ case (s, i) => r.toSTL(s, "gimbal_" + i + ".stl") }
 
-    r.view(Frame.assembled)
+  //r.view(Frame.assembled)
   //r.toSTL(Frame.connector1WithSupport, "connectorS1.stl")
   //r.toSTL(Frame.connector2WithSupport, "connectorS2.stl")
   //r.toSTL(Frame.connector3, "connector3.stl")

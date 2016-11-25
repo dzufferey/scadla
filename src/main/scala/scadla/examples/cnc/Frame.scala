@@ -298,6 +298,66 @@ object Frame {
     actuatorConnector1.mirror(1,0,0)
   }
 
+  def cableAttachPoint = {
+    // length 65mm
+    // 45⁰, 3mm
+    val knob = Difference(
+        Cube(6, 2, thickness).moveX(-3) + Cylinder(3, thickness).moveY(2),
+        Cylinder(woodScrewRadius, thickness).moveY(2)
+      ) - Cube(6, 2, thickness).move(-3, -2, 0)
+    val wireStopper = Difference(
+        Hull(
+          Trapezoid(6, 10, thickness, 3).moveX(-5),
+          Cylinder(3, thickness).rotateX(-Pi/2).moveZ(3)
+        ),
+        Cylinder(Thread.ISO.M3, thickness+2).rotateX(-Pi/2).moveZ(3),
+        Cylinder(0.6, thickness+2).rotateX(-Pi/2).moveZ(3-Thread.ISO.M3)
+      )
+    val body = Union(
+        Cube(65, 12, thickness),
+        knob.move(3, 12, 0),
+        knob.move(62, 12, 0),
+        Cylinder(4, 6, 3).move(32.5 - 4, 6, thickness),
+        wireStopper.move(43, 4, thickness)
+      )
+    val stopper1 = Union(
+        knob,
+        knob.moveZ(thickness/2),
+        (Cube(6, 6, thickness/2).move(-3, -6, 0) + Cylinder(3, thickness/2).moveY(-6)).moveX(3).rotateZ(Pi/4).moveX(-3),
+        PieSlice(3, 0, 3*Pi/4, 3*thickness/2).moveX(-3)
+      ) - Cylinder(woodScrewRadius, 2 * thickness).moveY(2)
+    val stopper2 = stopper1.mirror(1,0,0)
+    Seq(body, stopper1, stopper2)
+  }
+
+  def cableTensioner = {
+    val ri = 4.0
+    val ro = 5.0
+    val ch = 5.5 / 2
+    val c0 = Cylinder(ro, ri, ch) + Cylinder(ri, ro, ch).moveZ(ch)
+    val c = c0.rotateX(-Pi/2)
+    val pusher = (c * CenteredCube.x(2*ro + 1, 2*ch, 2*ro + 1)) - Cylinder(Thread.ISO.M3 + looseTolerance, 3).moveY(ch)
+    val bottom = 4*ro + 1
+    val top = 2*ro + 2 + 2*(ro-ri)
+    val y = 2*ch + 4
+    val outline = Hull(Cube(bottom, y, 1), Trapezoid(top, bottom, y, ro).moveZ(4 + (ro-ri)))
+    val sides = outline - Cube(bottom, 2*ch - 0.2, bottom).moveY(2.1)
+    val screwPlate = Difference(
+        CenteredCube.x(2*ro, y, 4),
+        Cylinder(Thread.ISO.M3 + tightTolerance, 4).moveY(y/2),
+        nut(Thread.ISO.M3).move(0, y/2, 2.4)
+      )
+    val body = Union(
+        sides,
+        Cube(2,y,2),
+        Cube(2,y,2).moveX(bottom-2),
+        c.move(0, 2, ro+4) * outline,
+        c.move(bottom, 2, ro+4) * outline,
+        screwPlate.moveX(bottom / 2)
+      )
+    Seq(body, pusher)
+  }
+
 
   def assembled = {
     val x = 1.1
