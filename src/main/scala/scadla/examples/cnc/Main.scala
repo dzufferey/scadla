@@ -20,6 +20,9 @@ object Main{
   //new Joint2DOF().parts.zipWithIndex.par.foreach{ case (p, i) =>
   //  r.toSTL(p, "j2dof-" + i + ".stl")
   //}
+  //r.view(new Joint2DOF().cross)
+  //r.view(new Joint2DOF().bottom(20))
+  //r.view(new Joint2DOF().top(30, 18))
 
   //r.view(Platform.with608Bearings())
   //r.toSTL(Platform.with608Bearings(), "platform.stl")

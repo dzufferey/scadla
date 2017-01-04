@@ -7,146 +7,81 @@ import InlineOps._
 import scadla.examples.fastener._
 import Common._
 
-/** A 2 degree of freedom joint which connects to a threaded rod.
- *  @param radius is the radius of the threaded rod
- *  vitamins:
- *      1 * threaded rod
- *      2 * nut for threaded rod
- *      3 * 608 bearing
- *      1 * M4 x ?? screw
- *      1 * M3 x ?? screw
- *      2 * M2 x ?? screw
- *      1 * M4 nut
- *      1 * M3 nut
- *      2 * M2 nut
- *      2 * M4 washer
- *      2 * M3 washer
- *      4 * M2 washer
+/** A 2 degree of freedom joint.
+ *  @param bottomNut is the size of bottom thread/nut
  */
-class Joint2DOF(radius: Double = Thread.ISO.M6) {
+class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
 
-  import Thread.ISO.{M2,M3,M4}
-  protected val m2t = M2 + tolerance
-  protected val m3t = M3 + tolerance
-  protected val m4t = M4 + tolerance
+  import Thread.ISO.{M3,M8}
 
-  protected val xThreadHolder = radius * 2 + 2
-  protected val yThreadHolder = radius * 3.2 + 5
-  protected val zThreadHolder = 15.0
+  //max outer radius of the nut
+  val radius = nut.maxOuterRadius(bottomNut)
+  // bottom wall, e.g., bellow the nut
+  val botWall = 2
+  // side wall, e.g., around the nut
+  val sideWall = 3
+  val outerRadius = radius + sideWall
+  val minRadius = nut.minOuterRadius(bottomNut) + looseTolerance
+  val washerThickness = 0.6
 
-  protected val xAxis = Cylinder(m3t, 25)
-  protected val zAxis = Cylinder(M4, 25) //Cylinder(m4t, 25)
-  protected val zOffset = 1
-  protected val zBearingSpace = 1
-  
-  protected val yBase = 18.5
-
-  val part1a = {
-    val t = Cylinder(15,7) - bearing
-    val n = {
-      val n0 = nut(radius + tolerance).moveZ(3)
-      val n1 = n0.moveX(-radius+1) + n0.moveX(radius-1)
-      n1.moveZ(-looseTolerance) + n1.moveZ(looseTolerance)
-    }
-    val s = Hexagon(radius, zThreadHolder).moveZ(2).rotateZ(Pi/6)
-    val x = xThreadHolder
-    val y = yThreadHolder
-    val f = Cube(x,y,zThreadHolder).move(-x/2,-y/2,0) - s - n
-    t + f.rotateY(Pi/2).move( 13, 0, x/2) - t.moveZ(7)
-  } 
-
-  val part1b = {
-    val t = tolerance
-    val t2 = 2*t
-    val x = 3.2 * (radius+2*tolerance) + 2
-    val y = yThreadHolder
-    val c1 = Cube(x, y, 5).move(-x/2,-y/2,0)
-    val c2 = Cube(xThreadHolder+t2, y, 5).move(-t-xThreadHolder/2, -y/2, 3)
-    val n = nut(radius + 2*tolerance).rotateZ(Pi/6)
-    c1 - c2 - n
+  def cross(length: Double, height: Double, screwRadius: Double): Solid = {
+    //XXX hex instead of cubes ???
+    val h = Hexagon(height/2, length).moveZ(-length/2)
+    val c1 = h.rotateX(Pi/2)
+    val c2 = h.rotateZ(Pi/6).rotateY(Pi/2)
+    val s = Cylinder(screwRadius, length+2).moveZ(-length/2-1)
+    val s1 = s.rotateX(Pi/2)
+    val s2 = s.rotateY(Pi/2)
+    c1 + c2 - s1 - s2
   }
 
-  protected val dovetailP = Trapezoid(3-tolerance, 2-tolerance, 3, 3-tolerance).moveX(tolerance/2 +1.5)
-  protected val dovetailN = Trapezoid(3+tolerance, 2+tolerance, 3.1, 3+tolerance).move(-tolerance/2 +1.5,-0.05,0)
-  //assumes s is centered in the middle of [0,step]
-  protected def chain(s: Solid, start: Double, step: Double, n: Int) = {
-    val elts = for (i <- 0 until n) yield s.moveX(start + i * step)
-    Union(elts:_*).rotateZ(Pi/2)
-  }
-  protected def chainYBase(s: Solid, step: Double) = {
-    val k = floor(yBase / step).toInt
-    val start = (yBase - k * step) / 2
-    chain(s, start, step, k)
+  def cross: Solid = {
+    cross(2*(minRadius - washerThickness), 2*sideWall, M3-0.5)
   }
 
-  val part2a = {
-    val c4 = Cylinder(m2t, 10)
-    val c5 = Cube(4, m2t*2+2, m2t*2+2)
+  protected def carving(top: Double, bottom: Double) = {
+    val r = outerRadius-2*M3+looseTolerance
+    val h = 2*outerRadius + 2
+    Cylinder(r, h).moveZ(-h/2.0).rotateY(Pi/2).moveZ(r).scaleZ((top-bottom)/r)
+  }
 
-    val offset = (xThreadHolder-7) / 2
-    val pos = Union(
-      Cube(8,yBase,3),
-      c5.move(2,0,3),
-      c5.move(2,yBase-c5.depth,3),
-      chainYBase(dovetailP, 5),
-      chainYBase(dovetailP, 5).moveX(11)
+  protected def addScrewThingy(base: Solid, height: Double) = {
+    val c0 = Cylinder(2*M3,2*outerRadius).moveZ(-outerRadius).rotateY(Pi/2).moveZ(height)
+    val c1 = Cylinder(2*M3,2*outerRadius-2).moveZ(-outerRadius+1).rotateY(Pi/2).moveZ(height)
+    val c2 = Cylinder(2*M3+0.01,2*minRadius).moveZ(-minRadius).rotateY(Pi/2).moveZ(height)
+    val c3 = Cylinder(M3, 2*outerRadius+2).moveZ(-outerRadius-1).rotateY(Pi/2).moveZ(height)
+    val sh = Cylinder(2*M3+0.01, sideWall).rotateY(Pi/2).moveZ(height)
+    base - c0 + c1 - c2 - c3 - sh.moveX(outerRadius - 1.5) - sh.moveX(-outerRadius-sideWall + 1.5)
+  }
+
+  def bottom(height: Double) = {
+    val nutTop = botWall + bottomNut * 1.5
+    val base = Difference(
+      Cylinder(outerRadius, height),
+      Hexagon(minRadius, height).moveZ(nutTop).rotateZ(Pi/6),
+      nut(bottomNut).moveZ(botWall).rotateZ(Pi/6),
+      Cylinder(bottomNut + tolerance, height),
+      carving(height, nutTop).move(0,  outerRadius, nutTop - 0.5),
+      carving(height, nutTop).move(0, -outerRadius, nutTop - 0.5)
     )
-    val neg = List(
-      zAxis.move(4-offset,yBase/2,0),
-      c4.rotateY(Pi/2).move(0,m2t+1 ,4+m2t),
-      c4.rotateY(Pi/2).move(0,yBase-1-m2t,4+m2t)
+    addScrewThingy(base, height)
+  }
+
+  def top(height: Double, baseFull: Double) = {
+    val base = Difference(
+      CenteredCube.xy(2*outerRadius, 2*outerRadius, height),
+      Hexagon(nut.minOuterRadius(bottomNut) + looseTolerance, height).moveZ(baseFull).rotateZ(Pi/6),
+      carving(height, baseFull).move(0,  outerRadius, baseFull - 0.5),
+      carving(height, baseFull).move(0, -outerRadius, baseFull - 0.5)
     )
-
-    pos -- neg
+    addScrewThingy(base, height)
   }
 
-  val part2b = {
-    val c2 = Cylinder(4, 3.5)
-    val c3 = Cylinder(6, 0.5)
-    val c4 = Cylinder(m2t, 10)
-    val c5 = Cube(m2t*2+2, m2t*2+2, 2)
-    
-    val sideLenght = 22
-
-    val pos = Union(
-      Hull(Cube(m2t*2+5,yBase,3), Cylinder(6,3).move(sideLenght,yBase/2,0)),
-      (c2.moveZ(3.5) + c3.moveZ(3)).move(sideLenght,yBase/2,0),
-      c5.move(3,0,3),
-      c5.move(3,yBase-c5.depth,3)
-    )
-
-    val neg = List(
-      xAxis.move(sideLenght,yBase/2,0),
-      c4.move(4+m2t,m2t+1, 0),
-      c4.move(4+m2t,yBase-1-m2t,0),
-      chainYBase(dovetailN, 5).rotateY(Pi/2)
-    )
-    pos -- neg
-  }
-
-  val part2c = {
-    Cylinder(6, zBearingSpace) - zAxis
-  }
-  
-  val part2d = {
-    val c2 = Cylinder(4-tolerance, 14+zBearingSpace-tolerance)
-    val c3 = Cylinder(6, zOffset)
-    c2.moveZ(zOffset) + c3 - zAxis
-  }
-  
-  val part2e = {
-    Cylinder(6, zBearingSpace) - Cylinder(4, zBearingSpace)
-  }
-  
-
-  val parts = List(
-    part1a,
-    part1b,
-    part2a,
-    part2b, //2x
-    part2c,
-    part2d,
-    part2e
+  def parts = Seq(
+    cross,
+    bottom(20),
+    top(30, 18)
   )
-  
+
+
 }

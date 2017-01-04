@@ -17,14 +17,14 @@ scalacOptions in Compile ++= Seq(
 libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
   "org.scala-lang.modules" %% "scala-xml" % "1.0.5",
-  "org.scalatest" %% "scalatest" % "3.0.0" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
   "io.github.dzufferey" %% "misc-scala-utils" % "0.1-SNAPSHOT",
   "org.scala-lang.modules" %% "scala-pickling" % "0.10.1",
   "org.scalafx" %% "scalafx" % "8.0.102-R11",
   "eu.mihosoft.vrl.jcsg" % "jcsg" % "0.3.1"
 )
 
-addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.16")
+addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.17")
 
 fork := true
 

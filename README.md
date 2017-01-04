@@ -116,12 +116,12 @@ Features that may (or may not) be implemented, depending on time and motivation:
     * chamfer
     * making object smaller (negative minkowski sum): instead of adding some tolerance to all dimension, design your object at the right size, the make them a bit smaller so they fit together. The goal is to move the face parallel to their normal by some amount while keeping the mesh well-formed.
   - cahnge FromFile to FromURL
-  - a `Solidifiable` trait that has a `def solidify: Solid` operation which can be called implicitly
+  - a `Solidifiable` trait that has an `implicit def solidify: Solid` method
   - object cache:
     * object
       - normalized non-polyhedron AST (keep only bool-ops, other operations are cheap)
       - scadla version
-      - renderer
+      - renderer (name and version)
       - created
       - last accessed
       - how many times accessed
@@ -136,14 +136,14 @@ Features that may (or may not) be implemented, depending on time and motivation:
 * implementation
   - file format:
     * PLY parser (this format is evil!!!)
-  - InBox: Polyhedron, multiply, hull
+  - `InBox: Polyhedron`: multiply, hull
   - try VTK as backend
-    * installation [http://www.vtk.org/Wiki/VTK/Configure_and_Build]()
+    * [installation](http://www.vtk.org/Wiki/VTK/Configure_and_Build)
     * how to decide whether or not to compile VTK: it cannot be resolved as a MVN dependency but only a a local one ...
       - split the project into (1) core, (2) renderers, (3) examples
-    * boolean operation [http://hdl.handle.net/10380/3262]()
-    * transform [http://www.vtk.org/doc/nightly/html/classvtkTransform.html]()
-    * convex hull [https://cmake.org/Wiki/VTK/Examples/Boneyard/Cxx/PolyData/ConvexHullDelaunay3D]()
+    * [boolean operation](http://hdl.handle.net/10380/3262)
+    * [transform](http://www.vtk.org/doc/nightly/html/classvtkTransform.html)
+    * [convex hull](https://cmake.org/Wiki/VTK/Examples/Boneyard/Cxx/PolyData/ConvexHullDelaunay3D)
     * minkowski sum ???
   - backend: decomposition as a DAG and to do the rendering in parallel.
      generalize renderer into `Renderer[A]` with
