@@ -46,7 +46,7 @@ class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
   }
 
   protected def addScrewThingy(base: Solid, height: Double) = {
-    val c0 = Cylinder(2*M3,2*outerRadius).moveZ(-outerRadius).rotateY(Pi/2).moveZ(height)
+    val c0 = Cylinder(2*M3-0.01,2*outerRadius).moveZ(-outerRadius).rotateY(Pi/2).moveZ(height)
     val c1 = Cylinder(2*M3,2*outerRadius-2).moveZ(-outerRadius+1).rotateY(Pi/2).moveZ(height)
     val c2 = Cylinder(2*M3+0.01,2*minRadius).moveZ(-minRadius).rotateY(Pi/2).moveZ(height)
     val c3 = Cylinder(M3, 2*outerRadius+2).moveZ(-outerRadius-1).rotateY(Pi/2).moveZ(height)
@@ -80,7 +80,7 @@ class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
   def parts = Seq(
     cross,
     bottom(20),
-    top(30, 18)
+    top(30, 16)
   )
 
 
