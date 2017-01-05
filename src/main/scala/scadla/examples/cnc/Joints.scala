@@ -23,6 +23,8 @@ class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
   val outerRadius = radius + sideWall
   val minRadius = nut.minOuterRadius(bottomNut) + looseTolerance
   val washerThickness = 0.6
+  
+  //println("size:" + 2*outerRadius) → 21.28823512814129
 
   def cross(length: Double, height: Double, screwRadius: Double): Solid = {
     //XXX hex instead of cubes ???
@@ -67,12 +69,20 @@ class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
     addScrewThingy(base, height)
   }
 
-  def top(height: Double, baseFull: Double) = {
+  def top(height: Double, baseFull: Double, screwRadius: Double) = {
+    val size = math.ceil(2*outerRadius)
+    val s = Cylinder(screwRadius, size+2).moveZ(-size/2-1)
+    val delta = screwRadius + 0.1
     val base = Difference(
-      CenteredCube.xy(2*outerRadius, 2*outerRadius, height),
-      Hexagon(nut.minOuterRadius(bottomNut) + looseTolerance, height).moveZ(baseFull).rotateZ(Pi/6),
+      CenteredCube.xy(size, size, height),
+      Hexagon(minRadius, height).moveZ(baseFull).rotateZ(Pi/6),
       carving(height, baseFull).move(0,  outerRadius, baseFull - 0.5),
-      carving(height, baseFull).move(0, -outerRadius, baseFull - 0.5)
+      carving(height, baseFull).move(0, -outerRadius, baseFull - 0.5),
+      //holes for mounting screws
+      s.rotateX(Pi/2).moveZ(4-delta),
+      s.rotateX(Pi/2).moveZ(baseFull-3-delta),
+      s.rotateY(Pi/2).moveZ(4+delta),
+      s.rotateY(Pi/2).moveZ(baseFull-3+delta)
     )
     addScrewThingy(base, height)
   }
@@ -80,7 +90,7 @@ class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
   def parts = Seq(
     cross,
     bottom(20),
-    top(30, 16)
+    top(30, 16, M3-0.15)
   )
 
 

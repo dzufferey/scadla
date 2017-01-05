@@ -17,12 +17,12 @@ object Main{
   //  r.toSTL(obj, "spdl-" + name + ".stl")
   //}
 
-    new Joint2DOF().parts.zipWithIndex.par.foreach{ case (p, i) =>
-      r.toSTL(p, "j2dof-" + i + ".stl")
-    }
+  //new Joint2DOF().parts.zipWithIndex.par.foreach{ case (p, i) =>
+  //  r.toSTL(p, "j2dof-" + i + ".stl")
+  //}
   //r.view(new Joint2DOF().cross)
   //r.view(new Joint2DOF().bottom(20))
-  //r.view(new Joint2DOF().top(30, 16))
+  //r.view(new Joint2DOF().top(30, 16, 1.35))
 
   //r.view(Platform.with608Bearings())
   //r.toSTL(Platform.with608Bearings(), "platform.stl")
