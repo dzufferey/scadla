@@ -75,7 +75,7 @@ class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
     val s = Cylinder(screwRadius, size+2).moveZ(-size/2-1)
     val delta = screwRadius + 0.1
     val base = Difference(
-      CenteredCube.xy(size, size, height),
+      RoundedCubeH(size, size, height, 2.5).move(-size/2.0, -size/2.0, 0),
       Hexagon(minRadius, height).moveZ(baseFull).rotateZ(Pi/6),
       carving(height, baseFull).move(0,  outerRadius, baseFull - 0.5),
       carving(height, baseFull).move(0, -outerRadius, baseFull - 0.5),
