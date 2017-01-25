@@ -26,9 +26,7 @@ object GearBearing {
   def main(args: Array[String]) {
     //val gears = apply(35, 10, 5, 10, 15, 0.02, toRadians(40), 5, 0.1)
     val gears = apply(35, 10, 5, 6, 10, 0.02, toRadians(60), 5, 0.1)
-    backends.OpenSCAD.toSTL(gears.outer,  "outer.stl")
-    backends.OpenSCAD.toSTL(gears.planet, "planet.stl")
-    backends.OpenSCAD.toSTL(gears.sun,    "sun.stl")
+    backends.Renderer.default.view(gears.all)
   }
 
 }

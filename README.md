@@ -115,7 +115,7 @@ Features that may (or may not) be implemented, depending on time and motivation:
   - more operations
     * chamfer
     * making object smaller (negative minkowski sum): instead of adding some tolerance to all dimension, design your object at the right size, the make them a bit smaller so they fit together. The goal is to move the face parallel to their normal by some amount while keeping the mesh well-formed.
-  - cahnge FromFile to FromURL
+  - change FromFile to FromURL
   - a `Solidifiable` trait that has an `implicit def solidify: Solid` method
   - object cache:
     * object
@@ -125,7 +125,7 @@ Features that may (or may not) be implemented, depending on time and motivation:
       - created
       - last accessed
       - how many times accessed
-      - filename (points twoard some stl.gz/bz2/xz)
+      - filename (points toward some stl.gz/bz2/xz)
     * prefs in home as .scadla folder
       - alternate file/folder locations
       - cache size
