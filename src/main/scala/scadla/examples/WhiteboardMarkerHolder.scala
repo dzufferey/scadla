@@ -34,7 +34,7 @@ object WhiteboardMarkerHolder {
     beam1 + beam2 + center - magnet
   }
 
-  def rail = {
+  def side = {
     val penSpace = 2.5 * penRadius
     val base = Cube(penSpace * numberPen + 10, thickness, 20)
     val hooks = (1 to numberPen).map( i => hook.rotateZ(-Pi/3).move(i * penSpace, 11.5, 0) )
@@ -43,8 +43,9 @@ object WhiteboardMarkerHolder {
   }
 
   def main(args: Array[String]) {
-    backends.Renderer.default.view(top)
-    //backends.Renderer.default.view(rail)
+    val r = backends.Renderer.default
+    r.toSTL(top.rotateX(Pi), "wbh_top.stl") // 1x
+    r.toSTL(side, "wbh_side.stl")           // 2x
   }
 
 }

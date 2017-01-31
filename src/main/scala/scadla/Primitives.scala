@@ -103,6 +103,12 @@ case class Vector(x: Double, y: Double, z: Double) {
   def rotateBy(q: Quaternion) = q.rotate(this)
 }
 
+object Vector {
+  def x = new Vector(1, 0, 0)
+  def y = new Vector(0, 1, 0)
+  def z = new Vector(0, 0, 1)
+}
+
 case class Quaternion(a: Double, i: Double, j: Double, k: Double) {
   /** Hammilton product */
   def *(q: Quaternion) = Quaternion(a*q.a - i*q.i - j*q.j - k*q.k,
