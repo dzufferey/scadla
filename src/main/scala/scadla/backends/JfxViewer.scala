@@ -3,7 +3,11 @@ package scadla.backends
 import scadla._
 import scadla.assembly._
 import scadla.utils.box._
-import dzufferey.utils.SysCmd
+import scadla.backends.utils._
+
+import scala.sys.process.{stdin, stdout, stderr}
+
+import com.esotericsoftware.kryo.io.{Input, Output}
 
 import scalafx.Includes._
 import scalafx.application.JFXApp
@@ -19,45 +23,62 @@ import scalafx.scene.{AmbientLight, Group, Node, PerspectiveCamera, PointLight, 
 object JfxViewer extends Viewer {
   
   def apply(obj: Polyhedron) {
+    import scala.sys.process._
     val cmd = Array("java", "-classpath", getClassPath, "scadla.backends.JfxViewerAppP")
-    val input = Some(serialize(obj))
-    SysCmd.execWithoutOutput(cmd, input)
+    val io = new  ProcessIO(serialize(obj), handleOut(false), handleOut(true), false)
+    stringSeqToProcess(cmd).run(io).exitValue
   }
   
   def apply(a: Assembly) {
+    import scala.sys.process._
     val cmd = Array("java", "-classpath", getClassPath, "scadla.backends.JfxViewerAppA")
-    val input = Some(serialize(a))
-    SysCmd.execWithoutOutput(cmd, input)
+    val io = new  ProcessIO(serialize(a), handleOut(false), handleOut(true), false)
+    stringSeqToProcess(cmd).run(io).exitValue
+  }
+
+  protected def handleOut(isErr: Boolean)(in: java.io.InputStream) {
+    val buffer = new Array[Byte](1024 * 4)
+    try {
+      var n = 1
+      while(n > 0) {
+        n = in.read(buffer)
+        if (n > 0) {
+          if (isErr) stderr.write(buffer, 0, n)
+          else stdout.write(buffer, 0, n)
+        }
+      }
+    } finally {
+      in.close
+    }
   }
     
-  import scala.pickling.Defaults._
-  import scala.pickling.json._
-  //import scala.pickling.static._
-  import scadla.backends.utils.Pickles._
+  def serialize(obj: Polyhedron)(out: java.io.OutputStream) {
+    val k = KryoSerializer.serializer
+    k.writeObject(new Output(out), JfxViewerObjPoly(obj));
+    out.close
+  }
 
+  def serialize(a: Assembly)(out: java.io.OutputStream) {
+    val k = KryoSerializer.serializer
+    k.writeObject(new Output(out), JfxViewerObjAssembly(a));
+    out.close
+  }
 
-  def serialize(obj: Polyhedron): String = {
-    JfxViewerObjPoly(obj).pickle.value
+  def deserialize: JfxViewerObj = {
+    val k = KryoSerializer.serializer
+    k.readObject(new Input(stdin), classOf[JfxViewerObj]);
+  }
+
+  def deserializeP: JfxViewerObj = {
+    val k = KryoSerializer.serializer
+    k.readObject(new Input(stdin), classOf[JfxViewerObjPoly]);
   }
   
-  def serialize(a: Assembly): String = {
-    JfxViewerObjAssembly(a).pickle.value
+  def deserializeA: JfxViewerObj = {
+    val k = KryoSerializer.serializer
+    k.readObject(new Input(stdin), classOf[JfxViewerObjAssembly]);
   }
-  
-  def deserialize(str: String): JfxViewerObj = {
-    //TODO
-    //JSONPickle(str).unpickle[JfxViewerObj]
-    JSONPickle(str).unpickle[JfxViewerObjPoly]
-    //JSONPickle(str).unpickle[JfxViewerObjAssembly]
-  }
-  
-  def deserializeP(str: String): JfxViewerObj = {
-    JSONPickle(str).unpickle[JfxViewerObjPoly]
-  }
-  
-  def deserializeA(str: String): JfxViewerObj = {
-    JSONPickle(str).unpickle[JfxViewerObjAssembly]
-  }
+
 
 
   def getClassPath = System.getProperty("java.class.path")
@@ -84,28 +105,18 @@ object JfxViewer extends Viewer {
 }
 
 object JfxViewerAppP extends JfxViewerApp {
-  override protected def deserialize(s: String) = JfxViewer.deserializeP(s)
+  override protected def deserialize = JfxViewer.deserializeP
 }
 
 object JfxViewerAppA extends JfxViewerApp {
-  override protected def deserialize(s: String) = JfxViewer.deserializeA(s)
+  override protected def deserialize = JfxViewer.deserializeA
 }
 
 //TODO add parameters from the JfxViewerObj
 //TODO arrows to display the axis
 class JfxViewerApp extends JFXApp {
 
-  protected def deserialize(s: String) = JfxViewer.deserialize(s)
-
-  protected def readPolyFromStdIn = {
-    val buffer = new StringBuffer
-    var line = scala.io.StdIn.readLine
-    while (line != null) {
-      buffer.append(line)
-      line = scala.io.StdIn.readLine
-    }
-    deserialize(buffer.toString)
-  }
+  protected def deserialize = JfxViewer.deserialize
 
   stage = new PrimaryStage {
     title = "Scadla JavaFX model viewer"
@@ -113,7 +124,7 @@ class JfxViewerApp extends JFXApp {
     scene = new Scene(800, 600, true, SceneAntialiasing.Balanced) {
       fill = Color.LightBlue
      
-      val obj = readPolyFromStdIn
+      val obj = deserialize
       
       val box = obj.boundingBox
      

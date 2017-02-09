@@ -70,24 +70,26 @@ class ComponentStorageBox(
       val s = Sphere(radius).scale((drawerWallThickness-1)/radius/2, 1, 1)
       h - s.move(0, drawerHeight/2, drawerHeight/2) - s.move(wallThickness, drawerHeight/2, drawerHeight/2) 
     }
-    val c1 = Cube(width - w2g, depth - wallThickness - gap, drawerHeight)
-    val c2 = Cube(width - w2g - dw2g, depth - wallThickness - gap - dw2g, drawerHeight).move(drawerWallThickness, drawerWallThickness, drawerWallThickness)
-    val lh = labelHolder( (width-w2g-wallThickness)/2 + labelWallThickness)
+    val dwidth = width - w2g
+    val ddepth = depth - wallThickness - gap
+    val c1 = Cube(dwidth, ddepth, drawerHeight)
+    val c2 = Cube(dwidth - dw2g, ddepth - dw2g, drawerHeight).move(drawerWallThickness, drawerWallThickness, drawerWallThickness)
+    val lh = labelHolder( (dwidth-wallThickness)/2 + labelWallThickness)
     //base with handle and thing to hold paper description
     val box = Union(c1 - c2,
-        handle.mirror(0,1,0).moveX( (width-w2g-wallThickness)/2 ),
+        handle.mirror(0,1,0).moveX( (dwidth-wallThickness)/2 ),
         lh.mirror(0,1,0),
-        lh.mirror(0,1,0).moveX( (width-w2g+wallThickness)/2 -labelWallThickness)
+        lh.mirror(0,1,0).moveX( (dwidth+wallThickness)/2 -labelWallThickness)
       )
     //add inner dividers
-    val dividersX = (1 until divisionsX).map( i => Cube( drawerWallThickness, depth -w2g, drawerHeight).move( -drawerWallThickness/2 + i * (width-w2g) / divisionsX , 0, 0) )
-    val dividersY = (1 until divisionsY).map( i => Cube( width -w2g, drawerWallThickness, drawerHeight).move( 0, -drawerWallThickness/2 + i * (depth-w2g) / divisionsY , 0) )
+    val dividersX = (1 until divisionsX).map( i => Cube( drawerWallThickness, ddepth, drawerHeight).move( -drawerWallThickness/2 + i * dwidth / divisionsX , 0, 0) )
+    val dividersY = (1 until divisionsY).map( i => Cube( dwidth, drawerWallThickness, drawerHeight).move( 0, -drawerWallThickness/2 + i * (depth-w2g) / divisionsY , 0) )
     val withDividers = box ++ dividersX ++ dividersY
     //add space for the rails
     val r0 = (rails + rails.moveZ(-wallThickness)).move(-gap/2, 0, drawerHeight+gap/2)
     val r1 = r0 + r0.moveY(-2*labelWallThickness)
     val rLeft = r1 * Cube(4*wallThickness, depth + 2*labelWallThickness, drawerHeight + 1).moveY(-2*labelWallThickness)
-    val rRight= r1 * Cube(4*wallThickness, depth + 2*labelWallThickness, drawerHeight + 1).move(width-w2g-4*wallThickness, -2*labelWallThickness, 0)
+    val rRight= r1 * Cube(4*wallThickness, depth + 2*labelWallThickness, drawerHeight + 1).move(dwidth-4*wallThickness, -2*labelWallThickness, 0)
     val railing = Bigger(Union(Hull(rLeft), Hull(rRight)), gap)
     withDividers - railing
   }
@@ -118,7 +120,13 @@ object ComponentStorageBox {
       (box.drawer(1, 1), "drawer_1x1.stl"),
       (box.drawer(2, 1), "drawer_2x1.stl"),
       (box.drawer(2, 2), "drawer_2x2.stl"),
-      (box.drawer(3, 3), "drawer_3x3.stl")
+      (box.drawer(3, 1), "drawer_3x1.stl"),
+      (box.drawer(3, 2), "drawer_3x2.stl"),
+      (box.drawer(3, 3), "drawer_3x3.stl"),
+      (box.drawer(4, 1), "drawer_4x1.stl"),
+      (box.drawer(4, 2), "drawer_4x2.stl"),
+      (box.drawer(4, 3), "drawer_4x3.stl"),
+      (box.drawer(4, 4), "drawer_4x4.stl")
      )
     elts.par.foreach{ case (s, f) => r.toSTL(s, f) }
   }

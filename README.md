@@ -153,10 +153,6 @@ Features that may (or may not) be implemented, depending on time and motivation:
     * choosing window size according to screen size, and allow resizing
     * moving the point of view
 
-* GUI
- - try to avoid the serialization when launching the GUI
- - more robust way to transfer data between the main program and the GUI
-
 * Assemblies: group of object linked by joints (can move), the goal is to make it easier to visualized larger projects and make sure everything fits/move properly
   - better notation for the connections
   - joint: what about time transformers (for min-max travel)
