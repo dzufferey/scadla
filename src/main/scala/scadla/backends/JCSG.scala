@@ -1,6 +1,7 @@
 package scadla.backends
 
-import eu.mihosoft.vrl.v3d.{Cube => JCube, Sphere => JSphere, Cylinder => JCylinder, Polyhedron => JPolyhedron, _}
+import eu.mihosoft.jcsg.{Cube => JCube, Sphere => JSphere, Cylinder => JCylinder, Polyhedron => JPolyhedron, _}
+import eu.mihosoft.vvecmath.{Vector3d, Transform, Plane}
 import scadla._
 import InlineOps._
 import scala.math._
@@ -36,7 +37,7 @@ class JCSG(numSlices: Int) extends Renderer {
 
   protected def to(s: Solid): CSG = s match {
     case Empty =>                                   empty
-    case Cube(width, depth, height) =>              new JCube(new Vector3d(width/2, depth/2, height/2), new Vector3d(width, depth, height)).toCSG()
+    case Cube(width, depth, height) =>              new JCube(Vector3d.xyz(width/2, depth/2, height/2), Vector3d.xyz(width, depth, height)).toCSG()
     case Sphere(radius) =>                          new JSphere(radius, numSlices, numSlices/2).toCSG()
     case Cylinder(radiusBot, radiusTop, height) =>  new JCylinder(radiusBot, radiusTop, height, numSlices).toCSG()
     case Polyhedron(triangles) =>
@@ -44,7 +45,7 @@ class JCSG(numSlices: Int) extends Renderer {
       val indexed = points.toSeq.zipWithIndex
       val idx: Map[Point, Int] = indexed.toMap
       val vs = Array.ofDim[Vector3d](indexed.size)
-      indexed.foreach{ case (Point(x,y,z), i) => vs(i) = new Vector3d(x,y,z) }
+      indexed.foreach{ case (Point(x,y,z), i) => vs(i) = Vector3d.xyz(x,y,z) }
       val is = Array.ofDim[Array[Integer]](triangles.size)
       triangles.zipWithIndex.foreach { case (Face(a,b,c), i) => is(i) = Array(idx(a), idx(b), idx(c)) }
       new JPolyhedron(vs, is).toCSG()
@@ -58,10 +59,11 @@ class JCSG(numSlices: Int) extends Renderer {
     case Difference(pos, negs @ _*) =>  negs.map(to).foldLeft(to(pos))( _.difference(_) )
     case Minkowski(objs @ _*) =>        stupidMinkowski(objs)
     case Hull(objs @ _*) =>             to(Union(objs:_*)).hull
-    case Scale(x, y, z, obj) =>         to(obj).transformed(new Transform().scale(x, y, z))
-    case Rotate(x, y, z, obj) =>        to(obj).transformed(new Transform().rot(toDegrees(x), toDegrees(y), toDegrees(z)))
-    case Translate(x, y, z, obj) =>     to(obj).transformed(new Transform().translate(x, y, z))
-    case Mirror(x, y, z, obj) =>        to(obj).transformed(new Transform().mirror(new Plane(new Vector3d(x,y,z), 0)))
+    case Scale(x, y, z, obj) =>         to(obj).transformed(Transform.unity().scale(x, y, z))
+    case Rotate(x, y, z, obj) =>        to(obj).transformed(Transform.unity().rot(toDegrees(x), toDegrees(y), toDegrees(z)))
+    case Translate(x, y, z, obj) =>     to(obj).transformed(Transform.unity().translate(x, y, z))
+    case Mirror(x, y, z, obj) =>        to(obj).transformed(Transform.unity().mirror(new Plane(Vector3d.xyz(x,y,z), 0)))
+  //case Mirror(x, y, z, obj) =>        to(obj).transformed(Transform.unity().mirror(Plane.fromPointAndNormal(Vector3d.ZERO, Vector3d.xyz(x,y,z))))
     case Multiply(m, obj) =>            sys.error("JCSG does not support arbitrary matrix transform")
   }
   

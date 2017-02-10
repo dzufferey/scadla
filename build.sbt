@@ -21,7 +21,7 @@ libraryDependencies ++= Seq(
   "io.github.dzufferey" %% "misc-scala-utils" % "0.1-SNAPSHOT",
   "com.twitter" %% "chill" % "0.9.1",
   "org.scalafx" %% "scalafx" % "8.0.102-R11",
-  "eu.mihosoft.vrl.jcsg" % "jcsg" % "0.3.1"
+  "eu.mihosoft.vrl.jcsg" % "jcsg" % "0.5.2"
 )
 
 addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.17")
