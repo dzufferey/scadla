@@ -78,9 +78,20 @@ object Nema17 {
     NemaStepper.putOnScrew(31, s)
   }
 
+  def axis(length: Double) = NemaStepper.axis(2.5, length, 0.45)
+
 }
 
 object NemaStepper {
+
+  def axis(axisRadius: Double, length: Double, axisFlat: Double) = {
+    val a = Cylinder(axisRadius, length)
+    if (axisFlat > 0) {
+      a - Cube(2*axisRadius, 2*axisRadius, length).move(axisRadius - axisFlat, -axisRadius, 0)
+    } else {
+      a
+    }
+  }
 
   def apply( side: Double,
              length: Double,
@@ -105,16 +116,8 @@ object NemaStepper {
       } else {
         withFlange
       }
-    def axis(length: Double) = {
-      val a = Cylinder(axisRadius, length)
-      if (axisFlat > 0) {
-        a - Cube(2*axisRadius, 2*axisRadius, length).move(axisRadius - axisFlat, -axisRadius, 0)
-      } else {
-        a
-      }
-    }
-    val withFrontAxis = withScrews + axis(axisLengthFront)
-    val withBackAxis = withFrontAxis + axis(axisLengthBack).moveZ(-length -axisLengthBack)
+    val withFrontAxis = withScrews + axis(axisRadius, axisLengthFront, axisFlat)
+    val withBackAxis = withFrontAxis + axis(axisRadius, axisLengthBack, axisFlat).moveZ(-length -axisLengthBack)
     withBackAxis
   }
 

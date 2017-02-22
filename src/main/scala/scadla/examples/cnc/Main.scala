@@ -61,6 +61,8 @@ object Main{
   //r.toSTL(Frame.hBeamJig1, "jig1.stl")
   //r.toSTL(Frame.hBeamJig2, "jig2.stl")
 
+  //r.view(Pulley(6, 4, 2, 1, 1, 2))
+
     println("work in progress")
   }
 
