@@ -4,6 +4,7 @@ import scadla._
 import scadla.InlineOps._
 import scadla.utils._
 import scala.math._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 //place holder for 20x20mm aluminium extrusions
 object _2020 {

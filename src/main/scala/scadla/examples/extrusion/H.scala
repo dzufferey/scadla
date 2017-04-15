@@ -3,6 +3,7 @@ package scadla.examples.extrusion
 import scadla._
 import scadla.InlineOps._
 import scadla.utils._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 //actually: more like a double T
 object H {

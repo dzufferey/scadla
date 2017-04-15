@@ -4,23 +4,26 @@ import scadla._
 import scadla.InlineOps._
 import scadla.utils._
 import scala.math._
+import squants.space.Length
+import squants.space.Radians
+import squants.space.Millimeters
 
 object Rack {
 
   //for carving so the backlash makes the tooth larger
-  def tooth( toothWidth: Double,
+  def tooth( toothWidth: Length,
              pressureAngle: Double,
-             addenum: Double,
-             dedenum: Double,
-             height: Double,
-             backlash: Double,
+             addenum: Length,
+             dedenum: Length,
+             height: Length,
+             backlash: Length,
              skew: Double ) = {
     assert(pressureAngle < Pi / 2 && pressureAngle >= 0, "pressureAngle must be between in [0;π/2)")
     val base = toothWidth + 2 * addenum * tan(pressureAngle) + backlash
     val tip  = toothWidth - 2 * dedenum * tan(pressureAngle) + backlash
-    assert(tip > 0, "tip of the profile is negative ("+tip+"), try decreasing the pressureAngle, or addenum/dedenum.")
+    assert(tip.value > 0, "tip of the profile is negative ("+tip+"), try decreasing the pressureAngle, or addenum/dedenum.")
     val tHeight = addenum + dedenum + backlash
-    Trapezoid(tip, base, height, tHeight, skew).rotateX(Pi/2).move(-base/2 + addenum*tan(skew), addenum, 0).rotateZ(-Pi/2)
+    Trapezoid(tip, base, height, tHeight, skew).rotateX(Radians(Pi/2)).move(-base/2 + addenum*tan(skew), addenum, Millimeters(0)).rotateZ(Radians(-Pi/2))
   }
   
   /** Create an involute spur gear.
@@ -33,25 +36,25 @@ object Rack {
    * @param backlash add some space (manufacturing tolerance)
    * @param skew generate a gear with an asymmetric profile by skewing the tooths
    */
-  def apply( toothWidth: Double,
+  def apply( toothWidth: Length,
              nbrTeeth: Int,
              pressureAngle: Double,
-             addenum: Double,
-             dedenum: Double,
-             height: Double,
-             backlash: Double,
+             addenum: Length,
+             dedenum: Length,
+             height: Length,
+             backlash: Length,
              skew: Double = 0.0) = {
 
-    assert(addenum > 0, "addenum must be greater than 0")
-    assert(dedenum > 0, "dedenum must be greater than 0")
+    assert(addenum.value > 0, "addenum must be greater than 0")
+    assert(dedenum.value > 0, "dedenum must be greater than 0")
     assert(nbrTeeth > 0, "number of tooths must be greater than 0")
-    assert(toothWidth > 0, "toothWidth must be greater than 0")
+    assert(toothWidth.value > 0, "toothWidth must be greater than 0")
 
     val rackTooth = tooth(toothWidth, pressureAngle, addenum, dedenum, height, -backlash, skew)
 
     val space = 2*toothWidth
     val teeth = for (i <- 0 until nbrTeeth) yield rackTooth.moveY(i * space)
-    val base = Cube(Gear.baseThickness, nbrTeeth * space, height).move(dedenum, -space/2, 0)
+    val base = Cube(Gear.baseThickness, nbrTeeth * space, height).move(dedenum, -space/2, Millimeters(0))
     base ++ teeth
   }
 

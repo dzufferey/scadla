@@ -19,6 +19,8 @@ import scalafx.scene.paint.{Color, PhongMaterial}
 import scalafx.scene.shape.{MeshView, TriangleMesh}
 import scalafx.scene.transform.{Rotate,Scale,Translate}
 import scalafx.scene.{AmbientLight, Group, Node, PerspectiveCamera, PointLight, Scene, SceneAntialiasing}
+import squants.time.Seconds
+import squants.space.Millimeters
 
 object JfxViewer extends Viewer {
   
@@ -130,15 +132,15 @@ class JfxViewerApp extends JFXApp {
      
       //center at origin
       val centered = new Group(obj.mesh) {
-        translateX = - box.x.center
-        translateY = - box.y.center
-        translateZ = - box.z.center
+        translateX = - box.x.center.toMillimeters
+        translateY = - box.y.center.toMillimeters
+        translateZ = - box.z.center.toMillimeters
       }
       //scale to camera FOV
       val scaled = new Group(centered) {
-        val sX = 600 / box.x.size
-        val sY = 600 / box.y.size
-        val sZ = 600 / box.z.size
+        val sX = 600 / box.x.size.toMillimeters
+        val sY = 600 / box.y.size.toMillimeters
+        val sZ = 600 / box.z.size.toMillimeters
         val s = math.min(sX, math.min(sY, sZ))
         scaleX = s
         scaleY = s
@@ -241,18 +243,18 @@ case class JfxViewerObjAssembly(a: Assembly) extends JfxViewerObj {
                           translate: (DoubleProperty, DoubleProperty, DoubleProperty),
                           rotate: (DoubleProperty, DoubleProperty, DoubleProperty)) = {
     val rpy = frame.orientation.toRollPitchYaw
-    translate._1() = frame.translation.x
-    translate._2() = frame.translation.y
-    translate._3() = frame.translation.z
-    rotate._1() = rpy.x
-    rotate._2() = rpy.y
-    rotate._3() = rpy.z
+    translate._1() = frame.translation.x.toMillimeters
+    translate._2() = frame.translation.y.toMillimeters
+    translate._3() = frame.translation.z.toMillimeters
+    rotate._1() = rpy.x.toRadians
+    rotate._2() = rpy.y.toRadians
+    rotate._3() = rpy.z.toRadians
   }
 
   /** triple (T,R,M) where T controls the translation, R the rotation, and M is the mesh.
    *  turn the Seq[(Frame,Polyhedron)] into a series of object and tranforms (and keep refs for the update).
    */
-  lazy val meshes = a.at(0).map{ case (frame, poly) =>
+  lazy val meshes = a.at(Seconds(0)).map{ case (frame, poly) =>
     val m0 = JfxViewerObj.objToMeshView(poly)
     val angleX = DoubleProperty(0)
     val angleY = DoubleProperty(0)
@@ -272,7 +274,7 @@ case class JfxViewerObjAssembly(a: Assembly) extends JfxViewerObj {
   def setParameters(params: List[Double]) {
     params match {
       case List(t, e) =>
-        val frames = a.expandAt(e, t)
+        val frames = a.expandAt(Millimeters(e), Seconds(t))
         //when updating, only the values of the tranforms needs to be updated
         meshes.zip(frames).foreach{ case ((t,r,_),(f,_)) => setFrame(f, t, r) }
       case other => sys.error("expected two parameters: " + other)
@@ -282,9 +284,9 @@ case class JfxViewerObjAssembly(a: Assembly) extends JfxViewerObj {
     val ms = meshes.map(_._3)
     new Group(ms:_*)
   }
-  def boundingBox = {
+  def boundingBox: Box = {
     import math.{min, max}
-    val bbs = a.at(0).map{ case (frame, poly) =>
+    val bbs: Seq[Box] = a.at(Seconds(0)).map{ case (frame, poly) =>
       val bb = JfxViewerObj.getBoundingBox(poly)
       val vs = bb.corners.map(frame.directTo)
       BoundingBox(vs)
@@ -313,9 +315,9 @@ object JfxViewerObj {
     val ptsArray = Array.ofDim[Float](indexedP.size * 3)
     for ( i <- indexedP.indices ) {
       val p = indexedP(i)
-      ptsArray(3*i)   = p.x.toFloat
-      ptsArray(3*i+1) = p.y.toFloat
-      ptsArray(3*i+2) = p.z.toFloat
+      ptsArray(3*i)   = p.x.toMillimeters.toFloat
+      ptsArray(3*i+1) = p.y.toMillimeters.toFloat
+      ptsArray(3*i+2) = p.z.toMillimeters.toFloat
     }
     mesh.points = ptsArray
 

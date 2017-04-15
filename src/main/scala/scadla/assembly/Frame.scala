@@ -1,6 +1,7 @@
 package scadla.assembly
 
 import scadla._
+import squants.space.Millimeters
 
 
 
@@ -39,7 +40,7 @@ case class Frame(translation: Vector, orientation: Quaternion) {
 }
 
 object Frame {
-  def apply(t: Vector): Frame = Frame(t, Quaternion(1,0,0,0))
-  def apply(q: Quaternion): Frame = Frame(Vector(0,0,0), q)
-  def apply(): Frame = Frame(Vector(0,0,0), Quaternion(1,0,0,0))
+  def apply(t: Vector): Frame = Frame(t, Quaternion(1,0,0,0, t.unit))
+  def apply(q: Quaternion): Frame = Frame(Vector(0,0,0, q.unit), q)
+  def apply(): Frame = Frame(Vector(0,0,0,Millimeters), Quaternion(1,0,0,0,Millimeters))
 }

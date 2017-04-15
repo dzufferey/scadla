@@ -4,8 +4,9 @@ import eu.mihosoft.jcsg.{Cube => JCube, Sphere => JSphere, Cylinder => JCylinder
 import eu.mihosoft.vvecmath.{Vector3d, Transform, Plane}
 import scadla._
 import InlineOps._
-import scala.math._
 import java.util.ArrayList
+import squants.space.Length
+import squants.space.Millimeters
 
 //backend using: https://github.com/miho/JCSG
 object JCSG extends JCSG(16)
@@ -23,7 +24,7 @@ class JCSG(numSlices: Int) extends Renderer {
     }
     // and then deal with internal holes (union with A translated by every point in B ?)
     val bPoints = b.faces.foldLeft(Set.empty[Point])( (acc, f) => acc + f.p1 + f.p2 + f.p3 )
-    val parts2 = bPoints.toSeq.map{ case Point(x, y, z) => a.move(x,y,z) }
+    val parts2 = bPoints.toSeq.map(a.move(_))
     // then union everything and render
     val res = Union( (parts1 ++ parts2) :_*)
     apply(res)
@@ -35,7 +36,10 @@ class JCSG(numSlices: Int) extends Renderer {
     to(res)
   }
 
-  protected def to(s: Solid): CSG = s match {
+  protected def to(s: Solid): CSG = {
+    import scala.language.implicitConversions
+    implicit def toDouble(l: Length): Double = l.toMillimeters // 1 unit = 1 mm. This is a quick code hack, make explicit later?
+    s match {  
     case Empty =>                                   empty
     case Cube(width, depth, height) =>              new JCube(Vector3d.xyz(width/2, depth/2, height/2), Vector3d.xyz(width, depth, height)).toCSG()
     case Sphere(radius) =>                          new JSphere(radius, numSlices, numSlices/2).toCSG()
@@ -45,7 +49,7 @@ class JCSG(numSlices: Int) extends Renderer {
       val indexed = points.toSeq.zipWithIndex
       val idx: Map[Point, Int] = indexed.toMap
       val vs = Array.ofDim[Vector3d](indexed.size)
-      indexed.foreach{ case (Point(x,y,z), i) => vs(i) = Vector3d.xyz(x,y,z) }
+      indexed.foreach{ case (p, i) => vs(i) = Vector3d.xyz(p.x,p.y,p.z) }
       val is = Array.ofDim[Array[Integer]](triangles.size)
       triangles.zipWithIndex.foreach { case (Face(a,b,c), i) => is(i) = Array(idx(a), idx(b), idx(c)) }
       new JPolyhedron(vs, is).toCSG()
@@ -60,16 +64,17 @@ class JCSG(numSlices: Int) extends Renderer {
     case Minkowski(objs @ _*) =>        stupidMinkowski(objs)
     case Hull(objs @ _*) =>             to(Union(objs:_*)).hull
     case Scale(x, y, z, obj) =>         to(obj).transformed(Transform.unity().scale(x, y, z))
-    case Rotate(x, y, z, obj) =>        to(obj).transformed(Transform.unity().rot(toDegrees(x), toDegrees(y), toDegrees(z)))
+    case Rotate(x, y, z, obj) =>        to(obj).transformed(Transform.unity().rot(x.toDegrees, y.toDegrees, z.toDegrees))
     case Translate(x, y, z, obj) =>     to(obj).transformed(Transform.unity().translate(x, y, z))
     case Mirror(x, y, z, obj) =>        to(obj).transformed(Transform.unity().mirror(new Plane(Vector3d.xyz(x,y,z), 0)))
   //case Mirror(x, y, z, obj) =>        to(obj).transformed(Transform.unity().mirror(Plane.fromPointAndNormal(Vector3d.ZERO, Vector3d.xyz(x,y,z))))
     case Multiply(m, obj) =>            sys.error("JCSG does not support arbitrary matrix transform")
+    }
   }
   
   protected def polyToFaces(p: Polygon): List[Face] = {
     val vs = p.vertices.toArray(Array.ofDim[Vertex](p.vertices.size))
-    val pts = vs.map( v => Point(v.pos.x, v.pos.y, v.pos.z))
+    val pts = vs.map( v => Point(Millimeters(v.pos.x), Millimeters(v.pos.y), Millimeters(v.pos.z)))
     //if more than 3 vertices if needs to be triangulated
     //assume that the vertices form a convex loop
     (0 until vs.size - 2).toList.map(i => Face(pts(0), pts(i+1), pts(i+2)) )

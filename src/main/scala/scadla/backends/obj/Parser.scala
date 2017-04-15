@@ -5,6 +5,7 @@ import scala.util.parsing.combinator._
 import dzufferey.utils._
 import dzufferey.utils.LogLevel._
 import java.io._
+import squants.space.Millimeters
 
 // https://en.wikipedia.org/wiki/Wavefront_.obj_file
 // We assume that the faces are oriented and only triangles
@@ -25,8 +26,8 @@ object Parser extends JavaTokenParsers {
 
   def parseVertex: Parser[Point] =
     "v" ~> repN(3, floatingPointNumber) ~ opt(floatingPointNumber) ^^ {
-      case List(a, b,c) ~ None => Point(a.toDouble, b.toDouble, c.toDouble)
-      case List(a, b,c) ~ Some(w) => Point(a.toDouble / w.toDouble, b.toDouble / w.toDouble, c.toDouble / w.toDouble)
+      case List(a, b,c) ~ None => Point(Millimeters(a.toDouble), Millimeters(b.toDouble), Millimeters(c.toDouble))
+      case List(a, b,c) ~ Some(w) => Point(Millimeters(a.toDouble / w.toDouble), Millimeters(b.toDouble / w.toDouble), Millimeters(c.toDouble / w.toDouble))
     }
 
 

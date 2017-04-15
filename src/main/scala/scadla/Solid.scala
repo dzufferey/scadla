@@ -1,11 +1,14 @@
 package scadla
 
+import squants.space.Length
+import squants.space.Angle
+
 sealed abstract class Solid 
 
 //basic shapes
-case class Cube(width: Double, depth: Double, height: Double) extends Solid
-case class Sphere(radius: Double) extends Solid
-case class Cylinder(radiusBot: Double, radiusTop: Double, height: Double) extends Solid
+case class Cube(width: Length, depth: Length, height: Length) extends Solid
+case class Sphere(radius: Length) extends Solid
+case class Cylinder(radiusBot: Length, radiusTop: Length, height: Length) extends Solid
 case class FromFile(path: String, format: String = "stl") extends Solid {
   def load: Polyhedron = format match {
     case "stl" => backends.stl.Parser(path)
@@ -28,8 +31,8 @@ case class Hull(objs: Solid*) extends Solid
 
 //transforms
 case class Scale(x: Double, y: Double, z: Double, obj: Solid) extends Solid
-case class Rotate(x: Double, y: Double, z: Double, obj: Solid) extends Solid
-case class Translate(x: Double, y: Double, z: Double, obj: Solid) extends Solid
+case class Rotate(x: Angle, y: Angle, z: Angle, obj: Solid) extends Solid
+case class Translate(x: Length, y: Length, z: Length, obj: Solid) extends Solid
 case class Mirror(x: Double, y: Double, z: Double, obj: Solid) extends Solid
 case class Multiply(m: Matrix, obj: Solid) extends Solid
 
@@ -40,7 +43,7 @@ case class Multiply(m: Matrix, obj: Solid) extends Solid
 /////////////////////////////
 
 object Cylinder {
-  def apply(radius: Double, height: Double): Cylinder = Cylinder(radius, radius, height)
+  def apply(radius: Length, height: Length): Cylinder = Cylinder(radius, radius, height)
 }
 
 object Translate {

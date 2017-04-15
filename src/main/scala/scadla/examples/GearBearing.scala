@@ -5,6 +5,8 @@ import scadla._
 import utils._
 import utils.gear._
 import InlineOps._
+import scadla.utils.gear.Twist.radiansPerMm
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 //inspired by Emmet's Gear Bearing (http://www.thingiverse.com/thing:53451)
 
@@ -15,7 +17,7 @@ object GearBearing {
             nbrPlanets: Int,
             nbrTeethPlanet: Int,
             nbrTeethSun: Int,
-            helixAngleOuter: Double,
+            helixAngleOuter: Twist,
             pressureAngle: Double,
             centerHexagonMinRadius: Double,
             backlash: Double) = {
@@ -25,7 +27,7 @@ object GearBearing {
 
   def main(args: Array[String]) {
     //val gears = apply(35, 10, 5, 10, 15, 0.02, toRadians(40), 5, 0.1)
-    val gears = apply(35, 10, 5, 6, 10, 0.02, toRadians(60), 5, 0.1)
+    val gears = apply(35, 10, 5, 6, 10, radiansPerMm(0.02), toRadians(60), 5, 0.1)
     backends.Renderer.default.view(gears.all)
   }
 
@@ -36,7 +38,7 @@ class GearBearing(val outerRadius: Double,
                   val nbrPlanets: Int,
                   val nbrTeethPlanet: Int,
                   val nbrTeethSun: Int,
-                  val helixAngleOuter: Double,
+                  val helixAngleOuter: Twist,
                   val pressureAngle: Double,
                   val centerHexagonMinRadius: Double,
                   val backlash: Double) {
@@ -50,7 +52,7 @@ class GearBearing(val outerRadius: Double,
     default * coeff
   }
 
-  protected def gear(pitch: Double, nbrTeeth: Int, helix: Double) = {
+  protected def gear(pitch: Double, nbrTeeth: Int, helix: Twist) = {
     val add = addenum( pitch, nbrTeeth)
     HerringboneGear(pitch, nbrTeeth, pressureAngle, add, add, height, helix, backlash)
   }
@@ -60,8 +62,8 @@ class GearBearing(val outerRadius: Double,
   val planetRadius = outerRadius / (2 + sunToPlanetRatio)
   val sunRadius = planetRadius * sunToPlanetRatio
   val nbrTeethOuter = 2 * nbrTeethPlanet + nbrTeethSun
-  val helixAnglePlanet = helixAngleOuter * outerRadius / planetRadius
-  val helixAngleSun = -(helixAngleOuter * outerRadius / sunRadius)
+  val helixAnglePlanet = helixAngleOuter * (outerRadius / planetRadius)
+  val helixAngleSun = -(helixAngleOuter * (outerRadius / sunRadius))
 
   def externalRadius = outerRadius + addenum(outerRadius, nbrTeethOuter) + Gear.baseThickness
 

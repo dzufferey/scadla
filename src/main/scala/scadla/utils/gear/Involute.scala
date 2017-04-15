@@ -2,6 +2,8 @@ package scadla.utils.gear
   
 import scadla._
 import scala.math._
+import squants.space.Length
+import squants.space.Millimeters
 
 object Involute {
   
@@ -13,40 +15,40 @@ object Involute {
   //  ρ = r * sqrt(1 + a^2)
   //  φ = a - arctan(a)
 
-  def x(radius: Double, phase: Double, theta: Double): Double = {
+  def x(radius: Length, phase: Double, theta: Double): Length = {
     radius * (cos(theta) + (theta - phase) * sin(theta))
   }
 
-  def y(radius: Double, phase: Double, theta: Double): Double = {
+  def y(radius: Length, phase: Double, theta: Double): Length = {
     radius * (sin(theta) - (theta - phase) * cos(theta))
   }
   
-  def x(radius: Double, theta: Double): Double = x(radius, 0, theta)
-  def y(radius: Double, theta: Double): Double = x(radius, 0, theta)
+  def x(radius: Length, theta: Double): Length = x(radius, 0, theta)
+  def y(radius: Length, theta: Double): Length = y(radius, 0, theta)
 
-  def x(theta: Double): Double = x(1, theta)
-  def y(theta: Double): Double = x(1, theta)
+  //def x(theta: Double): Double = x(1, theta)
+  //def y(theta: Double): Double = y(1, theta)
 
 
 
-  def apply(radius: Double, phase: Double, start: Double, end: Double, height: Double, stepSize: Double): Polyhedron = {
-    assert(radius > 0)
+  def apply(radius: Length, phase: Double, start: Double, end: Double, height: Length, stepSize: Double): Polyhedron = {
+    assert(radius.value > 0)
     assert(end > start)
-    assert(height > 0)
+    assert(height.value > 0)
     assert(stepSize > 0)
 
     val steps = ceil((end - start) / stepSize).toInt
     val actualStepSize = (end - start) / steps
 
     val points = Array.ofDim[Point](2 * (2 + steps))
-    points(0) = Point(0,0,0)
-    points(1) = Point(0,0,height)
+    points(0) = Point(Millimeters(0),Millimeters(0),Millimeters(0))
+    points(1) = Point(Millimeters(0),Millimeters(0),height)
 
     for (i <- (0 to steps)) {
       val theta = start + i * actualStepSize
       val x1 = x(radius, phase, theta)
       val y1 = y(radius, phase, theta)
-      points(2*(i+1)    ) = Point(x1, y1, 0)
+      points(2*(i+1)    ) = Point(x1, y1, Millimeters(0))
       points(2*(i+1) + 1) = Point(x1, y1, height)
     }
 
@@ -69,7 +71,7 @@ object Involute {
     Polyhedron(faces)
   }
   
-  def apply(radius: Double, start: Double, end: Double, height: Double): Polyhedron = {
+  def apply(radius: Length, start: Double, end: Double, height: Length): Polyhedron = {
     apply(radius, 0, start, end, height, 0.1)
   }
     

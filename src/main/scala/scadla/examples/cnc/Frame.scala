@@ -6,6 +6,8 @@ import scadla.utils._
 import scala.math._
 import scadla.examples.extrusion._
 import Common._
+import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Millimeters
 
 // TODO
 // - the parts for the cable to improve the rigidity
@@ -68,7 +70,7 @@ object Frame {
     val y = Cube(20,20,20+8.5).move(-20, 0,-20) + Cube(20, 20, 20).move(0,0,-20)
     val offsetX = 2 + 8.5 * sin(Pi/6) // 8.5 is T bottom part
     val y2 = y.rotateY(-Pi/6).moveX(offsetX)
-    val p = Vector(3, 1.5, 0).rotateBy(Quaternion.mkRotation(Pi/6, Vector(0,0,1)))
+    val p = Vector(3, 1.5, 0,Millimeters).rotateBy(Quaternion.mkRotation(Pi/6, Vector(0,0,1,Millimeters)))
     val s = screws.move(-p.y, offsetX - p.x, 0)
     Difference(
       x,
@@ -152,8 +154,8 @@ object Frame {
       val x = 30
       CenteredCube(x,x,x).rotate(Pi/4,Pi/4,0).moveY(-5) * c - corner
     }
-    val q = Quaternion.mkRotation(-2*Pi/3, Vector(0,0,1))
-    val p = Vector(-3, 1.5, 0).rotateBy(q)
+    val q = Quaternion.mkRotation(-2*Pi/3, Vector(0,0,1,Millimeters))
+    val p = Vector(-3, 1.5, 0,Millimeters).rotateBy(q)
     base + diagonal + angle - screws.move(-p.x, 8.5 * sin(Pi/6) - p.y, -2)
   }
   
@@ -207,22 +209,22 @@ object Frame {
 
   // part that goes between the feet and the frame to keep the 2π/3 angle
   protected def anglePlate = {
-    val q1 = Quaternion.mkRotation( Pi/6, Vector(0,0,1))
-    val q2 = Quaternion.mkRotation(-Pi/6, Vector(0,0,1))
+    val q1 = Quaternion.mkRotation( Pi/6, Vector(0,0,1,Millimeters))
+    val q2 = Quaternion.mkRotation(-Pi/6, Vector(0,0,1,Millimeters))
     val c1 = Cylinder(10, thickness)
     val c2 = Cylinder(boltSize + tolerance, thickness)
     val offsetY = 5.5
     val positions1 = Seq(
-      Vector( screwOffsetX1, offsetY, 0).rotateBy(q1),
-      Vector( screwOffsetX2, offsetY, 0).rotateBy(q1),
-      Vector(-screwOffsetX1, offsetY, 0).rotateBy(q2),
-      Vector(-screwOffsetX2, offsetY, 0).rotateBy(q2)
+      Vector( screwOffsetX1, offsetY, 0,Millimeters).rotateBy(q1),
+      Vector( screwOffsetX2, offsetY, 0,Millimeters).rotateBy(q1),
+      Vector(-screwOffsetX1, offsetY, 0,Millimeters).rotateBy(q2),
+      Vector(-screwOffsetX2, offsetY, 0,Millimeters).rotateBy(q2)
     )
     val positions2 = Seq(
-      Vector( screwOffsetX1, screwOffsetY1, 0).rotateBy(q1),
-      Vector( screwOffsetX2, screwOffsetY1, 0).rotateBy(q1),
-      Vector(-screwOffsetX1, screwOffsetY1, 0).rotateBy(q2),
-      Vector(-screwOffsetX2, screwOffsetY1, 0).rotateBy(q2)
+      Vector( screwOffsetX1, screwOffsetY1, 0,Millimeters).rotateBy(q1),
+      Vector( screwOffsetX2, screwOffsetY1, 0,Millimeters).rotateBy(q1),
+      Vector(-screwOffsetX1, screwOffsetY1, 0,Millimeters).rotateBy(q2),
+      Vector(-screwOffsetX2, screwOffsetY1, 0,Millimeters).rotateBy(q2)
     )
     val base = Hull(c1.scale(1.5, 0.5, 1).moveY(10) ++ positions1.map(p => c1.move(p)))
     base -- positions2.map(p => c2.move(p))

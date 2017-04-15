@@ -1,6 +1,9 @@
 package scadla
 
 import math._
+import squants.space.Length
+import scala.language.postfixOps
+import scadla.InlineOps._
 
 package object utils {
 
@@ -60,18 +63,19 @@ package object utils {
     case other => f(acc, other)
   }
 
+  private val Zero = 0°
   def simplify(s: Solid): Solid = {
     def rewrite(s: Solid): Solid = s match {
-      case Cube(width, depth, height) if width <= 0.0 || depth <= 0.0 || height <= 0.0 => Empty
-      case Sphere(radius) if radius <= 0.0 => Empty
-      case Cylinder(radiusBot, radiusTop, height) if height <= 0.0 => Empty
+      case Cube(width, depth, height) if width.value <= 0.0 || depth.value <= 0.0 || height.value <= 0.0 => Empty
+      case Sphere(radius) if radius.value <= 0.0 => Empty
+      case Cylinder(radiusBot, radiusTop, height) if height.value <= 0.0 => Empty
       //TODO order the points/faces to get a normal form
       case Polyhedron(triangles) if triangles.isEmpty => Empty
 
       case Translate(x1, y1, z1, Translate(x2, y2, z2, s2)) => Translate(x1+x2, y1+y2, z1+z2, s2)
-      case Rotate(x1, 0, 0, Rotate(x2, 0, 0, s2)) => Rotate(x1+x2, 0, 0, s2)
-      case Rotate(0, y1, 0, Rotate(0, y2, 0, s2)) => Rotate(0, y1+y2, 0, s2)
-      case Rotate(0, 0, z1, Rotate(0, 0, z2, s2)) => Rotate(0, 0, z1+z2, s2)
+      case Rotate(x1, Zero, Zero, Rotate(x2, Zero, Zero, s2)) => Rotate(x1+x2, Zero, Zero, s2)
+      case Rotate(Zero, y1, Zero, Rotate(Zero, y2, Zero, s2)) => Rotate(Zero, y1+y2, Zero, s2)
+      case Rotate(Zero, Zero, z1, Rotate(Zero, Zero, z2, s2)) => Rotate(Zero, Zero, z1+z2, s2)
       case Scale(x1, y1, z1, Scale(x2, y2, z2, s2)) => Scale(x1*x2, y1*y2, z1*z2, s2)
       
       //TODO flatten ops

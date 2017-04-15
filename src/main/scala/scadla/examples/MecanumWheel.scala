@@ -4,6 +4,8 @@ import math._
 import scadla._
 import utils._
 import InlineOps._
+import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Millimeters
 
 /** A class for the small rollers in the mecanum wheel */
 class Roller(height: Double, maxOuterRadius: Double, minOuterRadius: Double, innerRadius: Double) {
@@ -204,19 +206,19 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     val upperP = new Part("hub, upper half", upper, Some(upper.rotate(Pi, 0, 0).moveZ(-width/2)))
     val asmbl0 = Assembly("Mecanum wheel")
     def place(as: Assembly, c: Assembly, w: Vector) = {
-      val jt = Joint.revolute(0,0,1)
-      val f0 = Frame(Vector(innerR,0,width/2), Quaternion.mkRotation(angle, Vector(1,0,0)))
+      val jt = Joint.revolute(0,0,1,Millimeters)
+      val f0 = Frame(Vector(innerR,0,width/2,Millimeters), Quaternion.mkRotation(angle, Vector(1,0,0,Millimeters)))
       (0 until nbrRollers).foldLeft(as)( (acc, i) => {
-        val f1 = Frame(Vector(0,0,0), Quaternion.mkRotation(i * 2 * Pi / nbrRollers, Vector(0,0,1)))
+        val f1 = Frame(Vector(0,0,0,Millimeters), Quaternion.mkRotation(i * 2 * Pi / nbrRollers, Vector(0,0,1,Millimeters)))
         val frame = f0.compose(f1)
         acc + (frame, jt, c, w)
       })
     }
     val asmbl1 = asmbl0 +
-                (Joint.fixed(0,0,-1), lowerP) +
-                (Joint.fixed(0,0, 1), upperP)
-    val asmbl2 = place(asmbl1, rollerP, Vector(0,0,-rollerHeight/2))
-    place(asmbl2, axle, Vector(0,0,-axleHeight))
+                (Joint.fixed(0,0,-1,Millimeters), lowerP) +
+                (Joint.fixed(0,0, 1,Millimeters), upperP)
+    val asmbl2 = place(asmbl1, rollerP, Vector(0,0,-rollerHeight/2,Millimeters))
+    place(asmbl2, axle, Vector(0,0,-axleHeight,Millimeters))
   }
 
 }

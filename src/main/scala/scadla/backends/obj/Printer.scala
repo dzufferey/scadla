@@ -13,8 +13,8 @@ object Printer {
       val (points, faces) = obj.indexed
       writer.write("g ScadlaObject")
       writer.newLine
-      points.foreach{ case Point(x,y,z) =>
-        writer.write("v " + x + " " + y + " " + z)
+      points.foreach{ p =>
+        writer.write("v " + p.x.toMillimeters + " " + p.y.toMillimeters + " " + p.z.toMillimeters)
         writer.newLine
       }
       writer.newLine

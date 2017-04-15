@@ -60,7 +60,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
         case Empty =>
           writer.newLine
         case Cube(width, depth, height) =>
-          writer.write("cube([ " + width + ", " + depth + ", " + height + "]);")
+          writer.write("cube([ " + width.toMillimeters + ", " + depth.toMillimeters + ", " + height.toMillimeters + "]);")
           writer.newLine
         case Sphere(radius) =>
           writer.write("sphere( " + radius + ");")
@@ -71,7 +71,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
         case p @ Polyhedron(_) =>
           val (indexedP,indexedF) = p.indexed
           writer.write("polyhedron( points=[ ")
-          writer.write(indexedP.map{ case Point(x,y,z) => "["+x+","+y+","+z+"]" }.mkString(", "))
+          writer.write(indexedP.map(p => "["+p.x.toMillimeters+","+p.y.toMillimeters+","+p.z.toMillimeters+"]").mkString(", "))
           writer.write(" ], faces=[ ")
           writer.write(indexedF.map{ case (a,b,c) => "["+a+","+b+","+c+"]" }.mkString(", "))
           writer.write(" ]);")
@@ -124,7 +124,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
           writer.newLine
           prnt(obj, indent+2)
         case Rotate(x, y, z, obj) =>
-          writer.write("rotate(["+math.toDegrees(x)+","+math.toDegrees(y)+","+math.toDegrees(z)+"])")
+          writer.write("rotate(["+x.toDegrees+","+y.toDegrees+","+z.toDegrees+"])")
           writer.newLine
           prnt(obj, indent+2)
         case Translate(x, y, z, obj) =>

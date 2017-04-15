@@ -1,6 +1,7 @@
 package scadla.utils.box
 
 import scadla._
+import squants.space.Length
 
 case class Box(x: Interval, y: Interval, z: Interval) {
 
@@ -52,7 +53,7 @@ case class Box(x: Interval, y: Interval, z: Interval) {
     ))
   }
 
-  def move(x: Double, y: Double, z: Double) =
+  def move(x: Length, y: Length, z: Length) =
     if (isEmpty) Box.empty else {
       Box(this.x.move(x), this.y.move(y), this.z.move(z))
     }
@@ -92,8 +93,8 @@ object Box {
   val empty = Box(Interval.empty, Interval.empty, Interval.empty)
   val unit = Box(Interval.unit, Interval.unit, Interval.unit)
 
-  def apply(xMin: Double, yMin: Double, zMin: Double,
-            xMax: Double, yMax: Double, zMax: Double): Box =
+  def apply(xMin: Length, yMin: Length, zMin: Length,
+            xMax: Length, yMax: Length, zMax: Length): Box =
     Box(Interval(xMin, xMax),
         Interval(yMin, yMax),
         Interval(zMin, zMax))

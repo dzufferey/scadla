@@ -9,6 +9,7 @@ import scadla.examples.fastener._
 import scadla.examples.GearBearing
 import Common._
 import scadla.examples.reach3D.SpoolHolder
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 
 //TODO need to add some springy thing on one nut to reduce the backlash (preload)
@@ -42,13 +43,13 @@ object LinearActuator {
 
   val motorGearRadius = motorYOffset * nbrTeethMotor / (nbrTeethMotor + nbrTeethRod)
   val rodGearRadius =   motorYOffset * nbrTeethRod   / (nbrTeethMotor + nbrTeethRod)
-  val mHelix = -0.1
+  val mHelix = Twist(-0.1)
   val rHelix = -mHelix * motorGearRadius / rodGearRadius
   
   val grooveDepthBase = bbRadius / cos(Pi/4) - bearingGapBase / 2
   val grooveDepthSupport = bbRadius / cos(Pi/4) - bearingGapSupport / 2
   val grooveRadiusBase = SpoolHolder.adjustGrooveRadius(nut.maxOuterRadius(rodThread) + grooveDepthBase + 1) // +1 for the adjust radius
-  val grooveRadiusSupport = SpoolHolder.adjustGrooveRadius(rodGearRadius - Gear.addenum(rodGearRadius, nbrTeethRod) - grooveDepthSupport)
+  val grooveRadiusSupport = SpoolHolder.adjustGrooveRadius(rodGearRadius - Gear.addenum(rodGearRadius, nbrTeethRod).toMillimeters - grooveDepthSupport)
 
   val grooveBase = SpoolHolder.flatGroove(grooveRadiusBase, grooveDepthBase)
   val grooveSupport = SpoolHolder.flatGroove(grooveRadiusSupport, grooveDepthSupport)

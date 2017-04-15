@@ -2,6 +2,7 @@ package scadla.examples.fastener
 
 import scadla._
 import scadla.utils._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 object Washer {
 

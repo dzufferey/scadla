@@ -29,6 +29,8 @@ class BeltMold(length: Double,
                jacket: Double,
                tolerance: Double) {
 
+  import scadla.EverythingIsIn.{millimeters, radians}
+  
   val innerRadius = length / 2 / Pi
   val outerRadius = innerRadius + threadDiameter + 2*jacket
   val height = threadDiameter * threadTurns + 2*jacket

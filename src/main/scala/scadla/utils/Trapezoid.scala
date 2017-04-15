@@ -1,19 +1,22 @@
 package scadla.utils
   
 import scadla._
+import squants.space.Length
+import squants.space.Millimeters
 
 object Trapezoid {
 
-  def apply(xTop: Double, xBottom: Double, y: Double, z: Double, skew: Double = 0.0): Polyhedron = {
+  def apply(xTop: Length, xBottom: Length, y: Length, z: Length, skew: Double = 0.0): Polyhedron = {
     val skewOffest = z * math.tan(skew)
     val d = (xBottom-xTop)/2
+    val O = Millimeters(0)
     val pts = Seq(
-      Point(0, 0, 0),
-      Point(xBottom, 0, 0),
-      Point(xBottom, y, 0),
-      Point(0, y, 0),
-      Point(d + skewOffest, 0, z),
-      Point(xBottom - d + skewOffest, 0, z),
+      Point(O, O, O),
+      Point(xBottom, O, O),
+      Point(xBottom, y, O),
+      Point(O, y, O),
+      Point(d + skewOffest, O, z),
+      Point(xBottom - d + skewOffest, O, z),
       Point(xBottom - d + skewOffest, y, z),
       Point(d + skewOffest, y, z)
     )

@@ -1,16 +1,19 @@
 package scadla.utils.box
 
 import scadla._
+import squants.space.Length
+import squants.space.Millimeters
 
-case class Interval(min: Double, max: Double) {
+case class Interval(min: Length, max: Length) {
 
+  //TODO consider replacing Interval with QuantityRange, PR missing operators into squants
   //TODO better handling of degenerate case where min==max
 
   def isEmpty = min > max
 
-  def contains(x: Double) = x >= min && x <= max
+  def contains(x: Length) = x >= min && x <= max
 
-  def size = math.max(0.0, max - min)
+  def size = (max - min).max(min.unit(0))
 
   def contains(i: Interval) =
     i.isEmpty || (i.min >= min && i.max <= max)
@@ -21,7 +24,7 @@ case class Interval(min: Double, max: Double) {
   
   def center = (max - min) / 2
 
-  def move(x: Double) =
+  def move(x: Length) =
     if (isEmpty) this
     else Interval(x + min, x + max)
 
@@ -29,7 +32,7 @@ case class Interval(min: Double, max: Double) {
     if (isEmpty) this
     else Interval(x * min, x * max)
 
-  def intersection(b: Interval) = Interval(math.max(min,b.min), math.min(max,b.max))
+  def intersection(b: Interval) = Interval(min.max(b.min), max.min(b.max))
 
   def add(b: Interval) =
     if (isEmpty || b.isEmpty) Interval.empty
@@ -38,7 +41,7 @@ case class Interval(min: Double, max: Double) {
   def hull(b: Interval) =
     if (isEmpty) b
     else if (b.isEmpty) this 
-    else Interval(math.min(min, b.min), math.max(max, b.max))
+    else Interval(min.min(b.min), max.max(b.max))
 
   // hull(this \ b)
   def remove(b: Interval) =
@@ -60,6 +63,6 @@ case class Interval(min: Double, max: Double) {
 }
 
 object Interval {
-  val empty = Interval(1, -1)
-  val unit = Interval(0, 1)
+  val empty = Interval(Millimeters(1), Millimeters(-1))
+  val unit = Interval(Millimeters(0), Millimeters(1))
 }

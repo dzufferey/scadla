@@ -4,6 +4,7 @@ import math._
 import scadla._
 import utils._
 import InlineOps._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 /** Some legs for the Reach3D printer */
 object ReachLegs {

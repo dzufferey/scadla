@@ -5,19 +5,21 @@ import scala.util.parsing.combinator._
 import dzufferey.utils._
 import dzufferey.utils.LogLevel._
 import java.io._
+import squants.space.Millimeters
+import squants.space.SquareMeters
 
 
 object AsciiParser extends JavaTokenParsers {
   
   def parseVertex: Parser[Point] =
     "vertex" ~> repN(3, floatingPointNumber) ^^ {
-      case List(a, b,c) => Point(a.toDouble, b.toDouble, c.toDouble)
+      case List(a, b,c) => Point(Millimeters(a.toDouble), Millimeters(b.toDouble), Millimeters(c.toDouble))
     }
 
   def parseFacet: Parser[Face] =
     ("facet" ~> "normal" ~> repN(3, floatingPointNumber)) ~ ("outer" ~> "loop" ~> repN(3, parseVertex) <~ "endloop" <~ "endfacet") ^^ {
       case List(nx, ny, nz) ~ List(a, b, c) =>
-        val n = Vector(nx.toDouble, ny.toDouble, nz.toDouble)
+        val n = Vector(nx.toDouble, ny.toDouble, nz.toDouble, Millimeters)
         val f = Face(a, b, c)
         scadla.backends.stl.Parser.checkNormal(f, n)
     }
@@ -52,14 +54,14 @@ object BinaryParser {
     val p1 = buffer.getFloat
     val p2 = buffer.getFloat
     val p3 = buffer.getFloat
-    Vector(p1, p2, p3)
+    Vector(p1, p2, p3, Millimeters)
   }
 
   protected def point(buffer: ByteBuffer) = {
     val p1 = buffer.getFloat
     val p2 = buffer.getFloat
     val p3 = buffer.getFloat
-    Point(p1, p2, p3)
+    Point(Millimeters(p1), Millimeters(p2), Millimeters(p3))
   }
 
   def apply(fileName: String) = {
@@ -89,7 +91,7 @@ object Parser {
   val headerSize = bytesHeader.size
 
   def checkNormal(f: Face, n: Vector): Face = {
-    if (n.dot(f.normal) < 1e-10) f.flipOrientation
+    if (n.dot(f.normal) < SquareMeters(1e-16)) f.flipOrientation
     else f
   }
 

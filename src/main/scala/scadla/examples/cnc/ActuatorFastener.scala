@@ -6,6 +6,7 @@ import utils._
 import InlineOps._
 import Common._
 import scadla.examples.fastener._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 // dX, dZ are given from the center of the extrusion
 class ActuatorFasterner(dX: Double, dZ: Double) {

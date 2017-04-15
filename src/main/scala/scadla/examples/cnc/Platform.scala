@@ -5,6 +5,7 @@ import scadla._
 import utils._
 import InlineOps._
 import Common._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 //a platform to put hold the spindle
 object Platform {

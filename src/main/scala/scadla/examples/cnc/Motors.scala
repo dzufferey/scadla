@@ -4,6 +4,7 @@ import scadla._
 import scadla.InlineOps._
 import scadla.utils._
 import scala.math._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 //TODO move that to the lib
 //place holder for NEMA stepper motors
