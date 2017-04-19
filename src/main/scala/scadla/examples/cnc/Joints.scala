@@ -6,6 +6,7 @@ import utils._
 import InlineOps._
 import scadla.examples.fastener._
 import Common._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 /** A 2 degree of freedom joint.
  *  @param bottomNut is the size of bottom thread/nut

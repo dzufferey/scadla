@@ -7,6 +7,7 @@ import utils.gear._
 import InlineOps._
 import scadla.examples.fastener._
 import Common._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 //parameters:
 //- thickness of structure
@@ -72,8 +73,8 @@ object Spindle {
   // gears //
   ///////////
 
-  lazy val gear1 = Gear.helical( motorBoltDistance * 2 / 3.0, 32, gearHeight,-0.03, tolerance)
-  lazy val gear2 = Gear.helical( motorBoltDistance / 3.0    , 16, gearHeight, 0.06, tolerance)
+  lazy val gear1 = Gear.helical( motorBoltDistance * 2 / 3.0, 32, gearHeight, Twist(-0.03), tolerance)
+  lazy val gear2 = Gear.helical( motorBoltDistance / 3.0    , 16, gearHeight, Twist(0.06), tolerance)
   val motorKnobs = {
     val c = Cylinder(3-tolerance, 2).moveZ(gearHeight)
     val u = Union(c.moveX(9), c.moveX(-9), c.moveY(9), c.moveY(-9))

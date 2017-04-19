@@ -3,6 +3,8 @@ package scadla.utils.gear
 import scadla._
 import scadla.InlineOps._
 import scala.math._
+import squants.space.Millimeters
+import squants.space.Length
 
 //some references read when coding this
 //  https://en.wikipedia.org/wiki/Involute_gear
@@ -21,24 +23,24 @@ object Gear {
 
   /** This determines the number of vertical steps for helical and herringbone gear.
    *  This should more or less corresponds to the thickness of the layer when printing */
-  var zResolution = 0.2
+  var zResolution = Millimeters(0.2)
 
   /** only for rack and internal gears: thickness of the outer */
-  var baseThickness = 2
+  var baseThickness = Millimeters(2)
 
   /** default value for the addenum given the pitch and the number of teeth */
-  def addenum(pitch: Double, nbrTeeth: Int) = pitch.abs * 2 / nbrTeeth
+  def addenum(pitch: Length, nbrTeeth: Int) = pitch.abs * 2 / nbrTeeth
   
   /** suggested value for the pitch given the number of teeth and the addenum */
-  def pitch(nbrTeeth: Int, addenum: Double) = addenum / 2 * nbrTeeth
+  def pitch(nbrTeeth: Int, addenum: Length) = addenum / 2 * nbrTeeth
   
   /** aprroximative value for the number of teeth given the pitch and the addenum */
-  def approxNbrTeeth(pitch: Double, addenum: Double) = pitch / addenum * 2
+  def approxNbrTeeth(pitch: Length, addenum: Length) = pitch / addenum * 2
 
   /** Simplified interface for spur gear (try to guess some parameters).
    *  To mesh gears of different sizes, the pitch/nbrTeeth ratio must be the same for all the gears.
    */
-  def spur(pitch: Double, nbrTeeth: Int, height: Double, backlash: Double) = {
+  def spur(pitch: Length, nbrTeeth: Int, height: Length, backlash: Length) = {
     val add = addenum( pitch, nbrTeeth)
     InvoluteGear(pitch, nbrTeeth, toRadians(25), add, add, height, backlash)
   }
@@ -47,7 +49,7 @@ object Gear {
    *  Typical helix is 0.05
    *  To mesh gears of different sizes, the pitch/nbrTeeth and pitch/helix ratio must be the same for all the gears.
    */
-  def helical(pitch: Double, nbrTeeth: Int, height: Double, helix: Double, backlash: Double) = {
+  def helical(pitch: Length, nbrTeeth: Int, height: Length, helix: Twist, backlash: Length) = {
     val add = addenum( pitch, nbrTeeth)
     HelicalGear(pitch, nbrTeeth, toRadians(25), add, add, height, helix, backlash)
   }
@@ -55,7 +57,7 @@ object Gear {
   /** simplified interface for herringbone gear (try to guess some parameters)
    *  To mesh gears of different sizes, the pitch/nbrTeeth and pitch/helix ratio must be the same for all the gears.
    */
-  def herringbone(pitch: Double, nbrTeeth: Int, height: Double, helix: Double, backlash: Double) = {
+  def herringbone(pitch: Length, nbrTeeth: Int, height: Length, helix: Twist, backlash: Length) = {
     val add = addenum( pitch, nbrTeeth)
     HerringboneGear(pitch, nbrTeeth, toRadians(25), add, add, height, helix, backlash)
   }
@@ -63,7 +65,7 @@ object Gear {
   /** Simplified interface for rack (try to guess some parameters).
    * TODO what needs to match for gears to mesh
    */
-  def rack(toothWidth: Double, nbrTeeth: Int, height: Double, backlash: Double) = {
+  def rack(toothWidth: Length, nbrTeeth: Int, height: Length, backlash: Length) = {
     val add = toothWidth / 2 
     Rack(toothWidth, nbrTeeth, toRadians(25), add, add, height, backlash)
   }

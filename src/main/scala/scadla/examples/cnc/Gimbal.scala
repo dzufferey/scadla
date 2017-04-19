@@ -6,6 +6,7 @@ import utils._
 import InlineOps._
 import scadla.examples.fastener._
 import Common._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 //The part that holds the linear actuator connected to the frame
 

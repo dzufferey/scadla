@@ -26,8 +26,8 @@ object Printer {
     val writer = new BufferedWriter(new FileWriter(fileName))
     try {
       printHeader(writer, points.length, faces.size)
-      points.foreach{ case Point(x,y,z) =>
-        writer.write(x + " " + y + " " + z)
+      points.foreach{ p =>
+        writer.write(p.x.toMillimeters + " " + p.y.toMillimeters + " " + p.z.toMillimeters)
         writer.newLine
       }
       faces.foreach{ case (a,b,c) =>

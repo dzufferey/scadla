@@ -6,6 +6,7 @@ import utils._
 import InlineOps._
 import scadla.examples.fastener._
 import Common._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 object Chuck {
 
@@ -26,7 +27,7 @@ object Chuck {
   val nutHeight = nut.height(shaft)
     val body = Union(
       Cylinder(outerRadius, chuckHeight - 5).moveZ(5),
-      doubleHex(Hexagon.minRadius(outerRadius), 5)
+      doubleHex(Hexagon.minRadius(outerRadius).toMillimeters, 5)
     )
     val toRemove = List(
       threading.screwThreadIsoInner(mNumber, colletLength),
@@ -41,7 +42,7 @@ object Chuck {
   //TODO some more parameters
   def wrench(outerRadius: Double) = {
     val wall = 5
-    val hex = doubleHex(Hexagon.minRadius(outerRadius) + looseTolerance, 5)
+    val hex = doubleHex(Hexagon.minRadius(outerRadius).toMillimeters + looseTolerance, 5)
     val head = Cylinder(outerRadius + wall, 5)
     val handle = RoundedCubeH(outerRadius*6, outerRadius*2, 5, 3)
     head + handle.moveY(-outerRadius) - hex

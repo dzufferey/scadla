@@ -3,6 +3,10 @@ package scadla.assembly
 import scadla._
 import scadla.backends.Renderer
 import scala.language.implicitConversions
+import squants.space.Length
+import squants.time.Time
+import squants.time.Seconds
+import squants.space.Millimeters
 
 sealed abstract class Assembly(name: String, children: List[(Frame,Joint,Assembly,Frame)]) {
 
@@ -43,7 +47,7 @@ sealed abstract class Assembly(name: String, children: List[(Frame,Joint,Assembl
   def +(joint: Joint, child: Assembly): Assembly =
     this + (Frame(), joint, child, Frame())
   
-  def expandAt(expansion: Double, time: Double): Seq[(Frame,Polyhedron)] = {
+  def expandAt(expansion: Length, time: Time): Seq[(Frame,Polyhedron)] = {
     children.flatMap{ case (f1, j, c, f3) =>
       val f2 = j.expandAt(expansion, time)
       val f = f1.compose(f2).compose(f3)
@@ -52,9 +56,9 @@ sealed abstract class Assembly(name: String, children: List[(Frame,Joint,Assembl
     }
   }
 
-  def at(t: Double): Seq[(Frame,Polyhedron)] = expandAt(0, t)
+  def at(t: Time): Seq[(Frame,Polyhedron)] = expandAt(Millimeters(0), t)
 
-  def expand(t: Double): Seq[(Frame,Polyhedron)] = expandAt(t, 0)
+  def expand(t: Length): Seq[(Frame,Polyhedron)] = expandAt(t, Seconds(0))
   
   //TODO immutable
   def preRender(r: Renderer) {
@@ -111,7 +115,7 @@ case class SingletonAssembly(part: Part, children: List[(Frame,Joint,Assembly,Fr
     SingletonAssembly(part, (where, joint, child, whereChild) :: children)
   }
 
-  override def expandAt(e: Double, t: Double): Seq[(Frame,Polyhedron)] = super.expandAt(e, t) :+ (Frame() -> part.mesh)
+  override def expandAt(e: Length, t: Time): Seq[(Frame,Polyhedron)] = super.expandAt(e, t) :+ (Frame() -> part.mesh)
 
   override def preRender(r: Renderer) {
     super.preRender(r)

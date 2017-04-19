@@ -1,21 +1,33 @@
 package scadla
 
+import squants.space.Length
+import scala.language.postfixOps
+import squants.space.Millimeters
+import squants.space.Angle
+import squants.space.Degrees
+
 object InlineOps {
+  
+  implicit class AngleConversions[A](n: A)(implicit num: Numeric[A]) {
+    def ° = Degrees(n)
+  }
 
   implicit class Ops(lhs: Solid) {
+    import squants.space.LengthConversions._
 
-    def translate(x: Double, y: Double, z: Double) = Translate(x, y, z, lhs)
-    def move(x: Double, y: Double, z: Double) = Translate(x, y, z, lhs)
+    def translate(x: Length, y: Length, z: Length) = Translate(x, y, z, lhs)
+    def move(x: Length, y: Length, z: Length) = Translate(x, y, z, lhs)
     def move(v: Vector) = Translate(v, lhs)
-    def moveX(x: Double) = Translate(x, 0, 0, lhs)
-    def moveY(y: Double) = Translate(0, y, 0, lhs)
-    def moveZ(z: Double) = Translate(0, 0, z, lhs)
+    def move(p: Point) = Translate(p.toVector, lhs)
+    def moveX(x: Length) = Translate(x, 0 mm, 0 mm, lhs)
+    def moveY(y: Length) = Translate(0 mm, y, 0 mm, lhs)
+    def moveZ(z: Length) = Translate(0 mm, 0 mm, z, lhs)
 
-    def rotate(x: Double, y: Double, z: Double) = Rotate(x, y, z, lhs)
+    def rotate(x: Angle, y: Angle, z: Angle) = Rotate(x, y, z, lhs)
     def rotate(q: Quaternion) = Rotate(q, lhs)
-    def rotateX(x: Double) = Rotate(x, 0, 0, lhs)
-    def rotateY(y: Double) = Rotate(0, y, 0, lhs)
-    def rotateZ(z: Double) = Rotate(0, 0, z, lhs)
+    def rotateX(x: Angle) = Rotate(x, 0°, 0°, lhs)
+    def rotateY(y: Angle) = Rotate(0°, y, 0°, lhs)
+    def rotateZ(z: Angle) = Rotate(0°, 0°, z, lhs)
 
     def scale(x: Double, y: Double, z: Double) = Scale(x, y, z, lhs)
     def scaleX(x: Double) = Scale(x, 1, 1, lhs)
@@ -43,5 +55,4 @@ object InlineOps {
     def toPolyhedron = backends.Renderer.default(lhs) //TODO a way of being lazy
 
   }
-
 }

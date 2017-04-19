@@ -4,6 +4,7 @@ import scadla._
 import scadla.utils._
 import math._
 import InlineOps._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 /** Generate threaded rods, screws and nuts.
  * based on metric_iso_screw.scad by stth

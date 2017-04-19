@@ -3,6 +3,8 @@ package scadla.utils.gear
 import scadla._
 import scadla.InlineOps._
 import scala.math._
+import squants.space.Angle
+import squants.space.Length
 
 object HelicalGear {
 
@@ -18,25 +20,25 @@ object HelicalGear {
    * @param addenum how much to add to the pitch to get the outer radius of the gear
    * @param dedenum how much to remove to the pitch to get the root radius of the gear
    * @param height the height of the gear
-   * @param helixAngle how much twisting (in rad / mm)
+   * @param twist how much twisting
    * @param backlash add some space (manufacturing tolerance)
    * @param skew generate a gear with an asymmetric profile by skewing the tooths
    */
-  def apply( pitch: Double,
+  def apply( pitch: Length,
              nbrTeeth: Int,
              pressureAngle: Double,
-             addenum: Double,
-             dedenum: Double,
-             height: Double,
-             helixAngle: Double,
-             backlash: Double,
+             addenum: Length,
+             dedenum: Length,
+             height: Length,
+             twist: Twist,
+             backlash: Length,
              skew: Double = 0.0) = {
     val stepped = InvoluteGear.stepped(pitch, nbrTeeth, pressureAngle, addenum, dedenum, height, backlash, skew)
     def turnPoint(p: Point): Point = {
       val z = p.z
-      val a = helixAngle * z
-      val x = p.x * cos(a) - p.y * sin(a)
-      val y = p.x * sin(a) + p.y * cos(a)
+      val a = twist.angle * (z / twist.increment)
+      val x = p.x * a.cos - p.y * a.sin
+      val y = p.x * a.sin + p.y * a.cos
       Point(x, y, z)
     }
     Polyhedron(stepped.faces.map( f => Face(turnPoint(f.p1), turnPoint(f.p2), turnPoint(f.p3)) ))

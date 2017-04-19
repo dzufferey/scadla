@@ -3,19 +3,23 @@ package scadla.utils
 import scadla._
 import InlineOps._
 import scala.math._
+import squants.space.Length
+import squants.space.Radians
 
 object Hexagon {
 
-  def maxRadius(minRadius: Double) = minRadius / math.sin(math.Pi/3)
+  def maxRadius(minRadius: Length) = minRadius / math.sin(math.Pi/3)
 
-  def minRadius(maxRadius: Double) = maxRadius * math.sin(math.Pi/3)
+  def minRadius(maxRadius: Length) = maxRadius * math.sin(math.Pi/3)
 
   /* Extrude vertically an hexagon (centered at 0,0 with z from 0 to height)
    * @param minRadius the radius of the circle inscribed in the hexagon
    * @param height
    */
-  def apply(minRadius: Double, height: Double) = {
-    if (minRadius <= 0.0 || height <= 0.0) {
+  def apply(minRadius: Length, _height: Length) = {
+    val unit = minRadius.unit
+    val height = _height.in(unit)
+    if (minRadius.value <= 0.0 || height.value <= 0.0) {
       Empty
     } else {
       import scala.math._
@@ -49,12 +53,12 @@ object Hexagon {
    * @param radius2 the radius of the circle inscribed in the hexagon odd faces
    * @param height
    */
-  def semiRegular(radius1: Double, radius2: Double, height: Double) = {
-    val r = max(maxRadius(radius1), maxRadius(radius2))
+  def semiRegular(radius1: Length, radius2: Length, height: Length) = {
+    val r = maxRadius(radius1) max maxRadius(radius2)
     val base = Cylinder(r,height)
     val chop = Cube(r, 2*r, height).moveY(-r)
-    val neg1 = for(i <- 0 until 6 if i % 2 == 0) yield chop.moveX(radius1).rotateZ(i * Pi / 3)
-    val neg2 = for(i <- 0 until 6 if i % 2 == 1) yield chop.moveX(radius2).rotateZ(i * Pi / 3)
+    val neg1 = for(i <- 0 until 6 if i % 2 == 0) yield chop.moveX(radius1).rotateZ(Radians(i * Pi / 3))
+    val neg2 = for(i <- 0 until 6 if i % 2 == 1) yield chop.moveX(radius2).rotateZ(Radians(i * Pi / 3))
     base -- neg1 -- neg2
   }
 

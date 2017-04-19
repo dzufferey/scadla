@@ -5,24 +5,29 @@ import scala.util.parsing.combinator._
 import dzufferey.utils._
 import dzufferey.utils.LogLevel._
 import scala.xml._
+import squants.space.LengthUnit
+import squants.space.Millimeters
+import squants.space.Microns
+import squants.space.Meters
+import squants.space.Inches
 
 object Parser {
   
   def apply(fileName: String): Polyhedron = {
     val amf = XML.loadFile(fileName)
-    val unitFactor: Double = amf \@ "unit" match {
-      case "millimeter" | "" | null  => 1
-      case "meter" => 0.001
-      case "micrometer" => 1000
-      case "inch" => 25.4
+    val unit: LengthUnit = amf \@ "unit" match {
+      case "millimeter" | "" | null  => Millimeters
+      case "meter" => Meters
+      case "micrometer" => Microns
+      case "inch" => Inches
       case other => Logger.logAndThrow("amf.Parser", Error, "unkown unit: " + other)
     }
     def parseVertex(v: Node): Point = {
       val coord = v \ "coordinates"
-      val x = (coord \ "x").text.toDouble * unitFactor
-      val y = (coord \ "y").text.toDouble * unitFactor
-      val z = (coord \ "z").text.toDouble * unitFactor
-      Point(x,y,z)
+      val x = (coord \ "x").text.toDouble
+      val y = (coord \ "y").text.toDouble
+      val z = (coord \ "z").text.toDouble
+      Point(unit(x),unit(y),unit(z))
     }
     def parseFace(triangle: Node): (Int, Int, Int) = {
       val a = (triangle \ "v1").text.toInt

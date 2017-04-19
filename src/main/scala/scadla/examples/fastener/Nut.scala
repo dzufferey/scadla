@@ -4,6 +4,7 @@ import scadla._
 import scadla.utils._
 import math._
 import InlineOps._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 object Nut {
 
@@ -52,7 +53,7 @@ class NutPlaceHolder(tolerance: Double = 0.1) {
   }
   
   def minOuterRadius(innerRadius: Double) = factor * innerRadius + tolerance
-  def maxOuterRadius(innerRadius: Double) = Hexagon.maxRadius(minOuterRadius(innerRadius))
+  def maxOuterRadius(innerRadius: Double) = Hexagon.maxRadius(minOuterRadius(innerRadius)).toMillimeters
   def height(innerRadius: Double) = factor * innerRadius + tolerance
 
   def M1   = apply( Thread.ISO.M1 )

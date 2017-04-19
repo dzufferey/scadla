@@ -6,6 +6,7 @@ import utils._
 import InlineOps._
 import scadla.examples.fastener._
 import Common._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 object Collet {
 

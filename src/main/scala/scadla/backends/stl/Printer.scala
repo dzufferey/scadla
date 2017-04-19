@@ -37,9 +37,9 @@ object Printer {
       out.order(ByteOrder.LITTLE_ENDIAN)
     }
     def outputPoint(p: Point) {
-      out.putFloat(p.x.toFloat)
-      out.putFloat(p.y.toFloat)
-      out.putFloat(p.z.toFloat)
+      out.putFloat(p.x.toMillimeters.toFloat)
+      out.putFloat(p.y.toMillimeters.toFloat)
+      out.putFloat(p.z.toMillimeters.toFloat)
     }
     val header = Array.fill[Byte](80)(' '.toByte)
     "Generated with Scadla".getBytes.copyToArray(header)
@@ -47,9 +47,9 @@ object Printer {
     out.putInt(obj.faces.size)
     obj.faces.foreach{ case f @ Face(p1, p2, p3) =>
       val n = f.normal
-      out.putFloat(n.x.toFloat)
-      out.putFloat(n.y.toFloat)
-      out.putFloat(n.z.toFloat)
+      out.putFloat(n.x.toMillimeters.toFloat)
+      out.putFloat(n.y.toMillimeters.toFloat)
+      out.putFloat(n.z.toMillimeters.toFloat)
       outputPoint(p1)
       outputPoint(p2)
       outputPoint(p3)

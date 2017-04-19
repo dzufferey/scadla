@@ -2,6 +2,7 @@ package scadla.utils
 
 import scadla._
 import org.scalatest._
+import scadla.EverythingIsIn.{millimeters, radians}  
 
 class PackageTest extends FunSuite {
 

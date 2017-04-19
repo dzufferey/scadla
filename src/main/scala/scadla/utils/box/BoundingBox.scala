@@ -2,6 +2,8 @@ package scadla.utils.box
 
 import scadla._
 import scala.math._
+import squants.space.Length
+import squants.space.Millimeters
 
 object BoundingBox {
 
@@ -9,9 +11,9 @@ object BoundingBox {
     if (points.isEmpty) {
       Box.empty
     } else {
-      val init = (Double.MaxValue, Double.MinValue)
-      def updt(p: Point, proj: Point => Double, acc: (Double,Double)) = {
-        ( min(acc._1, proj(p)), max(acc._2, proj(p)) )
+      val init = (Millimeters(Double.MaxValue), Millimeters(Double.MinValue))
+      def updt(p: Point, proj: Point => Length, acc: (Length,Length)) = {
+        ( acc._1 min proj(p), acc._2 max proj(p) )
       }
       val ((xMin, xMax), (yMin, yMax), (zMin, zMax)) =
         points.foldLeft((init,init,init))( (acc,p) =>
@@ -22,16 +24,17 @@ object BoundingBox {
     }
   }
 
+  private val O = Millimeters(0)
   def apply(s: Solid): Box = s match {
     case Cube(w, d, h) =>
-      Box(0, 0, 0, w, d, h)
+      Box(O, O, O, w, d, h)
     case Empty =>
       Box.empty
     case Sphere(r) =>
       Box(-r, -r, -r, r, r, r)
     case Cylinder(radiusBot, radiusTop, height) =>
-      val r = math.max(radiusBot,radiusTop)
-      Box(-r, -r, 0, r, r, height)
+      val r = radiusBot max radiusTop
+      Box(-r, -r, O, r, r, height)
     case Polyhedron(faces) =>
       apply(faces.flatMap( f => Seq(f.p1, f.p2, f.p3) ))
     case f @ FromFile(_,_) =>
@@ -58,7 +61,7 @@ object BoundingBox {
       val neg = InBox(Union(lst:_*))
       remove(pos, neg)
     case Minkowski(lst @ _*) =>
-      val init = Box(0,0,0,0,0,0)
+      val init = Box(O,O,O,O,O,O)
       if (lst.isEmpty) Box.empty
       else lst.foldLeft(init)( (b,s) => b.add(apply(s)) )
     case Hull(lst @ _*) =>
