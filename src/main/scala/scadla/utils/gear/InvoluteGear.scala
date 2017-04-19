@@ -83,7 +83,7 @@ object InvoluteGear {
     val de = if (pitch.value >= 0) dedenum else addenum 
     val rackTooth = Rack.tooth(toothWidth, pressureAngle, ad, de, height, backlash, skew)
 
-    if (pitch == 0) {
+    if (pitch == Millimeters(0)) {
       val space = 2*toothWidth
       val teeth = for (i <- 0 until nbrTeeth) yield rackTooth.moveX(i * space)
       val bt = dedenum + Gear.baseThickness

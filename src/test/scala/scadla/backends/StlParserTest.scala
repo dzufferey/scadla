@@ -2,12 +2,13 @@ package scadla.backends
 
 import scadla._
 import org.scalatest._
+import squants.space.Millimeters
 
 object ParserTest {
   def checkCube(p: Polyhedron) = {
     p.faces.forall( t =>
       List(t.p1, t.p2, t.p3).forall(p =>
-        List(p.x, p.y, p.z).forall( v => v == 0.0 || v == 1.0)))
+        List(p.x, p.y, p.z).forall( v => v == Millimeters(0) || v == Millimeters(1))))
   }
 
   val path = "src/test/resources/"

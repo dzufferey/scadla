@@ -2,8 +2,19 @@ package scadla.backends
 
 import scadla._
 import org.scalatest._
+import scadla.EverythingIsIn.{millimeters, radians}
+
 
 class OpenSCADTest extends FunSuite {
+
+  test("rendering a cube") {
+    if (OpenSCAD.isPresent) {
+      val obj = OpenSCAD(Cube(1, 1, 1))
+      assert(obj.faces.size == 12)
+    } else {
+      // skip
+    }
+  }
 
 //test("rendering 1a") {
 //  val obj = OpenSCAD(Sphere(1.0))

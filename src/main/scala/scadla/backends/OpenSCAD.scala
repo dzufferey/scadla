@@ -63,10 +63,10 @@ class OpenSCAD(header: List[String]) extends Renderer {
           writer.write("cube([ " + width.toMillimeters + ", " + depth.toMillimeters + ", " + height.toMillimeters + "]);")
           writer.newLine
         case Sphere(radius) =>
-          writer.write("sphere( " + radius + ");")
+          writer.write("sphere( " + radius.toMillimeters + ");")
           writer.newLine
         case Cylinder(radiusBot, radiusTop, height) =>
-          writer.write("cylinder( r1 = " + radiusBot + ", r2 = " + radiusTop + ", h = " + height + ");")
+          writer.write("cylinder( r1 = " + radiusBot.toMillimeters + ", r2 = " + radiusTop.toMillimeters + ", h = " + height.toMillimeters + ");")
           writer.newLine
         case p @ Polyhedron(_) =>
           val (indexedP,indexedF) = p.indexed
@@ -128,7 +128,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
           writer.newLine
           prnt(obj, indent+2)
         case Translate(x, y, z, obj) =>
-          writer.write("translate(["+x+","+y+","+z+"])")
+          writer.write("translate(["+x.toMillimeters+","+y.toMillimeters+","+z.toMillimeters+"])")
           writer.newLine
           prnt(obj, indent+2)
         case Mirror(x, y, z, obj) =>
