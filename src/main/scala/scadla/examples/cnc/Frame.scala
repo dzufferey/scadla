@@ -274,7 +274,7 @@ object Frame {
         c.move(0, topY, topZ),
         Cylinder(11 + thickness, totalThickness).rotateY(Pi/2).move(0, laY, laZ)
       )
-    val spaceForM3 = 3 + 2 * Thread.ISO.M3
+    val spaceForM3 = 3 + Thread.ISO.M3 * 2
     val body1 = Union(
         body0,
         // part to attach on top
@@ -288,8 +288,8 @@ object Frame {
         Cylinder(11 + looseTolerance, totalThickness).rotateY(Pi/2).move(retainerThickness, laY, laZ),
         Cylinder(8 , totalThickness).rotateY(Pi/2).move(0, laY, laZ),
         // for the bottom screw
-        CenteredCube.y(totalThickness, threadFactor * 2 * boltSize + looseTolerance, (threadFactor + 0.2) * boltSize).move(0, screwOffset, bottomZ + thickness),
-        CenteredCube.y(totalThickness, 2 * (boltSize + tolerance), thickness).move(0, screwOffset, bottomZ),
+        CenteredCube.y(totalThickness, boltSize * threadFactor * 2 + looseTolerance, boltSize * (threadFactor + 0.2)).move(0, screwOffset, bottomZ + thickness),
+        CenteredCube.y(totalThickness, (boltSize + tolerance) * 2, thickness).move(0, screwOffset, bottomZ),
         // for the top screw
         Cylinder(Thread.ISO.M3 + tightTolerance, 4 + 2 * thickness).move(totalThickness/2, topY - 1 - Thread.ISO.M3, topZ)
       )

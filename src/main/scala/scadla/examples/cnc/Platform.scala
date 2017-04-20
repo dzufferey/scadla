@@ -1,16 +1,17 @@
 package scadla.examples.cnc
 
-import math._
 import scadla._
 import utils._
+import Trig._
 import InlineOps._
 import Common._
+import squants.space.Length
 import scadla.EverythingIsIn.{millimeters, radians}  
 
 //a platform to put hold the spindle
 object Platform {
 
-  protected def bearings(space: Double) = {
+  protected def bearings(space: Length) = {
     Union(
       bearing.moveZ(-tolerance/2),
       bearing.moveZ(7 + space + tolerance/2),
@@ -20,12 +21,12 @@ object Platform {
     )
   }
 
-  protected def oldSpindleMount(height: Double, gap: Double) = {
+  protected def oldSpindleMount(height: Length, gap: Length) = {
     val screw = Cylinder(Thread.ISO.M3+tolerance, Thread.ISO.M3+tolerance, height)
     Cylinder(15+gap, height).move(15,15,0) ++ Spindle.fixCoord.map{ case (x,y,_) => screw.move(x,y,0) }
   }
 
-  protected def spindleMount(spindleHoleRadius: Double, height: Double) = {
+  protected def spindleMount(spindleHoleRadius: Length, height: Length) = {
     Union(
       Cylinder(spindleHoleRadius + looseTolerance, height),
       Cylinder(mountScrews, height).move( spindleHoleRadius, spindleHoleRadius, 0),
@@ -54,15 +55,15 @@ object Platform {
   //   * make a M3 thread on the last few mm
 
   //space should be ~ zBearingSpace + 2*tolerance
-  def with608Bearings(radius: Double = 50,
-                      wall: Double = 5,
-                      bearingGap: Double = 10,
-                      height: Double = 10,
-                      space: Double = 1.6,
-                      spindleHoleRadius: Double = 25) = {
+  def with608Bearings(radius: Length = 50,
+                      wall: Length = 5,
+                      bearingGap: Length = 10,
+                      height: Length = 10,
+                      space: Length = 1.6,
+                      spindleHoleRadius: Length = 25) = {
     val bNeg = bearings(space).moveZ(height/2 - 7 - space/2) 
     val bHolder = Cylinder(11 + wall, height)
-    val offset = max(wall/2, bearingGap/2)
+    val offset = (wall/2) max (bearingGap/2)
     def place(s: Solid) = {
       val paired = Union(
         s.move( 11 +offset, radius, 0),
@@ -93,13 +94,13 @@ object Platform {
   val bushingRadius = 5
   val mountScrews = Thread.ISO.M4
 
-  def withBushing(radius: Double = 50, height: Double = 10,
-                  wall: Double = 4, bearingGap: Double = 10,
-                  spindleHoleRadius: Double = 25): Solid = {
-    val offset = bushingRadius + max(wall/2, bearingGap/2)
+  def withBushing(radius: Length = 50, height: Length = 10,
+                  wall: Length = 4, bearingGap: Length = 10,
+                  spindleHoleRadius: Length = 25): Solid = {
+    val offset = bushingRadius + (wall/2) max (bearingGap/2)
     def place(s: Solid) = {
       val paired = Union(
-        s.move(+offset, radius, 0),
+        s.move( offset, radius, 0),
         s.move(-offset, radius, 0)
       )
       for (i <- 0 until 3) yield paired.rotateZ(2 * i * Pi / 3) //linter:ignore ZeroDivideBy
@@ -111,10 +112,10 @@ object Platform {
     base - spindle
   }
 
-  def verticalBushing2Rod(wall: Double = 4,
-                          length: Double = 50,
-                          brassThickness: Double = 8,
-                          slit: Double = 2) = {
+  def verticalBushing2Rod(wall: Length = 4,
+                          length: Length = 50,
+                          brassThickness: Length = 8,
+                          slit: Length = 2) = {
     val bw = bushingRadius + wall
     val n = nut(Thread.ISO.M6).rotateY(Pi/2)
     val base = Cylinder(bw, brassThickness) + CenteredCube.y(length, 1.5 * bw, brassThickness)
@@ -129,19 +130,19 @@ object Platform {
     )
   }
 
-  def verticalBushing2Platform(wall: Double = 4,
-                               brassThickness: Double = 8) = {
+  def verticalBushing2Platform(wall: Length = 4,
+                               brassThickness: Length = 8) = {
     val washerM6Inner = 3.2
     val washerM6Thickness = 1.6
-    val b2w = brassThickness + 2*wall
+    val b2w = brassThickness + wall*2
     val bw = bushingRadius + wall
     val h =  bw + 4 + wall // 4 to allow an M4 screw head + washer XXX check that ...
     val base = Hull(
-      CenteredCube.x(2*bw, b2w, 1),
-      Cylinder(2*Thread.ISO.M6, b2w).rotateX(-Pi/2).moveZ(h)
+      CenteredCube.x(bw*2, b2w, 1),
+      Cylinder(Thread.ISO.M6 * 2, b2w).rotateX(-Pi/2).moveZ(h)
     )
     val innerDelta = wall - 0.5
-    val w = Tube(2*Thread.ISO.M6 + looseTolerance, washerM6Inner - tolerance, washerM6Thickness)
+    val w = Tube(Thread.ISO.M6 * 2+ looseTolerance, washerM6Inner - tolerance, washerM6Thickness)
     Difference(
       base,
       Cylinder(mountScrews + tightTolerance, wall).moveY(b2w/2),

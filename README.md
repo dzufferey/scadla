@@ -17,9 +17,7 @@ The main points on which we try to improve are:
 
 * _first class objects_ An OpenSCAD program roughly build a tree with primitive objects as leaves and CSG operations as internal nodes. However, that tree is built implicitly and one cannot access it directly. In scadla, that tree is just an algebraic datatype. This means that you can reference it, e.g., `val u = Union(Cube(...), Sphere(...))` and also inspect/modify it using pattern matching, e.g., `u match { case Union(...) => ... }`
 
-* variables evaluation and other small quirks
-
-* all the angles are in _radians_, not in degrees. Because ... math! If you still prefer degrees you can write `math.toRadians(α)`.
+* _type-safe units_ with the [squants](https://github.com/typelevel/squants) library. Let the compiler warns you when you try to rotate a object by 10mm. To keep a lightweight syntax `EverythingIsIn` provides mplicit conversion from numbers to length and angles. For instance, add `import scadla.EverythingIsIn.{millimeters, radians}` in your file to work use millimeters and radians by default.
 
 * a small caveat: OpenSCAD does has only floating points number but scala makes the distinction between integers and floating points. For instance, `1/2` is the integer division and returns `0`, not `0.5`. If you want floating point numbers write `1/2.0` or `1.0/2`.
 
@@ -100,6 +98,10 @@ To try some examples execute `sbt run` and select one example.
 Currently scadla is not yet published in an online maven repository.
 If you want to use it in another project, run `sbt publishLocal` to make it available to other projects on the same machine. You can include it in your projects by adding `libraryDependencies += "io.github.dzufferey" %% "scadla" % "0.1-SNAPSHOT"` in your `build.sbt`.
 
+## Contributors
+
+* Damien Zufferey (basic infrastrucure)
+* Jan Ypma (adding type-safe units)
 
 ## ToDo
 

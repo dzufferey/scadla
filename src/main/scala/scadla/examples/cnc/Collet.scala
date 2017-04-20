@@ -7,25 +7,26 @@ import InlineOps._
 import scadla.examples.fastener._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Length
 
 object Collet {
 
-  def slits(outer: Double, height: Double, nbrSlits: Int, slitWidth: Double, wall: Double) = {
+  def slits(outer: Length, height: Length, nbrSlits: Int, slitWidth: Length, wall: Length) = {
     assert(nbrSlits % 2 == 0, "number of slits must be even")
     val slit = Cube(slitWidth, outer, height - wall).moveX(-slitWidth/2)
     for(i <- 0 until nbrSlits) yield slit.rotateZ(i * 2 * Pi / nbrSlits).moveZ((i % 2) * wall)
   }
 
   //example: Collet(6, 7, 3, 20, 6, 1, 2)
-  def apply(outer1: Double, outer2: Double, inner: Double, height: Double,
-            nbrSlits: Int, slitWidth: Double, wall: Double) = {
+  def apply(outer1: Length, outer2: Length, inner: Length, height: Length,
+            nbrSlits: Int, slitWidth: Length, wall: Length) = {
     val base = Cylinder(outer1, outer2, height) - Cylinder(inner, height)
-    base -- slits(max(outer1, outer1), height, nbrSlits, slitWidth, wall)
+    base -- slits(outer1 max outer2, height, nbrSlits, slitWidth, wall)
   }
 
-  def threaded(outer1: Double, outer2: Double, inner: Double, height: Double,
-               nbrSlits: Int, slitWidth: Double, wall: Double,
-               mNumber: Double, screwRadius: Double) = {
+  def threaded(outer1: Length, outer2: Length, inner: Length, height: Length,
+               nbrSlits: Int, slitWidth: Length, wall: Length,
+               mNumber: Length, screwRadius: Length) = {
     val innerC = Cylinder(inner+tolerance, height)
     val base = Cylinder(outer1, outer2, height)
     val slts = slits(mNumber, height, nbrSlits, slitWidth, wall)
@@ -36,7 +37,7 @@ object Collet {
   }
 
   //TODO some more parameters
-  def wrench(outer: Double, inner: Double, nbrSlits: Int, screwRadius: Double) = {
+  def wrench(outer: Length, inner: Length, nbrSlits: Int, screwRadius: Length) = {
     val base = RoundedCubeH(60, 20, 5, 3).move(-30, -10, 0)
     val t = screwRadius //Thread.ISO.M2
     val screw = Cylinder(t+tolerance, 5)

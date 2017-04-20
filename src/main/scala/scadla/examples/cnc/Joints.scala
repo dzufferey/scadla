@@ -7,11 +7,12 @@ import InlineOps._
 import scadla.examples.fastener._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Length
 
 /** A 2 degree of freedom joint.
  *  @param bottomNut is the size of bottom thread/nut
  */
-class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
+class Joint2DOF(bottomNut: Length = Thread.ISO.M8) {
 
   import Thread.ISO.{M3,M8}
 
@@ -27,7 +28,7 @@ class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
   
   //println("size:" + 2*outerRadius) → 21.28823512814129
 
-  def cross(length: Double, height: Double, screwRadius: Double): Solid = {
+  def cross(length: Length, height: Length, screwRadius: Length): Solid = {
     val h = Hexagon(height/2, length).moveZ(-length/2)
     val c1 = h.rotateX(Pi/2)
     val c2 = h.rotateZ(Pi/6).rotateY(Pi/2)
@@ -41,15 +42,15 @@ class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
     cross(2*(minRadius - washerThickness - tightTolerance), 2*sideWall+1, M3-0.5)
   }
 
-  protected def carving(top: Double, bottom: Double) = {
-    val r = outerRadius-2*M3+looseTolerance
-    val h = 2*outerRadius + 2
+  protected def carving(top: Length, bottom: Length) = {
+    val r = outerRadius-M3*2+looseTolerance
+    val h = outerRadius*2 + 2
     Cylinder(r, h).moveZ(-h/2.0).rotateY(Pi/2).moveZ(r).scaleZ((top-bottom)/r)
   }
 
-  protected def addScrewThingy(base: Solid, height: Double) = {
-    val r = 2*M3 + 2
-    val l = 2 * outerRadius
+  protected def addScrewThingy(base: Solid, height: Length) = {
+    val r = M3 * 2 + 2
+    val l = outerRadius * 2
     val l2 = outerRadius
     val c0 = Cylinder(r-0.01,l+10).moveZ(-l2-5).rotateY(Pi/2).moveZ(height)
     val c1 = Cylinder(r,l-2).moveZ(-l2+1).rotateY(Pi/2).moveZ(height)
@@ -59,7 +60,7 @@ class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
     base - c0 + c1 - c2 - c3 - sh.moveX(outerRadius - 1) - sh.moveX(-outerRadius-sideWall + 1)
   }
 
-  def bottom(height: Double) = {
+  def bottom(height: Length) = {
     val nutTop = botWall + bottomNut * 1.5
     val base = Difference(
       Cylinder(outerRadius, height),
@@ -71,7 +72,7 @@ class Joint2DOF(bottomNut: Double = Thread.ISO.M8) {
     addScrewThingy(base, height)
   }
 
-  def top(height: Double, baseFull: Double, screwRadius: Double) = {
+  def top(height: Length, baseFull: Length, screwRadius: Length) = {
     val size = math.ceil(2*outerRadius)
     val s = Cylinder(screwRadius, size+2).moveZ(-size/2-1)
     val delta = screwRadius + 0.1

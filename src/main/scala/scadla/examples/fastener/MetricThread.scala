@@ -2,9 +2,11 @@ package scadla.examples.fastener
 
 import scadla._
 import scadla.utils._
-import math._
 import InlineOps._
-import scadla.EverythingIsIn.{millimeters, radians}  
+import Trig._
+import squants.space.{Length, Angle}
+import scala.language.postfixOps
+import squants.space.LengthConversions._
 
 /** Generate threaded rods, screws and nuts.
  * based on metric_iso_screw.scad by stth
@@ -13,7 +15,7 @@ import scadla.EverythingIsIn.{millimeters, radians}
  *     http://www.thingiverse.com/thing:8796
  * CC Public Domain
  */
-class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
+class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
   
   /** Creates a thread with one rotation below z = 0 and one rotation above the number of rotations
    * a cylinder fills the thread, if icut &gt; 0, the valleys are stump
@@ -28,17 +30,17 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    * when rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
   def fullThread(ttn: Int,
-                  st: Double,
+                  st: Length,
                   sn: Int,
-                  or: Double,
-                  ir: Double,
-                  icut: Double ) = {
+                  or: Length,
+                  ir: Length,
+                  icut: Length ) = {
     // pitch per rotation
     val zt = st / sn
     // revolution angle of one shape
     val lfxy = 2 * Pi / sn
 
-    assert(ir >= 0.2, """Step Degrees too agresive, the thread will not be made!!
+    assert(ir >= (0.2 mm), """Step Degrees too agresive, the thread will not be made!!
   try to:
     increase de value for the degrees and/or...
     decrease the pitch value and/or...
@@ -83,7 +85,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
     val thread = for(i <- 0 until ttn; j <- 0 until sn) yield mkPoly(i, j)
 
     val r = ir + icut
-    val center = Translate(0, 0, -st, Cylinder(r, (ttn+1)*st))
+    val center = Translate(0 mm, 0 mm, -st, Cylinder(r, (ttn+1)*st))
 
     Union( (center +: thread):_* )
   }
@@ -108,18 +110,18 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    *
    * when rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
-  def threadShape(cs: Int, lt: Double, or: Double, ir: Double, st: Double, ocut: Double) = {
+  def threadShape(cs: Int, lt: Length, or: Length, ir: Length, st: Length, ocut: Length) = {
     if ( cs == 0 ) {
       Cylinder(or-ocut, lt)
     } else {
       Intersection(
         Union(
-          Cylinder(or, lt-st+0.005).moveZ(st/2),
+          Cylinder(or, lt-st+(0.005 mm)).moveZ(st/2),
 
           if ( cs == -1 || cs == 2 ) Cylinder(ir, or, st/2)
           else Cylinder(or, st/2),
           
-          Translate(0, 0, lt-st/2,
+          Translate(0 mm, 0 mm, lt-st/2,
             if ( cs == 1 || cs == 2 ) Cylinder(or, ir, st/2)
             else Cylinder(or, st/2)
           )
@@ -153,21 +155,21 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    *
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
-  def screwThread(od: Double, st: Double, lf0: Double, lt: Double, cs: Int, icut: Double, ocut: Double) = {
+  def screwThread(od: Length, st: Length, lf0: Angle, lt: Length, cs: Int, icut: Length, ocut: Length) = {
     // radius of outer thread helix
     val or = od/2
     // radius of inner thread helix
     val ir = or - st/2*cos(lf0)/sin(lf0)
     // number of revolutions
-    val ttn = ceil(lt/st).toInt + 1
+    val ttn = math.ceil(lt/st).toInt + 1
     
-    assert(od > 0, "outer diameter (od = "+od+") <= 0")
-    assert(st > 0, "thread pitch (st = "+st+") <= 0")
-    assert(lf0 > 0 && lf0 < Pi/2, "thread angle (fl0 = "+lf0+") not between 0 and π/2 (non-inclusive), try π/6!")
-    assert(lt > 0, "thread length (lt = "+lt+") <= 0")
+    assert(od > (0 mm), "outer diameter (od = "+od+") <= 0")
+    assert(st > (0 mm), "thread pitch (st = "+st+") <= 0")
+    assert(lf0 > (0°) && lf0 < (90°), "thread angle (fl0 = "+lf0+") not between 0 and π/2 (non-inclusive), try π/6!")
+    assert(lt > (0 mm), "thread length (lt = "+lt+") <= 0")
     assert(cs >= -2 && cs <= 2, "invalid mode (cs = "+cs+"), try -2, -1, 0, 1, or 2!")
-    assert(icut >= 0, "inner thread plane cut (icut = "+icut+") <= 0, try 0 or litte greater!")
-    assert(ocut >= 0, "outer thread plane cut (ocut = "+ocut+") <= 0, try 0 or litte greater!")
+    assert(icut >= (0 mm), "inner thread plane cut (icut = "+icut+") <= 0, try 0 or litte greater!")
+    assert(ocut >= (0 mm), "outer thread plane cut (ocut = "+ocut+") <= 0, try 0 or litte greater!")
     assert(icut < or-ir, "inner thread plane cut (icut = "+icut+") to big, try 0 or litte greater!")
     assert(ocut < or-ir, "outer thread plane cut (ocut = "+ocut+") to big, try 0 or litte greater!")
     assert(icut+ocut <= or-ir, "inner plus outer thread plane cut (icut + ocut = "+(icut+ocut)+") to big, try 0 or litte greater for both")
@@ -185,7 +187,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    *
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
-  def hexHead(hg: Double, df: Double) = {
+  def hexHead(hg: Length, df: Length) = {
     Intersection(
       Hexagon(df/2, hg),
       Cylinder(df/2 + hg, df/2, hg),
@@ -202,9 +204,9 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    *
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
-  def hexCountersinkEnds(chg: Double, od: Double, lf0: Double, hg: Double) = {
+  def hexCountersinkEnds(chg: Length, od: Length, lf0: Angle, hg: Length) = {
     // overlength of cones
-    val olen = 0.1
+    val olen = (0.1 mm)
     Union(
       // lower cone
       Cylinder( od/2,
@@ -231,7 +233,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    *
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
-  def hexNut(df: Double, hg: Double, st: Double, lf0: Double, od: Double, icut: Double, ocut: Double) = {
+  def hexNut(df: Length, hg: Length, st: Length, lf0: Angle, od: Length, icut: Length, ocut: Length) = {
     Difference(
       hexHead(hg, df),
       hexCountersinkEnds(st/2, od, lf0, hg),
@@ -263,19 +265,19 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    *
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
-  def hexScrew(od: Double, st: Double, lf0: Double, lt: Double,
-                  cs: Int, df: Double, hg: Double, ntl: Double,
-                  ntd: Double, icut: Double, ocut: Double) = {
+  def hexScrew(od: Length, st: Length, lf0: Angle, lt: Length,
+               cs: Int, df: Length, hg: Length, ntl: Length,
+               ntd: Length, icut: Length, ocut: Length) = {
 
     val ntr = od/2 - (st/2)*cos(lf0)/sin(lf0) + icut
 
     Union(
       hexHead(hg, df),
          
-      Translate(0, 0, hg,
-        if ( ntl == 0 ) Cylinder(ntr, 0.01)
-        else if ( ntd == -1 ) Cylinder(ntr, ntl+0.01)
-        else if ( ntd == 0 ) {
+      Translate(0 mm, 0 mm, hg,
+        if ( ntl == (0 mm) ) Cylinder(ntr, 0.01 mm)
+        else if ( ntd == (-1 mm) ) Cylinder(ntr, ntl+ (0.01 mm))
+        else if ( ntd == (0 mm) ) {
           val r = od/2 - ocut
           Union(
             Cylinder(r, ntl-st/2),
@@ -289,53 +291,53 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
   }
 
   /** Returns the thread pitch for an ISO M-Number */
-  val getIsoPitch = Map(
-     1.0-> 0.25,
-     1.2-> 0.25,
-     1.6-> 0.35,
-     2.0-> 0.4 ,
-     2.5-> 0.45,
-     3.0-> 0.5 ,
-     4.0-> 0.7 ,
-     5.0-> 0.8 ,
-     6.0-> 1.0 ,
-     8.0-> 1.25,
-    10.0-> 1.5 ,
-    12.0-> 1.75,
-    16.0-> 2.0 ,
-    20.0-> 2.5 ,
-    24.0-> 3.0 ,
-    30.0-> 3.5 ,
-    36.0-> 4.0 ,
-    42.0-> 4.5 ,
-    48.0-> 5.0 ,
-    56.0-> 5.5 ,
-    64.0-> 6.0 
+  val getIsoPitch = Map[Length, Length](
+    ( 1.0 mm) -> (0.25 mm),
+    ( 1.2 mm) -> (0.25 mm),
+    ( 1.6 mm) -> (0.35 mm),
+    ( 2.0 mm) -> (0.4  mm),
+    ( 2.5 mm) -> (0.45 mm),
+    ( 3.0 mm) -> (0.5  mm),
+    ( 4.0 mm) -> (0.7  mm),
+    ( 5.0 mm) -> (0.8  mm),
+    ( 6.0 mm) -> (1.0  mm),
+    ( 8.0 mm) -> (1.25 mm),
+    (10.0 mm) -> (1.5  mm),
+    (12.0 mm) -> (1.75 mm),
+    (16.0 mm) -> (2.0  mm),
+    (20.0 mm) -> (2.5  mm),
+    (24.0 mm) -> (3.0  mm),
+    (30.0 mm) -> (3.5  mm),
+    (36.0 mm) -> (4.0  mm),
+    (42.0 mm) -> (4.5  mm),
+    (48.0 mm) -> (5.0  mm),
+    (56.0 mm) -> (5.5  mm),
+    (64.0 mm) -> (6.0  mm)
   )
 
   /** returns the width across flat (tool size) for an ISO M-Number (take 0.1 less!) */ 
-  val getIsoWaf = Map[Double, Double]( 
-     1.0->  2.0,
-     1.2->  2.5,
-     1.6->  3.2,
-     2.0->  4.0,
-     2.5->  5.0,
-     3.0->  5.5,
-     4.0->  7.0,
-     5.0->  8.0,
-     6.0-> 10.0,
-     8.0-> 13.0,
-    10.0-> 17.0,
-    12.0-> 19.0,
-    16.0-> 24.0,
-    20.0-> 30.0,
-    24.0-> 36.0,
-    30.0-> 46.0,
-    36.0-> 55.0,
-    42.0-> 65.0,
-    48.0-> 75.0,
-    56.0-> 85.0,
-    64.0-> 96.0
+  val getIsoWaf = Map[Length, Length]( 
+    ( 1.0 mm) -> ( 2.0 mm),
+    ( 1.2 mm) -> ( 2.5 mm),
+    ( 1.6 mm) -> ( 3.2 mm),
+    ( 2.0 mm) -> ( 4.0 mm),
+    ( 2.5 mm) -> ( 5.0 mm),
+    ( 3.0 mm) -> ( 5.5 mm),
+    ( 4.0 mm) -> ( 7.0 mm),
+    ( 5.0 mm) -> ( 8.0 mm),
+    ( 6.0 mm) -> (10.0 mm),
+    ( 8.0 mm) -> (13.0 mm),
+    (10.0 mm) -> (17.0 mm),
+    (12.0 mm) -> (19.0 mm),
+    (16.0 mm) -> (24.0 mm),
+    (20.0 mm) -> (30.0 mm),
+    (24.0 mm) -> (36.0 mm),
+    (30.0 mm) -> (46.0 mm),
+    (36.0 mm) -> (55.0 mm),
+    (42.0 mm) -> (65.0 mm),
+    (48.0 mm) -> (75.0 mm),
+    (56.0 mm) -> (85.0 mm),
+    (64.0 mm) -> (96.0 mm)
   )
 
   /** Creates an outer (screw) iso screw thread and it's filling according to the mode in parameter cs
@@ -353,7 +355,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    *
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
-  def screwThreadIsoOuter(d: Double, lt: Double, cs: Int) = {
+  def screwThreadIsoOuter(d: Length, lt: Length, cs: Int) = {
     // pitch
     val st = getIsoPitch(d)
     // thread peak to thread peak (without cuts)
@@ -387,7 +389,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    *
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
-  def screwThreadIsoInner(d: Double, lt: Double) = {
+  def screwThreadIsoInner(d: Length, lt: Length) = {
     // pitch
     val st = getIsoPitch(d)
     
@@ -433,7 +435,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    *
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
-  def hexScrewIso(d: Double, lt: Double, cs: Int, ntl: Double, ntd: Double, hg: Double) = {
+  def hexScrewIso(d: Length, lt: Length, cs: Int, ntl: Length, ntd: Length, hg: Length) = {
     // pitch
     val st = getIsoPitch(d)
     
@@ -450,7 +452,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
       Pi/6,
       lt,
       cs,
-      getIsoWaf(d) - 0.1,
+      getIsoWaf(d) - (0.1 mm),
       hg,
       ntl,
       ntd,
@@ -472,7 +474,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
    *
    * assume for rendering $fn should be 30 minimum (do not use $fs or $fa)
    */
-  def hexNutIso(d: Double, hg: Double) = {
+  def hexNutIso(d: Length, hg: Length) = {
     // pitch
     val st = getIsoPitch(d)
     
@@ -484,7 +486,7 @@ class MetricThread(tolerance: Double = 0.05, fn: Int = 30) {
     // hfree_div_r = 0.5;
     
     hexNut(
-      getIsoWaf(d) - 0.1,
+      getIsoWaf(d) - (0.1 mm),
       hg,
       st,
       Pi/6,
@@ -511,23 +513,23 @@ object MetricThread {
     val m = new MetricThread()
 
     val set = Map(
-      1-> 1,
-      2-> 2,
-      3-> 3,
-      4-> 4,
-      5-> 1,
-      6-> 8,
-      7-> 6,
-      8-> 5
+      1-> (1 mm),
+      2-> (2 mm),
+      3-> (3 mm),
+      4-> (4 mm),
+      5-> (1 mm),
+      6-> (8 mm),
+      7-> (6 mm),
+      8-> (5 mm)
     )
 
     def boltAndNut(x: Int, y: Int) = {
       val i = 4*x + y
       val di = set(i)
-      val bolt = m.hexScrewIso( di, di*2, 2, di*0.6, 0, di/1.7)
+      val bolt = m.hexScrewIso( di, di*2, 2, di*0.6, 0 mm, di/1.7)
       val nut = m.hexNutIso(di, di/1.2)
       val pair = bolt + nut.moveZ( di/2 + di*0.6 + 6*m.getIsoPitch(di))
-      pair.translate(x*12, (y-1)*12 + x*(y-2)*8, 0)
+      pair.translate(x*12 mm, (y-1)*12 + x*(y-2)*8 mm, 0 mm)
     }
 
     val all = for (x <- 0 to 1; y <- 1 to 4) yield boltAndNut(x, y)
@@ -537,7 +539,7 @@ object MetricThread {
   def test = {
     val m = new MetricThread()
     //m.hexHead(4, 8)
-    m.hexScrewIso( 8, 12.5, 2, 7.5, 0, 3)
+    m.hexScrewIso( 8 mm, 12.5 mm, 2, 7.5 mm, 0 mm, 3 mm)
     //m.hexNutIso( 8, 4)
     //m.screwThreadIsoOuter( 8, 10, 2)
     //m.screwThreadIsoInner( 8, 6)

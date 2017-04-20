@@ -1,15 +1,18 @@
 package scadla.examples.cnc
 
-import math._
 import scadla._
 import utils._
 import utils.gear._
+import Trig._
 import InlineOps._
 import scadla.examples.fastener._
 import scadla.examples.GearBearing
 import Common._
 import scadla.examples.reach3D.SpoolHolder
 import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.{Length, Angle, Degrees, Millimeters}
+import scala.language.postfixOps
+import squants.space.LengthConversions._
 
 
 //TODO need to add some springy thing on one nut to reduce the backlash (preload)
@@ -17,34 +20,34 @@ import scadla.EverythingIsIn.{millimeters, radians}
 object LinearActuator {
 
   val rodThread = Thread.ISO.M6
-  val rodLead = 1.0
+  val rodLead = 1.0 mm
 
-  val motorYOffset = 21.5
+  val motorYOffset = 21.5 mm
   def length = motorYOffset + Nema14.size
   def width = Nema14.size
 
   // motor
-  val motorSocket = 4.0 //how deep the screw goes in
+  val motorSocket = 4.0 mm //how deep the screw goes in
   val motor = Nema14(28, 0)
 
   // the screws holding the motors
-  val screwHead = 2.0
-  val screwLength = 12.0
+  val screwHead = 2.0 mm
+  val screwLength = 12.0 mm
   val motorScrew = Union(Cylinder(Thread.ISO.M3 + looseTolerance, screwLength),
-                         Cylinder(2.1 * Thread.ISO.M3 + looseTolerance, screwHead))
+                         Cylinder(Thread.ISO.M3 * 2.1 + looseTolerance, screwHead))
 
-  val bbRadius = 3.0 // airsoft ∅ is 6mm
-  val bearingGapBase = 3.5
-  val bearingGapSupport = 2.5
+  val bbRadius = 3.0 mm // airsoft ∅ is 6mm
+  val bearingGapBase = 3.5 mm
+  val bearingGapSupport = 2.5 mm
 
-  val gearHeight = 10
+  val gearHeight = 10 mm
   val nbrTeethMotor = 14
   val nbrTeethRod = 2 * nbrTeethMotor
 
   val motorGearRadius = motorYOffset * nbrTeethMotor / (nbrTeethMotor + nbrTeethRod)
   val rodGearRadius =   motorYOffset * nbrTeethRod   / (nbrTeethMotor + nbrTeethRod)
   val mHelix = Twist(-0.1)
-  val rHelix = -mHelix * motorGearRadius / rodGearRadius
+  val rHelix = -mHelix * (motorGearRadius / rodGearRadius)
   
   val grooveDepthBase = bbRadius / cos(Pi/4) - bearingGapBase / 2
   val grooveDepthSupport = bbRadius / cos(Pi/4) - bearingGapSupport / 2
@@ -56,7 +59,7 @@ object LinearActuator {
   
   // to attach to the gimbal
   val gimbalWidth = Nema14.size + 4
-  val gimbalKnob = 7.0
+  val gimbalKnob = 7.0 mm
 
   val plateThickness = screwLength - motorSocket + screwHead
   val pillarHeight = gearHeight + bearingGapBase + bearingGapSupport
@@ -135,7 +138,7 @@ object LinearActuator {
 
   def rodGear(support: Boolean) = {
     val n = nut(rodThread)
-    val nh = 1.6 * rodThread //nut height
+    val nh = rodThread * 1.6 //nut height
     val g = Gear.herringbone(rodGearRadius, nbrTeethRod, gearHeight, rHelix, tightTolerance)
     val done = Difference(
         g,
@@ -168,12 +171,12 @@ object LinearActuator {
 
   val gimbalOffset = (gimbalLength1 - gimbalLength2) / 2.0
 
-  val retainerThickness = 1
+  val retainerThickness = 1 mm
 
   def gimbal = {
     Gimbal.inner(
       gimbalLength, //length
-      gimbalWidth - 2*retainerThickness,  //width
+      gimbalWidth - retainerThickness * 2,  //width
       30,   //height
       gimbalOffset, //lengthOffset
       0,    //widthOffset

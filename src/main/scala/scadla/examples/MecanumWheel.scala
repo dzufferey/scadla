@@ -1,16 +1,18 @@
 package scadla.examples
 
-import math._
 import scadla._
 import utils._
+import Trig._
 import InlineOps._
 import scadla.EverythingIsIn.{millimeters, radians}  
-import squants.space.Millimeters
+import squants.space.{Length, Angle, Degrees, Millimeters}
+import scala.language.postfixOps // for mm notation
+import squants.space.LengthConversions._ // for mm notation
 
 /** A class for the small rollers in the mecanum wheel */
-class Roller(height: Double, maxOuterRadius: Double, minOuterRadius: Double, innerRadius: Double) {
+class Roller(height: Length, maxOuterRadius: Length, minOuterRadius: Length, innerRadius: Length) {
 
-  val axis = 0.5
+  val axis = 0.5 mm
   val h = height - 2*axis
 
   protected def carveAxle(s: Solid) = s - Cylinder(innerRadius, height)
@@ -19,8 +21,8 @@ class Roller(height: Double, maxOuterRadius: Double, minOuterRadius: Double, inn
     // r * f = maxOuterRadius
     // r * f * cos(a) = minOuterRadius
     // r * sin(a) = height/2
-    val a = math.acos(minOuterRadius/maxOuterRadius)
-    val r = h / 2 / math.sin(a)
+    val a = acos(minOuterRadius/maxOuterRadius)
+    val r = h / 2 / sin(a)
     val f = maxOuterRadius / r
     val s = Sphere(r).scale(f, f, 1).moveZ(height/2)
     val c1 = Cylinder(maxOuterRadius, h).moveZ(axis)
@@ -38,19 +40,19 @@ class Roller(height: Double, maxOuterRadius: Double, minOuterRadius: Double, inn
         Cylinder(minOuterRadius, height) +
         solid.scale(0.8, 0.8, 1)
       )
-    val angle = math.Pi / 8
-    val grooveDepth = max(maxOuterRadius - minOuterRadius, 2)
-    val inner = max(maxOuterRadius - grooveDepth, (minOuterRadius + innerRadius) / 2)
+    val angle = 22.5° // π / 8
+    val grooveDepth = (maxOuterRadius - minOuterRadius) max 2
+    val inner = (maxOuterRadius - grooveDepth) max ((minOuterRadius + innerRadius) / 2)
     val slice = PieSlice(maxOuterRadius, inner, angle, h).moveZ(axis)
     (0 until 8).foldLeft(base)( (acc, i) => acc - slice.rotateZ(i*2*angle) )
   }
 
   //mold for k*l roller
   def mold(k: Int, l: Int) = {
-    val wall = 2
+    val wall = 2 mm
     val distToWall = wall + maxOuterRadius
     val step = maxOuterRadius + distToWall
-    val flatRoller = Rotate(-math.Pi/2, 0, 0, outline)
+    val flatRoller = Rotate(-90°, 0, 0, outline)
     val row = {
       val rs = for (i <- 0 until k) yield Translate( distToWall + i*step, 1, distToWall, flatRoller)
       Union(rs:_*)
@@ -65,38 +67,38 @@ class Roller(height: Double, maxOuterRadius: Double, minOuterRadius: Double, inn
       val gs = for (i <- 0 until (k-1)) yield groove.moveX( distToWall + (i+0.5)*step)
       Union(gs:_*)
     }
-    val base = Cube(k*step+wall, l*(2+height), distToWall)
+    val base = Cube((k * step : Length) + wall, l*(2+height), distToWall)
     base - grooves - rows
   }
 
 }
 
 
-class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int) {
+class MecanumWheel(radius: Length, width: Length, angle: Angle, nbrRollers: Int) {
 
   //TODO ideally the projection of the arc created by the roller should match the shape of the wheel
 
   //some more parameters
-  val tolerance = 0.15
+  val tolerance = 0.15 mm
 
-  var centerAxleRadius = 2.5 + tolerance
-  var shaftFlat = 0.45
+  var centerAxleRadius = (2.5 mm) + tolerance
+  var shaftFlat = 0.45 mm
 
-  var rollerAxleRadius1 = 1.75/2 + tolerance
-  var rollerAxleRadius2 = 1.0 + tolerance
+  var rollerAxleRadius1 = (1.75 mm) / 2 + tolerance
+  var rollerAxleRadius2 = (1.0 mm) + tolerance
 
-  var rollerGap = 0.0
-  var rollerRimGap = 0.5
+  var rollerGap = 0.0 mm
+  var rollerRimGap = 0.5 mm
 
-  var mountThickness = 1.0
+  var mountThickness = 1.0 mm
 
   //the rollers' dimensions
   //  innerR + maxR == radius
-  //  2*math.Pi*innerR == 1/cos(angle) * nbrRollers * (rollerGap + 2*maxR)
+  //  2*π*innerR == 1/cos(angle) * nbrRollers * (rollerGap + 2*maxR)
   def maxR = {
-    val c1 = 2 * Pi / nbrRollers
+    val c1 = 2 * math.Pi / nbrRollers // circumference not angle
     val c2 = 2 / cos(angle)
-    (c1 * radius - rollerGap) / (c1 + c2)
+    (radius * c1 - rollerGap) / (c1 + c2)
   }
   def innerR = radius - maxR
   def minR = rollerAxleRadius2 + mountThickness 
@@ -126,7 +128,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
   //assumes it is centered at (0,0,0)
   protected def placeOnRim(s: Solid) = {
     val oriented = s.rotate(angle, 0, 0).translate(innerR, 0, width/2)
-    val placed = for (i <- 0 until nbrRollers) yield oriented.rotate(0, 0, i * 2 * Pi / nbrRollers)
+    val placed = for (i <- 0 until nbrRollers) yield oriented.rotate(0, 0, i * 2 * π / nbrRollers)
     Union(placed:_*)
   }
     
@@ -149,10 +151,10 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     val base = Tube(innerR-maxR-rollerRimGap, centerAxleRadius, width)
     val shaft = Translate(centerAxleRadius - shaftFlat, -centerAxleRadius/2, 0, Cube(2*centerAxleRadius, centerAxleRadius, width))
 
-    val op = tan(angle.abs) * width / 2
+    val op = width * tan(angle.abs) / 2
     val ad = innerR
     val hyp = hypot(op, ad)
-    val rth = 2*minR*sin(angle.abs) + mountThickness
+    val rth = minR*sin(angle.abs)*2 + mountThickness
 
     val lowerRing = Tube(hyp + rollerAxleRadius1 + mountThickness, centerAxleRadius, rth) 
     val upperRing = lowerRing.moveZ(width - rth)
@@ -164,7 +166,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
 
   //the hub in two halfs, easier to print
   def hubHalves(nbrHoles: Int) = {
-    val angle = Pi * 2 / nbrHoles
+    val angle = π * 2 / nbrHoles
 
     val holeOffsetX = innerR / 2
     val holeOffsetA = angle / 2
@@ -176,8 +178,8 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     val lowerHalf = withHoles * Cylinder(innerR + maxR, width/2)
     val upperHalf = withHoles * Cylinder(innerR + maxR, width/2).moveZ(width/2)
 
-    val kHeight = min(5, width / 2 - 2)
-    val kRadius = 1.5
+    val kHeight = (width / 2 - 2) min 5
+    val kRadius = 1.5 mm
     val knobX = holeOffsetX + kRadius - 1
     val knob = Cylinder(kRadius, kHeight)
     val knobs = for(i <- 0 until nbrHoles) yield knob.move(knobX, 0, width/2).rotate(0, 0, i*angle)
@@ -190,7 +192,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
 
   def hubHalvesPrintable(nbrHoles: Int) = {
     val (l, h) = hubHalves(nbrHoles)
-    (l, h.rotate(Pi, 0, 0).moveZ(-width/2))
+    (l, h.rotate(π, 0, 0).moveZ(-width/2))
   }
 
   def assembled = Union(hub, rollers)
@@ -203,13 +205,13 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
     axle.vitamin = true
     val (lower,upper) = hubHalves(8)
     val lowerP = new Part("hub, lower half", lower)
-    val upperP = new Part("hub, upper half", upper, Some(upper.rotate(Pi, 0, 0).moveZ(-width/2)))
+    val upperP = new Part("hub, upper half", upper, Some(upper.rotate(π, 0, 0).moveZ(-width/2)))
     val asmbl0 = Assembly("Mecanum wheel")
     def place(as: Assembly, c: Assembly, w: Vector) = {
       val jt = Joint.revolute(0,0,1,Millimeters)
-      val f0 = Frame(Vector(innerR,0,width/2,Millimeters), Quaternion.mkRotation(angle, Vector(1,0,0,Millimeters)))
+      val f0 = Frame(Vector(innerR.toMillimeters,0,width/2,Millimeters), Quaternion.mkRotation(angle, Vector(1,0,0,Millimeters)))
       (0 until nbrRollers).foldLeft(as)( (acc, i) => {
-        val f1 = Frame(Vector(0,0,0,Millimeters), Quaternion.mkRotation(i * 2 * Pi / nbrRollers, Vector(0,0,1,Millimeters)))
+        val f1 = Frame(Vector(0,0,0,Millimeters), Quaternion.mkRotation(i * 2 * π / nbrRollers, Vector(0,0,1,Millimeters)))
         val frame = f0.compose(f1)
         acc + (frame, jt, c, w)
       })
@@ -218,7 +220,7 @@ class MecanumWheel(radius: Double, width: Double, angle: Double, nbrRollers: Int
                 (Joint.fixed(0,0,-1,Millimeters), lowerP) +
                 (Joint.fixed(0,0, 1,Millimeters), upperP)
     val asmbl2 = place(asmbl1, rollerP, Vector(0,0,-rollerHeight/2,Millimeters))
-    place(asmbl2, axle, Vector(0,0,-axleHeight,Millimeters))
+    place(asmbl2, axle, Vector(0,0, -axleHeight.toMillimeters, Millimeters))
   }
 
 }
@@ -227,10 +229,10 @@ object MecanumWheel {
 
   def main(args: Array[String]) {
     //a small version
-    val r = 25
-    val w = 18
+    val r = 25 mm
+    val w = 18 mm
     val n = 12
-    val a = Pi/6
+    val a = π / 6
     val wheel1 = new MecanumWheel(r, w, a, n)
     val wheel2 = new MecanumWheel(r, w,-a, n)
     

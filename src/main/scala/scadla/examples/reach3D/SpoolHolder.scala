@@ -1,11 +1,12 @@
 package scadla.examples.reach3D
 
-import math._
 import scadla._
 import utils._
+import Trig._
 import InlineOps._
 import scadla.examples.fastener.StructuralNutPlaceHolder
 import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.{Length, Angle}
 
 object SpoolHolder {
 
@@ -18,23 +19,23 @@ object SpoolHolder {
   val grooveDepth = bbRadius / cos(Pi/4)
 
   // make sures the BBs fit nicely
-  def adjustGrooveRadius(radius: Double): Double = {
+  def adjustGrooveRadius(radius: Length): Length = {
     assert(radius > bbRadius)
     // find n such that the circumscribed radius is the closest to the given radius
     val sideLength = 2*bbRadius + looseTolerance
-    val nD = Pi / asin(sideLength / (2 *radius))
+    val nD = Pi / asin(sideLength / radius / 2)
     val n = nD.toInt // rounding to nearest regular polygon
     circumscribedRadius(n, sideLength)
   }
 
-  def flatGroove(radius: Double, depth: Double, angle: Double = Pi/2, undercut: Double = 0.5) = {
+  def flatGroove(radius: Length, depth: Length, angle: Angle = Pi/2, undercut: Length = 0.5) = {
     val width = depth / tan(Pi/2 - angle/2)
     val outer = Cylinder(radius + width, radius, depth)
     val inner = Cylinder(radius - width, radius, depth)
     (outer - inner) * Cylinder(radius + width, depth - undercut)
   }
 
-  def radialGroove(radius: Double, depth: Double, angle: Double = Pi/2, undercut: Double = 0.5) = {
+  def radialGroove(radius: Length, depth: Length, angle: Angle = Pi/2, undercut: Length = 0.5) = {
     val width = (depth / tan(Pi/2 - angle/2)).abs
     val middleRadius = radius - depth
     val body = Cylinder(radius, 2*width)
@@ -46,11 +47,11 @@ object SpoolHolder {
     shape.moveZ(-width)
   }
 
-  def steppedCone(baseRadius: Double, steps: Int, stepRadiusDec: Double, stepHeight: Double) = {
+  def steppedCone(baseRadius: Length, steps: Int, stepRadiusDec: Length, stepHeight: Length) = {
     Union((0 until steps).map( i => Cylinder(baseRadius - i * stepRadiusDec, stepHeight).moveZ(i * stepHeight) ): _*)
   }
 
-  def stemShape(radius1: Double, height1: Double, radius2: Double, height2: Double, bevel: Double) = {
+  def stemShape(radius1: Length, height1: Length, radius2: Length, height2: Length, bevel: Length) = {
     val c1 = Cylinder(radius1, height1)
     val c2 = Cylinder(radius2, height2).moveZ(height1)
     val bev = if (radius1 > radius2) Cylinder(radius2 + bevel, radius2, bevel).moveZ(height1)

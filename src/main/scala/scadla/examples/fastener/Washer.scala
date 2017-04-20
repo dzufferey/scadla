@@ -2,20 +2,22 @@ package scadla.examples.fastener
 
 import scadla._
 import scadla.utils._
-import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Length
+import scala.language.postfixOps
+import squants.space.LengthConversions._
 
 object Washer {
 
-  def apply(innerDiameter: Double, outerDiameter: Double, thickness: Double) = {
-    metric(innerDiameter, outerDiameter, thickness)
-  }
-  
-  def metric(innerDiameter: Double, outerDiameter: Double, thickness: Double) = {
+  def apply(innerDiameter: Length, outerDiameter: Length, thickness: Length) = {
     Tube(outerDiameter/2, innerDiameter/2, thickness)
   }
   
+  def metric(innerDiameter: Double, outerDiameter: Double, thickness: Double) = {
+    apply(innerDiameter mm, outerDiameter mm, thickness mm)
+  }
+  
   def imperial(innerDiameter: Double, outerDiameter: Double, thickness: Double) = {
-    Tube(inch2mm(outerDiameter)/2, inch2mm(innerDiameter)/2, inch2mm(thickness))
+    apply(innerDiameter inches, outerDiameter inches, thickness inches)
   }
 
   //metric versions (ISO)

@@ -1,26 +1,27 @@
 package scadla.examples.cnc
 
-import math._
 import scadla._
 import utils._
+import Trig._
 import InlineOps._
 import scadla.examples.fastener._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Length
 
 //The part that holds the linear actuator connected to the frame
 
 // outer dimensions
 class Gimbal(
-        length: Double,
-        width: Double,
-        height: Double,
-        lengthOffset: Double,
-        widthOffset: Double,
-        maxThickness: Double,
-        minThickness: Double,
-        retainerThickness: Double,
-        knobLength: Double) {
+        length: Length,
+        width: Length,
+        height: Length,
+        lengthOffset: Length,
+        widthOffset: Length,
+        maxThickness: Length,
+        minThickness: Length,
+        retainerThickness: Length,
+        knobLength: Length) {
 
   protected def carveBearing(shape: Solid) = {
     val b = Cylinder(11 + looseTolerance, maxThickness)
@@ -43,7 +44,7 @@ class Gimbal(
       k1.rotateY(Pi/2).move(length/2, widthOffset, 0)
   }
 
-  protected def halfCylinder(r1: Double, r2: Double, h: Double) = {
+  protected def halfCylinder(r1: Length, r2: Length, h: Length) = {
     val c1 = if (r1 <= r2) Cylinder(r1, h) else PieSlice(r1, 0, Pi, h)
     val c2 = if (r2 <= r1) Cylinder(r2, h) else PieSlice(r2, 0, Pi, h).rotateZ(Pi)
     c1 + c2
@@ -53,16 +54,16 @@ class Gimbal(
 
   protected def shapeOuter = {
 
-    def distO(center: Double, radius: Double) = {
+    def distO(center: Length, radius: Length) = {
       val l0 = radius - center
       val l1 = hypot( l0 - maxThickness + minThickness, height/2)
-      min(l1, l0)
+      l1 min l0
     }
 
-    def distI(center: Double, radius: Double) = {
+    def distI(center: Length, radius: Length) = {
       val l0 = radius - center
       val l1 = hypot( l0 - maxThickness, height/2)
-      max(l1, l0 - minThickness)
+      l1 max (l0 - minThickness)
     }
     
     val radiusWidth1 = distO(width/2 + widthOffset, width)
@@ -93,7 +94,7 @@ class Gimbal(
   //split into multiple parts connected with dovetail (and screws) for easier printing
   def parts(support: Boolean = false) = {
     val screw = Cylinder(woodScrewHeadRadius, woodScrewHeadHeight+10).moveZ(-10) + Cylinder(woodScrewRadius, woodScrewLength+woodScrewHeadHeight)
-    val screwOffset = max( woodScrewHeadRadius, minThickness/2)
+    val screwOffset = woodScrewHeadRadius max(minThickness/2)
     val screwX = length/2 - screwOffset
     val screwY = width/2
     val screwZ = 0
@@ -113,9 +114,9 @@ class Gimbal(
     val t = Trapezoid(height/3, height/2, width, maxThickness+delta).move(-height/4, -width/2, -maxThickness-delta)
     val doveTail = Difference(
       c,
-      t.rotateY(-Pi/2).move(-width, 0, + height/2),
+      t.rotateY(-Pi/2).move(-width, 0,   height/2),
       t.rotateY(-Pi/2).move(-width, 0, - height/2),
-      t.rotateY( Pi/2).move( width, 0, + height/2),
+      t.rotateY( Pi/2).move( width, 0,   height/2),
       t.rotateY( Pi/2).move( width, 0, - height/2)
     )
     val dovetail1 = doveTail.moveY(maxThickness - width)
@@ -161,44 +162,44 @@ class Gimbal(
 object Gimbal {
 
   def outer(
-        length: Double,
-        width: Double,
-        height: Double,
-        lengthOffset: Double,
-        widthOffset: Double,
-        maxThickness: Double,
-        minThickness: Double,
-        retainerThickness: Double,
-        knobLength: Double) = {
+        length: Length,
+        width: Length,
+        height: Length,
+        lengthOffset: Length,
+        widthOffset: Length,
+        maxThickness: Length,
+        minThickness: Length,
+        retainerThickness: Length,
+        knobLength: Length) = {
     new Gimbal(length, width, height, lengthOffset, widthOffset,
                maxThickness, minThickness, retainerThickness, knobLength)
   }
 
   def outerDimensions(
-        length: Double, 
-        width: Double,
-        height: Double,
-        lengthOffset: Double,
-        widthOffset: Double,
-        maxThickness: Double,
-        minThickness: Double,
-        retainerThickness: Double,
-        knobLength: Double) = {
+        length: Length, 
+        width: Length,
+        height: Length,
+        lengthOffset: Length,
+        widthOffset: Length,
+        maxThickness: Length,
+        minThickness: Length,
+        retainerThickness: Length,
+        knobLength: Length) = {
     val g = new Gimbal(length, width, height, lengthOffset, widthOffset,
                        maxThickness, minThickness, retainerThickness, knobLength)
     g.model
   }
 
   def inner(
-        length: Double,
-        width: Double,
-        height: Double,
-        lengthOffset: Double,
-        widthOffset: Double,
-        maxThickness: Double,
-        minThickness: Double,
-        retainerThickness: Double,
-        knobLength: Double) = {
+        length: Length,
+        width: Length,
+        height: Length,
+        lengthOffset: Length,
+        widthOffset: Length,
+        maxThickness: Length,
+        minThickness: Length,
+        retainerThickness: Length,
+        knobLength: Length) = {
     outer(
         length + 2 * maxThickness,
         width + 2 * maxThickness,
@@ -212,15 +213,15 @@ object Gimbal {
   }
 
   def innerDimensions(
-        length: Double,
-        width: Double,
-        height: Double,
-        lengthOffset: Double,
-        widthOffset: Double,
-        maxThickness: Double,
-        minThickness: Double,
-        retainerThickness: Double,
-        knobLength: Double) = {
+        length: Length,
+        width: Length,
+        height: Length,
+        lengthOffset: Length,
+        widthOffset: Length,
+        maxThickness: Length,
+        minThickness: Length,
+        retainerThickness: Length,
+        knobLength: Length) = {
     outerDimensions(
         length + 2 * maxThickness,
         width + 2 * maxThickness,

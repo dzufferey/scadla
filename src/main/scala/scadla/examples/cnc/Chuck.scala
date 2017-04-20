@@ -1,27 +1,28 @@
 package scadla.examples.cnc
 
-import math._
 import scadla._
 import utils._
 import InlineOps._
 import scadla.examples.fastener._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Length
+import scala.language.postfixOps
 
 object Chuck {
 
-  protected def doubleHex(radius: Double, height: Double) = {
+  protected def doubleHex(radius: Length, height: Length) = {
     val h = Hexagon(radius, height)
-    Union(h, h.rotateZ(Pi/6))
+    Union(h, h.rotateZ(30°))
   }
   
   //TODO some more parameters
   //assumes M8 middle
-  def innerThread( outerRadius: Double,
-                   innerHole: Double,
-                   chuckHeight: Double,
-                   colletLength: Double,
-                   mNumber: Double ) = {
+  def innerThread( outerRadius: Length,
+                   innerHole: Length,
+                   chuckHeight: Length,
+                   colletLength: Length,
+                   mNumber: Length ) = {
   val shaft = Thread.ISO.M8 + tightTolerance //TODO add more/less tolerance ???
   val splitWasher = 2
   val nutHeight = nut.height(shaft)
@@ -40,7 +41,7 @@ object Chuck {
   }
   
   //TODO some more parameters
-  def wrench(outerRadius: Double) = {
+  def wrench(outerRadius: Length) = {
     val wall = 5
     val hex = doubleHex(Hexagon.minRadius(outerRadius).toMillimeters + looseTolerance, 5)
     val head = Cylinder(outerRadius + wall, 5)

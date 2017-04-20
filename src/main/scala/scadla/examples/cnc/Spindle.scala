@@ -1,13 +1,16 @@
 package scadla.examples.cnc
 
-import math._
 import scadla._
 import utils._
+import Trig._
 import utils.gear._
 import InlineOps._
 import scadla.examples.fastener._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.{Length, Angle, Degrees, Millimeters}
+import scala.language.postfixOps
+import squants.space.LengthConversions._
 
 //parameters:
 //- thickness of structure
@@ -50,24 +53,24 @@ object Spindle {
   
   val motorBoltDistance = (30 + 30) / 2f //depends on the size of the motorBase and boltSupport
   
-  val gearHeight = 10
-  val chuckNonThreadOverlap = 10 
+  val gearHeight = 10 mm
+  val chuckNonThreadOverlap = 10 mm
 
-  val topBoltWasher = 2
-  val bottomBoltWasher = 2
+  val topBoltWasher = 2 mm
+  val bottomBoltWasher = 2 mm
 
-  val boltThreadedLength = 25 //23
-  val boltNonThreadedLength = 96 //86
+  val boltThreadedLength = 25 mm //23
+  val boltNonThreadedLength = 96 mm //86
 
   val boltSupportTop = boltNonThreadedLength - gearHeight - chuckNonThreadOverlap - topBoltWasher - bottomBoltWasher
 
-  val motorBaseToGear = 37.3
+  val motorBaseToGear = 37.3 mm
   val motorBaseHeight = boltSupportTop + topBoltWasher - motorBaseToGear 
 
-  val bitsLength = 25
+  val bitsLength = 25 mm
   val colletLength = bitsLength - 3
   val chuckHeight = colletLength + boltThreadedLength + chuckNonThreadOverlap
-  val innerHole = 9 //17.5 / 2
+  val innerHole = 9 mm //17.5 / 2
 
   ///////////
   // gears //
@@ -128,7 +131,7 @@ object Spindle {
     base - shaftHole -- fasteners -- breathingSpaces
   }
 
-  val fixCoord = List[(Double,Double,Double)](
+  val fixCoord = List[(Length, Length, Angle)](
     (31,  4, -Pi/5.2),
     (-1,  4, Pi+Pi/5.2),
     (34, 30,  0),
@@ -171,8 +174,8 @@ object Spindle {
   def objects = Map(
     "gear_bolt" -> gearBolt,
     "gear_motor" -> gearMotor,
-    "bolt_washer_top" -> Tube(6, 4 + 2*tolerance, topBoltWasher),
-    "bolt_washer_bot" -> Tube(6, 4 + 2*tolerance, bottomBoltWasher),
+    "bolt_washer_top" -> Tube(6, (4 mm) + 2*tolerance, topBoltWasher),
+    "bolt_washer_bot" -> Tube(6, (4 mm) + 2*tolerance, bottomBoltWasher),
     "spindle_body" -> spindle,
     "chuck_wrench" -> Chuck.wrench(13),
     "chuck" -> chuck.rotateX(Pi),

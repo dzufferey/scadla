@@ -4,19 +4,21 @@ import scadla._
 import scadla.utils._
 import math._
 import InlineOps._
-import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Length
+import scala.language.postfixOps
+import squants.space.LengthConversions._
 
 object Nut {
 
   private lazy val thread = new MetricThread()
 
-  def apply(radius: Double) = {
+  def apply(radius: Length) = {
     thread.hexNutIso(radius*2, 1.6 * radius)
   }
 
-  def minOuterRadius(innerRadius: Double) = 1.6 * innerRadius
-  def maxOuterRadius(innerRadius: Double) = Hexagon.maxRadius(minOuterRadius(innerRadius))
-  def height(innerRadius: Double) = 1.6 * innerRadius
+  def minOuterRadius(innerRadius: Length) = 1.6 * innerRadius
+  def maxOuterRadius(innerRadius: Length) = Hexagon.maxRadius(minOuterRadius(innerRadius))
+  def height(innerRadius: Length) = 1.6 * innerRadius
 
   //metric versions (ISO)
   def M1   = apply( Thread.ISO.M1 )
@@ -44,17 +46,17 @@ object Nut {
 }
 
 /** simple Hexagon as placeholder for nuts (rendering is much faster) */
-class NutPlaceHolder(tolerance: Double = 0.1) {
+class NutPlaceHolder(tolerance: Length = 0.1 mm) {
 
   protected val factor = 1.6
 
-  def apply(radius: Double) = {
+  def apply(radius: Length) = {
     Hexagon(radius * factor + tolerance, factor * radius + tolerance)
   }
   
-  def minOuterRadius(innerRadius: Double) = factor * innerRadius + tolerance
-  def maxOuterRadius(innerRadius: Double) = Hexagon.maxRadius(minOuterRadius(innerRadius)).toMillimeters
-  def height(innerRadius: Double) = factor * innerRadius + tolerance
+  def minOuterRadius(innerRadius: Length) = factor * innerRadius + tolerance
+  def maxOuterRadius(innerRadius: Length) = Hexagon.maxRadius(minOuterRadius(innerRadius)).toMillimeters
+  def height(innerRadius: Length) = factor * innerRadius + tolerance
 
   def M1   = apply( Thread.ISO.M1 )
   def M1_2 = apply( Thread.ISO.M1_2 )
@@ -80,7 +82,7 @@ class NutPlaceHolder(tolerance: Double = 0.1) {
 
 }
 
-class StructuralNutPlaceHolder(tolerance: Double = 0.1) extends NutPlaceHolder(tolerance) {
+class StructuralNutPlaceHolder(tolerance: Length = 0.1 mm) extends NutPlaceHolder(tolerance) {
 
   override protected val factor = 1.8
 

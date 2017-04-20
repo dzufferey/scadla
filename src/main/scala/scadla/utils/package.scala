@@ -9,11 +9,7 @@ package object utils {
 
   import scadla._
   
-  def inch2mm(i: Double) = i * 25.4
-
-  def mm2inch(i: Double) = i / 25.4
-
-  def polarCoordinates(x: Double, y: Double) = (math.hypot(x, y), math.atan2(y,x))
+  def polarCoordinates(x: Length, y: Length) = (Trig.hypot(x, y), Trig.atan2(y,x))
   
   def traverse(f: Solid => Unit, s: Solid): Unit = s match {
     case Translate(x, y, z, s2) =>  traverse(f, s2); f(s)
