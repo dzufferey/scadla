@@ -1,7 +1,7 @@
 package scadla
 
-import math._
-import squants.space.Length
+import scadla.utils.Trig._
+import squants.space.{Length, Angle}
 import scala.language.postfixOps
 import scadla.InlineOps._
 
@@ -112,15 +112,15 @@ package object utils {
   }
 
   /** https://en.wikipedia.org/wiki/Chord_(geometry) */
-  def chord(angle: Double) = 2*sin(angle/2)
+  def chord(angle: Angle) = 2*sin(angle/2)
 
   /** https://en.wikipedia.org/wiki/Apothem */
-  def apothem(nbrSides: Int, sideLength: Double) = sideLength / (2 * tan(Pi / nbrSides))
-  def apothemFromR(nbrSides: Int, maxRadius: Double) = maxRadius * cos(Pi / nbrSides)
+  def apothem(nbrSides: Int, sideLength: Length) = sideLength / (2 * tan(Pi / nbrSides))
+  def apothemFromR(nbrSides: Int, maxRadius: Length) = maxRadius * cos(Pi / nbrSides)
 
-  def incribedRadius(nbrSides: Int, sideLength: Double) = sideLength / tan(Pi / nbrSides) / 2
+  def incribedRadius(nbrSides: Int, sideLength: Length) = sideLength / tan(Pi / nbrSides) / 2
 
-  def circumscribedRadius(nbrSides: Int, sideLength: Double) = sideLength / sin(Pi / nbrSides) / 2
+  def circumscribedRadius(nbrSides: Int, sideLength: Length) = sideLength / sin(Pi / nbrSides) / 2
 
 }
 

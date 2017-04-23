@@ -1,10 +1,12 @@
 package scadla.examples.reach3D
 
-import math._
 import scadla._
 import utils._
+import Trig._
 import InlineOps._
-import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.{Length, Angle}
+import scala.language.postfixOps
+import squants.space.LengthConversions._
 
 /** Some legs for the Reach3D printer */
 object ReachLegs {
@@ -16,17 +18,18 @@ object ReachLegs {
   // t-nuts (M4)
   // springy thing
 
-  val thickness = 4.0
-  val padWidth = 12.5
+  val thickness = 4.0 mm
+  val padWidth = 12.5 mm
   val width = 2 * padWidth
-  val length = 100.0
+  val length = 100.0 mm
   
-  val height = 40 + thickness
-  val padSpace = 6.0
-  val meetingPoint = 50.0
-  val damperThickness = 1.4
+  val height = (40 mm) + thickness
+  val padSpace = 6.0 mm
+  val meetingPoint = 50.0 mm
+  val damperThickness = 1.4 mm
 
   def base1 = {
+    import scadla.EverythingIsIn.millimeters
     val b = Hull(
       Cube(width, thickness, height),
       Cube(width, length, thickness),
@@ -51,42 +54,45 @@ object ReachLegs {
     )
   }
 
-  def vibrationDamper(baseWidth: Double) = {
+  def vibrationDamper(baseWidth: Length) = {
+    import scadla.EverythingIsIn.millimeters
     val offset = (baseWidth - width) / 2
     val c = Cylinder(damperThickness/2, width).rotateY(Pi/2)
     val pad = Union(
       Cube(width, padWidth + 2 * damperThickness, damperThickness),
       c.moveY(damperThickness/2),
-      c.moveY(3*damperThickness/2 + padWidth)
+      c.moveY(damperThickness*3/2 + padWidth)
     )
     val leg = Hull(
       c.move(offset, 0, damperThickness/2),
-      Cylinder(damperThickness/2, baseWidth).rotateY(Pi/2).move(0, -meetingPoint, 3*damperThickness/2 + padSpace)
+      Cylinder(damperThickness/2, baseWidth).rotateY(Pi/2).move(0, -meetingPoint, damperThickness*3/2 + padSpace)
     )
     (pad.moveX(offset) + leg).moveZ(-damperThickness)
   }
 
   def leg1 = {
-    base1 + vibrationDamper(width).move(0, length - padWidth - 2*damperThickness, - padSpace)
+    base1 + vibrationDamper(width).move(0 mm, length - padWidth - 2*damperThickness, - padSpace)
   }
 
-  val beamLength = meetingPoint + padWidth + 2*damperThickness + 20
+  val beamLength = meetingPoint + padWidth + 2*damperThickness + (20 mm)
 
   def endcap2040 = {
+    import scadla.EverythingIsIn.millimeters
     //ideal slot: Cube(6,10,2).moveX(-3) + Cube(11, 10, 1.5).move(-5.5,0,2) + Trapezoid(6, 11, 10,2.5).move(-5.5,0,3.5)
     val slot = Cube(5.8,10,2.1).moveX(-2.9) + Cube(10.8, 10, 1.3).move(-5.4,0,2.1) + Trapezoid(5.8, 10.8, 10, 2.3).move(-5.4,0,3.4)
     Cube(20, thickness, 40) +
-    slot.move(10, 0, 0) +
+    slot.move(10, 0,  0) +
     slot.move(10, 0, 20) +
-    slot.rotateY(Pi/2).move(0, 0, 10) +
+    slot.rotateY( Pi/2).move( 0, 0, 10) +
     slot.rotateY(-Pi/2).move(20, 0, 10) +
-    slot.rotateY(Pi/2).move(0, 0, 30) +
+    slot.rotateY( Pi/2).move( 0, 0, 30) +
     slot.rotateY(-Pi/2).move(20, 0, 30) +
-    slot.rotateY(Pi).move(10, 0, 20) +
-    slot.rotateY(Pi).move(10, 0, 40)
+    slot.rotateY( Pi).move(10, 0, 20) +
+    slot.rotateY( Pi).move(10, 0, 40)
   }
 
   def base2 = {
+    import scadla.EverythingIsIn.millimeters
     // beam that continues below the extrusion
     val beam = Cube(20, beamLength, thickness) +
                PieSlice(thickness, 0, Pi/2, 20).rotateY(Pi/2).move(0, beamLength, thickness) +
@@ -97,10 +103,11 @@ object ReachLegs {
   }
 
   def leg2 = {
-    base2 + vibrationDamper(20).move(0, beamLength - padWidth - 2*damperThickness, - padSpace)
+    base2 + vibrationDamper(20 mm).move(0 mm, beamLength - padWidth - 2*damperThickness, - padSpace)
   }
 
   def main(args: Array[String]) {
+    import scadla.EverythingIsIn.{millimeters, radians}
     Seq(
       leg1.rotateY(-Pi/2) -> "leg1a.stl",
       leg1.mirror(0,0,1).rotateY(-Pi/2) -> "leg1b.stl",

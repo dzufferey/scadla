@@ -4,6 +4,7 @@ import scadla._
 import scadla.InlineOps._
 import scadla.utils._
 import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Length
 
 object U {
 
@@ -15,7 +16,7 @@ object U {
    *  ─ └───────┘ ─ d
    *    |   b   |
    */
-  def apply(b: Double, h: Double, d: Double)(length: Double): Solid = {
+  def apply(b: Length, h: Length, d: Length)(length: Length): Solid = {
     apply(b, h, d, d)(length)
   }
 
@@ -28,7 +29,7 @@ object U {
    *  ─ └───────┘ ─ d
    *    |   b   |
    */
-  def apply(b: Double, h: Double, d: Double, t: Double)(length: Double): Solid = {
+  def apply(b: Length, h: Length, d: Length, t: Length)(length: Length): Solid = {
     apply(b, h, d, t, t)(length)
   }
 
@@ -42,7 +43,7 @@ object U {
    *  ─ └───────┘ ─ d
    *    |   b   |
    */
-  def apply(b: Double, h: Double, d: Double, t1: Double, t2: Double)(length: Double): Solid = {
+  def apply(b: Length, h: Length, d: Length, t1: Length, t2: Length)(length: Length): Solid = {
     val c1 = Cube(  b, d, length)
     val c2 = Cube( t1, h, length)
     val c3 = Cube( t2, h, length)

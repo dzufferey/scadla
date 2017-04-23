@@ -1,35 +1,37 @@
 package scadla.examples
 
-import math._
 import scadla._
 import utils._
+import Trig._
 import InlineOps._
-import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.{Length, Angle}
+import scala.language.postfixOps
+import squants.space.LengthConversions._
 
 object WhiteboardMarkerHolder {
 
-  val penRadius = 10
+  val penRadius = 10 mm
 
   val numberPen = 4
 
-  val thickness = 3
+  val thickness = 3 mm
 
-  val magnetRadius = 12
-  val magnetHeight = 5
+  val magnetRadius = 12 mm
+  val magnetHeight = 5 mm
 
-  val tolerance = 0.2
+  val tolerance = 0.2 mm
 
   protected def hook = {
-    PieSlice(penRadius + thickness, penRadius, 2*Pi/3, 20)
+    PieSlice(penRadius + thickness, penRadius, 2*Pi/3, 20 mm)
   }
 
   def top = {
     val mrt = magnetRadius + thickness
-    val beam1 = Cube( 90, 10, thickness).move(-45, -mrt, thickness)
-    val beam2 = Cube( 50, 10 + thickness, 2*thickness).move(-25, -mrt, 0)
+    val beam1 = Cube( 90 mm, 10 mm, thickness).move(-45 mm, -mrt, thickness)
+    val beam2 = Cube( 50 mm, (10 mm) + thickness, 2*thickness).move(-25 mm, -mrt, 0 mm)
     val center = Hull(
       Cylinder(mrt, 2*thickness),
-      Cube(2*mrt, 1, 2*thickness).move(-mrt, -mrt, 0)
+      Cube(2*mrt, 1 mm, 2*thickness).move(-mrt, -mrt, 0 mm)
     )
     val magnet = Cylinder(magnetRadius + tolerance, magnetHeight + tolerance)
     beam1 + beam2 + center - magnet
@@ -37,10 +39,10 @@ object WhiteboardMarkerHolder {
 
   def side = {
     val penSpace = 2.5 * penRadius
-    val base = Cube(penSpace * numberPen + 10, thickness, 20)
-    val hooks = (1 to numberPen).map( i => hook.rotateZ(-Pi/3).move(i * penSpace, 11.5, 0) )
-    val lip = Cube(thickness, 2 * thickness, 20)
-    base ++ hooks + lip + lip.moveX(10 + thickness + tolerance)
+    val base = Cube(penSpace * numberPen + (10 mm), thickness, 20 mm)
+    val hooks = (1 to numberPen).map( i => hook.rotateZ(-Pi/3).move(i * penSpace, 11.5 mm, 0 mm) )
+    val lip = Cube(thickness, 2 * thickness, 20 mm)
+    base ++ hooks + lip + lip.moveX((10 mm) + thickness + tolerance)
   }
 
   def main(args: Array[String]) {

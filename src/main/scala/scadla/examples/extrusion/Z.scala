@@ -3,7 +3,7 @@ package scadla.examples.extrusion
 import scadla._
 import scadla.InlineOps._
 import scadla.utils._
-import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Length
 
 object Z {
   
@@ -15,7 +15,7 @@ object Z {
    *  ─    └────┘ ─ d
    *    |   b   |
    */
-  def apply(b: Double, h: Double, d: Double)(length: Double): Solid = {
+  def apply(b: Length, h: Length, d: Length)(length: Length): Solid = {
     val m = (b+d) / 2
     apply(m, m, h, d, d)(length)
   }
@@ -29,7 +29,7 @@ object Z {
    *  ─    └────┘ ─ d
    *       | b2 |
    */
-  def apply(b1: Double, b2: Double, h: Double, d: Double)(length: Double): Solid = {
+  def apply(b1: Length, b2: Length, h: Length, d: Length)(length: Length): Solid = {
     apply(b1, b2, h, d, d)(length)
   }
 
@@ -43,7 +43,7 @@ object Z {
    *  ─    └────┘ ─ d
    *       | b2 |
    */
-  def apply(b1: Double, b2: Double, h: Double, d: Double, t: Double)(length: Double): Solid = {
+  def apply(b1: Length, b2: Length, h: Length, d: Length, t: Length)(length: Length): Solid = {
     apply(b1, b2, h, d, d, t)(length)
   }
 
@@ -57,7 +57,7 @@ object Z {
    *      ─    └────┘ ─ d2
    *           | b2 |
    */
-  def apply(b1: Double, b2: Double, h: Double, d1: Double, d2: Double, t: Double)(length: Double): Solid = {
+  def apply(b1: Length, b2: Length, h: Length, d1: Length, d2: Length, t: Length)(length: Length): Solid = {
     val c1 = Cube(b1, d1, length)
     val c2 = Cube( t, h, length)
     val c3 = Cube(b2, d2, length)

@@ -1,5 +1,7 @@
 package scadla.examples.extrusion
 
+import scadla.EverythingIsIn.millimeters
+
 object Demo {
 
   def main(args: Array[String]) {

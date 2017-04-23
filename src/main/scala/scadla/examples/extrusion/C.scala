@@ -3,7 +3,9 @@ package scadla.examples.extrusion
 import scadla._
 import scadla.InlineOps._
 import scadla.utils._
-import scadla.EverythingIsIn.{millimeters, radians}  
+import squants.space.Length
+import scala.language.postfixOps
+import squants.space.LengthConversions._
 
 object C {
 
@@ -16,7 +18,7 @@ object C {
    *  ─ └─────────┘ ─ d
    *    |    a    |
    */
-  def apply(a: Double, b: Double, c: Double, d: Double)(length: Double): Solid = {
+  def apply(a: Length, b: Length, c: Length, d: Length)(length: Length): Solid = {
     apply(a, b, c, d, d)(length)
   }
 
@@ -29,7 +31,7 @@ object C {
    *  ─ └─────────┘ ─ d
    *    |    a    |
    */
-  def apply(a: Double, b: Double, c: Double, d: Double, t: Double)(length: Double): Solid = {
+  def apply(a: Length, b: Length, c: Length, d: Length, t: Length)(length: Length): Solid = {
     apply(a, b, c, d, d, t, t)(length)
   }
 
@@ -43,12 +45,12 @@ object C {
    *  ─ └─────────┘ ─ d1
    *    |    a    |
    */
-  def apply(a: Double, b: Double, c: Double, d1: Double, d2: Double, t1: Double, t2: Double)(length: Double): Solid = {
+  def apply(a: Length, b: Length, c: Length, d1: Length, d2: Length, t1: Length, t2: Length)(length: Length): Solid = {
     val c1 = Cube( a, d1, length)
     val c2 = Cube(t1, b,  length)
     val c3 = Cube(t2, b,  length)
     val c4 = Cube( (a-c)/2, d2, length)
-    c1 + c2 + c3.moveX(a-t2) + c4.moveY(b-d2) + c4.move(a/2+c/2, b-d2, 0)
+    c1 + c2 + c3.moveX(a-t2) + c4.moveY(b-d2) + c4.move(a/2+c/2, b-d2, 0 mm)
   }
 
 }
