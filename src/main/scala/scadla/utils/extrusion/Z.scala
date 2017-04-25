@@ -1,4 +1,4 @@
-package scadla.examples.extrusion
+package scadla.utils.extrusion
 
 import scadla._
 import scadla.InlineOps._

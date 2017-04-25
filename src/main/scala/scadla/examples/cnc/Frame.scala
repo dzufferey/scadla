@@ -4,7 +4,7 @@ import scadla._
 import scadla.InlineOps._
 import scadla.utils._
 import scala.math._
-import scadla.examples.extrusion._
+import scadla.utils.extrusion._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.Millimeters
