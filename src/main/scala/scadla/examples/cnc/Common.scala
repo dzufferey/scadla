@@ -3,7 +3,7 @@ package scadla.examples.cnc
 import scadla._
 import utils._
 import InlineOps._
-import scadla.examples.fastener._
+import thread._
 import scala.language.postfixOps // for mm notation
 import squants.space.LengthConversions._ // for mm notation
 
@@ -23,7 +23,7 @@ object Common {
   val threading = new MetricThread(tolerance)
 
   // wood screws that can be used to hold multiples palstic parts together
-  val woodScrewRadius = Thread.ISO.M3 - (0.5 mm) // for 3mm wood screws
+  val woodScrewRadius = ISO.M3 - (0.5 mm) // for 3mm wood screws
   val woodScrewHeadHeight = 2 mm
   val woodScrewHeadRadius = 3 mm
   val woodScrewLength = 18 mm

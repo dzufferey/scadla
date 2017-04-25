@@ -4,14 +4,14 @@ import scadla._
 import utils._
 import Trig._
 import InlineOps._
-import scadla.examples.fastener.StructuralNutPlaceHolder
+import thread.{ISO, StructuralNutPlaceHolder}
 import squants.space.{Length, Angle}
 import scala.language.postfixOps
 import squants.space.LengthConversions._
 
 object SpoolHolder {
 
-  val t = Thread.ISO.M6
+  val t = ISO.M6
   
   val looseTolerance = 0.2 mm
 

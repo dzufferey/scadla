@@ -1,4 +1,4 @@
-package scadla.examples.fastener
+package scadla.utils.thread
 
 import scadla._
 import scadla.utils._

@@ -3,7 +3,8 @@ package scadla.examples.extrusion
 import scadla._
 import scadla.InlineOps._
 import scadla.utils._
-import scala.math._
+import scadla.utils.thread._
+import scadla.utils.Trig._
 import scadla.EverythingIsIn.{millimeters, radians}
 import squants.space.Length
 import scala.language.postfixOps // for mm notation
@@ -44,7 +45,7 @@ object _2020 {
                 tolerance: Length) = {
     val base = CenteredCube.xy(20, 20, plateThicknesss + knobHeight).moveZ(-plateThicknesss)
     val negative = Bigger(apply(knobHeight), tolerance).moveZ(tolerance/2)
-    val hole = Cylinder(Thread.ISO.M5, knobHeight + plateThicknesss + 1).moveZ(-plateThicknesss-1)
+    val hole = Cylinder(ISO.M5, knobHeight + plateThicknesss + 1).moveZ(-plateThicknesss-1)
     Difference(
       base,
       negative,
@@ -67,7 +68,7 @@ object _2020 {
     Difference(
       chamfered,
       Cylinder(threadRadius-tolerance, height).move(bot/2, length/2, 0),
-      new examples.fastener.NutPlaceHolder().apply(threadRadius).move(bot/2, length/2, height-1.6*threadRadius+1)
+      new NutPlaceHolder().apply(threadRadius).move(bot/2, length/2, height-1.6*threadRadius+1)
     )
   }
 

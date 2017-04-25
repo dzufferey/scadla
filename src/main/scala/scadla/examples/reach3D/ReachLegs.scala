@@ -46,7 +46,7 @@ object ReachLegs {
       slot.moveZ(thickness + 30),
       PieSlice(thickness, 0, Pi/2, width).rotateY(Pi/2).rotateX(-Pi/2).moveZ(thickness)
     )
-    val screw = Cylinder(Thread.ISO.M4 + 0.1, thickness + 3).rotateX(Pi/2).move(width/2, thickness + 1, 0)
+    val screw = Cylinder(thread.ISO.M4 + 0.1, thickness + 3).rotateX(Pi/2).move(width/2, thickness + 1, 0)
     Difference(
       added,
       screw.moveZ(thickness + 10),
@@ -98,7 +98,7 @@ object ReachLegs {
                PieSlice(thickness, 0, Pi/2, 20).rotateY(Pi/2).move(0, beamLength, thickness) +
                PieSlice(thickness, 0, Pi/2, 20).rotateY(Pi/2).rotateX(-Pi/2).moveZ(thickness) +
                Trapezoid(6.75, 9, beamLength, 1.5).move(-4.5 + 10, 0, thickness) -
-               Cylinder(Thread.ISO.M4 + 0.1, thickness + 3).move(10, 10, 0)
+               Cylinder(thread.ISO.M4 + 0.1, thickness + 3).move(10, 10, 0)
     beam + endcap2040.rotateZ(Pi).move(20, beamLength + thickness, thickness)
   }
 

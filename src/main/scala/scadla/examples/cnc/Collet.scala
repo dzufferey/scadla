@@ -4,7 +4,7 @@ import math._
 import scadla._
 import utils._
 import InlineOps._
-import scadla.examples.fastener._
+import thread._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.Length

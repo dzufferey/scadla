@@ -4,7 +4,7 @@ import scadla._
 import utils._
 import Trig._
 import InlineOps._
-import scadla.examples.fastener._
+import thread._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.Length
@@ -38,7 +38,7 @@ class Gimbal(
       Cylinder(4 - tolerance, knobLength + 7),
       Cylinder(6, knobLength + tolerance).moveZ(-tolerance) //tolerance guarantees interferences
     )
-    val k1 = k0 - Cylinder(Thread.ISO.M3, knobLength + 7)
+    val k1 = k0 - Cylinder(ISO.M3, knobLength + 7)
     shape +
       k1.rotateY(-Pi/2).move(-length/2, widthOffset, 0) +
       k1.rotateY(Pi/2).move(length/2, widthOffset, 0)

@@ -22,7 +22,7 @@ import squants.space.Millimeters
 
 object Frame {
 
-  val boltSize = Thread.ISO.M5
+  val boltSize = thread.ISO.M5
 
   val vBeamLength: Double = 600
   val hBeamLength: Double = 300
@@ -274,7 +274,7 @@ object Frame {
         c.move(0, topY, topZ),
         Cylinder(11 + thickness, totalThickness).rotateY(Pi/2).move(0, laY, laZ)
       )
-    val spaceForM3 = 3 + Thread.ISO.M3 * 2
+    val spaceForM3 = 3 + thread.ISO.M3 * 2
     val body1 = Union(
         body0,
         // part to attach on top
@@ -291,7 +291,7 @@ object Frame {
         CenteredCube.y(totalThickness, boltSize * threadFactor * 2 + looseTolerance, boltSize * (threadFactor + 0.2)).move(0, screwOffset, bottomZ + thickness),
         CenteredCube.y(totalThickness, (boltSize + tolerance) * 2, thickness).move(0, screwOffset, bottomZ),
         // for the top screw
-        Cylinder(Thread.ISO.M3 + tightTolerance, 4 + 2 * thickness).move(totalThickness/2, topY - 1 - Thread.ISO.M3, topZ)
+        Cylinder(thread.ISO.M3 + tightTolerance, 4 + 2 * thickness).move(totalThickness/2, topY - 1 - thread.ISO.M3, topZ)
       )
     body2
   }
@@ -312,8 +312,8 @@ object Frame {
           Trapezoid(6, 10, thickness, 3).moveX(-5),
           Cylinder(3, thickness).rotateX(-Pi/2).moveZ(3)
         ),
-        Cylinder(Thread.ISO.M3, thickness+2).rotateX(-Pi/2).moveZ(3),
-        Cylinder(0.6, thickness+2).rotateX(-Pi/2).moveZ(3-Thread.ISO.M3)
+        Cylinder(thread.ISO.M3, thickness+2).rotateX(-Pi/2).moveZ(3),
+        Cylinder(0.6, thickness+2).rotateX(-Pi/2).moveZ(3-thread.ISO.M3)
       )
     val body = Union(
         Cube(65, 12, thickness),
@@ -338,7 +338,7 @@ object Frame {
     val ch = 5.5 / 2
     val c0 = Cylinder(ro, ri, ch) + Cylinder(ri, ro, ch).moveZ(ch)
     val c = c0.rotateX(-Pi/2)
-    val pusher = (c * CenteredCube.x(2*ro + 1, 2*ch, 2*ro + 1)) - Cylinder(Thread.ISO.M3 + looseTolerance, 3).moveY(ch)
+    val pusher = (c * CenteredCube.x(2*ro + 1, 2*ch, 2*ro + 1)) - Cylinder(thread.ISO.M3 + looseTolerance, 3).moveY(ch)
     val bottom = 4*ro + 1
     val top = 2*ro + 2 + 2*(ro-ri)
     val y = 2*ch + 4
@@ -346,8 +346,8 @@ object Frame {
     val sides = outline - Cube(bottom, 2*ch - 0.2, bottom).moveY(2.1)
     val screwPlate = Difference(
         CenteredCube.x(2*ro, y, 4),
-        Cylinder(Thread.ISO.M3 + tightTolerance, 4).moveY(y/2),
-        nut(Thread.ISO.M3).move(0, y/2, 2.4)
+        Cylinder(thread.ISO.M3 + tightTolerance, 4).moveY(y/2),
+        nut(thread.ISO.M3).move(0, y/2, 2.4)
       )
     val body = Union(
         sides,

@@ -5,7 +5,7 @@ import utils._
 import utils.gear._
 import Trig._
 import InlineOps._
-import scadla.examples.fastener._
+import thread._
 import scadla.examples.GearBearing
 import Common._
 import scadla.examples.reach3D.SpoolHolder
@@ -19,7 +19,7 @@ import squants.space.LengthConversions._
 
 object LinearActuator {
 
-  val rodThread = Thread.ISO.M6
+  val rodThread = ISO.M6
   val rodLead = 1.0 mm
 
   val motorYOffset = 21.5 mm
@@ -33,8 +33,8 @@ object LinearActuator {
   // the screws holding the motors
   val screwHead = 2.0 mm
   val screwLength = 12.0 mm
-  val motorScrew = Union(Cylinder(Thread.ISO.M3 + looseTolerance, screwLength),
-                         Cylinder(Thread.ISO.M3 * 2.1 + looseTolerance, screwHead))
+  val motorScrew = Union(Cylinder(ISO.M3 + looseTolerance, screwLength),
+                         Cylinder(ISO.M3 * 2.1 + looseTolerance, screwHead))
 
   val bbRadius = 3.0 mm // airsoft ∅ is 6mm
   val bearingGapBase = 3.5 mm
@@ -67,7 +67,7 @@ object LinearActuator {
   def basePlate(knob: Boolean = false, support: Boolean = false) = {
     val n14s2 = Nema14.size/2
     val gimbalMount = if (knob) {
-        val thr = Thread.ISO.M3
+        val thr = ISO.M3
         val w2k = gimbalWidth+2*gimbalKnob
         val c1 = Cylinder(6, gimbalWidth)
         val c2 = Cylinder(4 - tolerance, w2k).moveZ(-gimbalKnob)

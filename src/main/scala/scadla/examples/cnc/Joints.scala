@@ -4,7 +4,7 @@ import math._
 import scadla._
 import utils._
 import InlineOps._
-import scadla.examples.fastener._
+import thread._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.Length
@@ -12,9 +12,9 @@ import squants.space.Length
 /** A 2 degree of freedom joint.
  *  @param bottomNut is the size of bottom thread/nut
  */
-class Joint2DOF(bottomNut: Length = Thread.ISO.M8) {
+class Joint2DOF(bottomNut: Length = ISO.M8) {
 
-  import Thread.ISO.{M3,M8}
+  import ISO.{M3,M8}
 
   //max outer radius of the nut
   val radius = nut.maxOuterRadius(bottomNut)

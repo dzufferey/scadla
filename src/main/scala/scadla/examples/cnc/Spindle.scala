@@ -5,7 +5,7 @@ import utils._
 import Trig._
 import utils.gear._
 import InlineOps._
-import scadla.examples.fastener._
+import thread._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.{Length, Angle, Degrees, Millimeters}
@@ -84,10 +84,10 @@ object Spindle {
     val r = (motorBoltDistance / 3.0) * (1.0 - 2.0 / 16)
     u * Cylinder(r, 20)
   }
-  val nutTop = Cylinder(Thread.ISO.M8 * 3, 14) - nut.M8.moveZ(gearHeight)
+  val nutTop = Cylinder(ISO.M8 * 3, 14) - nut.M8.moveZ(gearHeight)
   //gears
-  lazy val gearBolt = gear1 + nutTop - Cylinder(Thread.ISO.M8 + tolerance, gearHeight)
-  lazy val gearMotor = gear2 - Cylinder(Thread.ISO.M5 + tolerance, gearHeight) + motorKnobs
+  lazy val gearBolt = gear1 + nutTop - Cylinder(ISO.M8 + tolerance, gearHeight)
+  lazy val gearMotor = gear2 - Cylinder(ISO.M5 + tolerance, gearHeight) + motorKnobs
 
 
   /////////////////////////////////
@@ -106,7 +106,7 @@ object Spindle {
         top
       )
     val nm3 = Bigger(Hull(nut.M3, nut.M3.moveX(5)), 0.4)
-    val screw_hole = Cylinder(Thread.ISO.M3, 10)
+    val screw_hole = Cylinder(ISO.M3, 10)
     val fasteners = Seq(
       screw_hole.move( 3.25, 3.25, 0),
       screw_hole.move(26.75, 3.25, 0),
@@ -151,7 +151,7 @@ object Spindle {
   }
 
   val spindle = {
-    val s = Cylinder(Thread.ISO.M3 + tolerance, 5)
+    val s = Cylinder(ISO.M3 + tolerance, 5)
     val fix = Cylinder(4, 4) + Cube(5, 8, 4).move(-5, -4, 0) - s
     Union(
       boltSupport.move(15, 15, 0),
@@ -167,9 +167,9 @@ object Spindle {
 
   val chuck = Chuck.innerThread(13, innerHole+tolerance, chuckHeight, colletLength, 20)
   val slits = 4 //6
-  val collet  = Collet.threaded(innerHole+1, innerHole, Thread.UTS._1_8, colletLength,
-                                slits, 0.5, 1, 20, Thread.ISO.M2)
-  val colletWrench = Collet.wrench(innerHole, Thread.UTS._1_8, slits, Thread.ISO.M2)
+  val collet  = Collet.threaded(innerHole+1, innerHole, UTS._1_8, colletLength,
+                                slits, 0.5, 1, 20, ISO.M2)
+  val colletWrench = Collet.wrench(innerHole, UTS._1_8, slits, ISO.M2)
 
   def objects = Map(
     "gear_bolt" -> gearBolt,

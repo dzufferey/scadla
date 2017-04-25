@@ -4,8 +4,8 @@ import math._
 import scadla._
 import utils._
 import InlineOps._
+import thread._
 import Common._
-import scadla.examples.fastener._
 import scadla.EverythingIsIn.{millimeters, radians}  
 
 // dX, dZ are given from the center of the extrusion
@@ -19,7 +19,7 @@ class ActuatorFasterner(dX: Double, dZ: Double) {
   var bearingRetainer = 2.0
   var supportLength = 40.0
   var guideDepth = 2
-  var thread = Thread.ISO.M3
+  var thread = ISO.M3
   var beamConnectorRounding = 2
   var nbrScrewsPerSide = 2
   

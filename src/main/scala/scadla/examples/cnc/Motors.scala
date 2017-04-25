@@ -21,7 +21,7 @@ object Nema14 {
              axisLengthFront: Length,
              axisLengthBack: Length ): Solid = {
     NemaStepper(size, length,
-                26 mm, Thread.ISO.M3, screwLength,
+                26 mm, thread.ISO.M3, screwLength,
                 11 mm, 2.0 mm,
                 2.5 mm, axisFlat, axisLengthFront, axisLengthBack)
   }
@@ -57,7 +57,7 @@ object Nema17 {
              axisLengthFront: Length,
              axisLengthBack: Length ): Solid = {
     NemaStepper(size, length,
-                31 mm, Thread.ISO.M3, screwLength,
+                31 mm, thread.ISO.M3, screwLength,
                 11 mm, 2.0 mm,
                 2.5 mm, axisFlat, axisLengthFront, axisLengthBack)
   }

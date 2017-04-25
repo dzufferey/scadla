@@ -3,7 +3,7 @@ package scadla.examples.cnc
 import scadla._
 import utils._
 import InlineOps._
-import scadla.examples.fastener._
+import thread._
 import Common._
 import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.Length
@@ -23,7 +23,7 @@ object Chuck {
                    chuckHeight: Length,
                    colletLength: Length,
                    mNumber: Length ) = {
-  val shaft = Thread.ISO.M8 + tightTolerance //TODO add more/less tolerance ???
+  val shaft = ISO.M8 + tightTolerance //TODO add more/less tolerance ???
   val splitWasher = 2
   val nutHeight = nut.height(shaft)
     val body = Union(
