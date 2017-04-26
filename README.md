@@ -17,7 +17,7 @@ The main points on which we try to improve are:
 
 * _first class objects_ An OpenSCAD program roughly build a tree with primitive objects as leaves and CSG operations as internal nodes. However, that tree is built implicitly and one cannot access it directly. In scadla, that tree is just an algebraic datatype. This means that you can reference it, e.g., `val u = Union(Cube(...), Sphere(...))` and also inspect/modify it using pattern matching, e.g., `u match { case Union(...) => ... }`
 
-* _type-safe units_ with the [squants](https://github.com/typelevel/squants) library. Let the compiler warns you when you try to rotate a object by 10mm. To keep a lightweight syntax `EverythingIsIn` provides mplicit conversion from numbers to length and angles. For instance, add `import scadla.EverythingIsIn.{millimeters, radians}` in your file to work use millimeters and radians by default.
+* _type-safe units_ with the [squants](https://github.com/typelevel/squants) library. Let the compiler warns you when you try to rotate a object by 10mm. To keep a lightweight syntax `EverythingIsIn` provides implicit conversions from numbers to length and angles. For instance, add `import scadla.EverythingIsIn.{millimeters, radians}` in your file to work use millimeters and radians by default.
 
 * a small caveat: OpenSCAD does has only floating points number but scala makes the distinction between integers and floating points. For instance, `1/2` is the integer division and returns `0`, not `0.5`. If you want floating point numbers write `1/2.0` or `1.0/2`.
 
@@ -38,35 +38,46 @@ For a complete example, you can head to [MecanumWheel.scala](src/main/scala/dzuf
 
 The primitives and CSG operations are defined in [Solid.scala](src/main/scala/dzufferey/scadla/Solid.scala).
 This gives you a basic verbose syntax.
-For instance, a cube written `cube([1,2,1])` in OpenSCAD is written `Cube(1,2,1)` in scadla.
+For instance, a cube written `cube([1,2,1])` in OpenSCAD is written `Cube(1 mm, 2 mm, 1 mm)` in scadla.
+Scadla has explicits units.
+In that case, we use millimeters.
 
 Let us consider the following example:
 ```scala
 Intersection(
   Union(
-    Cube(1,1,1),
-    Translate( -0.5, -0.5, 0, Cube(1,1,1))
+    Cube(1 mm, 1 mm, 1mm),
+    Translate(-0.5 mm, -0.5 mm, 0 mm, Cube(1 mm, 1 mm, 1 mm))
   ),
-  Sphere(1.5)
+  Sphere(1.5 mm)
 )
 ```
 In the most verbose form, it corresponds to the full CSG tree.
 However, we can make it prettier.
 First, we can store `Solid`s in variables and reuse them:
 ```scala
-val c = Cube(1,1,1)
-val s = Sphere(1.5)
-val u = Union(c, Translate( -0.5, -0.5, 0, c))
+val c = Cube(1 mm, 1 mm, 1 mm)
+val s = Sphere(1.5 mm)
+val u = Union(c, Translate(-0.5 mm, -0.5 mm, 0 mm, c))
 Intersection(u, s)
 ```
 Next, we can replace the operation with a less verbose syntax using `import InlineOps._`
 ```scala
-val c = Cube(1,1,1)
-val s = Sphere(1.5)
-(c + c.move( -0.5, -0.5, 0)) * s
+val c = Cube(1 mm, 1 mm, 1 mm)
+val s = Sphere(1.5 mm)
+(c + c.move(-0.5 mm, -0.5 mm, 0 mm)) * s
 ```
+To avoid putting `mm` everywhere, it is possible to use implicit conversion with `import scadla.EverythingIsIn.{millimeters, radians}`
+```scala
+val c = Cube(1, 1, 1)
+val s = Sphere(1.5)
+(c + c.move(-0.5, -0.5, 0)) * s
+```
+The compiler will interpret numeric constant as millimeters when used as length and as radians for angles.
+It is also possible to use inches instead of millimeters and degrees instead of radians.
+Beware, when using the implicit conversions as it can be unpredictable.
 
-Once, we have the descprition of the object we want to make, we need to evaluate the CSG tree to get a 3D model.
+Once, we have the description of the object we want to make, we need to evaluate the CSG tree to get a 3D model.
 We currently use OpenSCAD for that.
 See [OpenSCAD.scala](src/main/scala/dzufferey/scadla/backends/OpenSCAD.scala) for the details.
 
