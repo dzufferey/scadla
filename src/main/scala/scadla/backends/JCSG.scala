@@ -66,8 +66,7 @@ class JCSG(numSlices: Int) extends Renderer {
     case Scale(x, y, z, obj) =>         to(obj).transformed(Transform.unity().scale(x, y, z))
     case Rotate(x, y, z, obj) =>        to(obj).transformed(Transform.unity().rot(x.toDegrees, y.toDegrees, z.toDegrees))
     case Translate(x, y, z, obj) =>     to(obj).transformed(Transform.unity().translate(x, y, z))
-    case Mirror(x, y, z, obj) =>        to(obj).transformed(Transform.unity().mirror(new Plane(Vector3d.xyz(x,y,z), 0)))
-  //case Mirror(x, y, z, obj) =>        to(obj).transformed(Transform.unity().mirror(Plane.fromPointAndNormal(Vector3d.ZERO, Vector3d.xyz(x,y,z))))
+    case Mirror(x, y, z, obj) =>        to(obj).transformed(Transform.unity().mirror(Plane.fromPointAndNormal(Vector3d.ZERO, Vector3d.xyz(x,y,z))))
     case Multiply(m, obj) =>            sys.error("JCSG does not support arbitrary matrix transform")
     }
   }

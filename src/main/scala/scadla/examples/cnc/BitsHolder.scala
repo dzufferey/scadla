@@ -4,7 +4,6 @@ import math._
 import scadla._
 import utils._
 import InlineOps._
-import scadla.examples.fastener._
 import scadla.EverythingIsIn.{millimeters, radians}  
 
 object BitsHolder {
