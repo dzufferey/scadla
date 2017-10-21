@@ -6,35 +6,35 @@ import squants.space.Angle
 
 trait RendererAux[A] extends Renderer {
 
-  protected def empty: A
+  def empty: A
 
-  protected def union(objs: Seq[A]): A
-  protected def intersection(objs: Seq[A]): A
-  protected def difference(pos: A, negs: Seq[A]): A
-  protected def minkowski(objs: Seq[A]): A
-  protected def hull(objs: Seq[A]): A
+  def union(objs: Seq[A]): A
+  def intersection(objs: Seq[A]): A
+  def difference(pos: A, negs: Seq[A]): A
+  def minkowski(objs: Seq[A]): A
+  def hull(objs: Seq[A]): A
 
-  protected def polyhedron(p: Polyhedron): A
-  protected def cube(width: Length, depth: Length, height: Length): A
-  protected def sphere(radius: Length): A
-  protected def cylinder(radiusBot: Length, radiusTop: Length, height: Length): A
-  protected def fromFile(path: String, format: String): A
+  def polyhedron(p: Polyhedron): A
+  def cube(width: Length, depth: Length, height: Length): A
+  def sphere(radius: Length): A
+  def cylinder(radiusBot: Length, radiusTop: Length, height: Length): A
+  def fromFile(path: String, format: String): A
 
-  protected def multiply(m: Matrix, obj: A): A
+  def multiply(m: Matrix, obj: A): A
 
-  protected def scale(x: Double, y: Double, z: Double, obj: A): A = {
+  def scale(x: Double, y: Double, z: Double, obj: A): A = {
     val m = Matrix.scale(x,y,z)
     multiply(m, obj)
   }
-  protected def rotate(x: Angle, y: Angle, z: Angle, obj: A): A = {
+  def rotate(x: Angle, y: Angle, z: Angle, obj: A): A = {
     val m = Matrix.rotation(x,y,z)
     multiply(m, obj)
   }
-  protected def translate(x: Length, y: Length, z: Length, obj: A): A = {
+  def translate(x: Length, y: Length, z: Length, obj: A): A = {
     val m = Matrix.translation(x,y,z)
     multiply(m, obj)
   }
-  protected def mirror(x: Double, y: Double, z: Double, obj: A): A = {
+  def mirror(x: Double, y: Double, z: Double, obj: A): A = {
     val m = Matrix.mirror(x,y,z)
     multiply(m, obj)
   }
@@ -67,3 +67,23 @@ trait RendererAux[A] extends Renderer {
 
 }
 
+class RendererAuxAdapter(r: Renderer) extends RendererAux[Polyhedron] {
+  
+  def empty: Polyhedron = r(Empty)
+
+  def union(objs: Seq[Polyhedron]): Polyhedron = r(Union(objs:_*))
+  def intersection(objs: Seq[Polyhedron]): Polyhedron = r(Intersection(objs:_*))
+  def difference(pos: Polyhedron, negs: Seq[Polyhedron]): Polyhedron = r(Difference(pos, negs:_*))
+  def minkowski(objs: Seq[Polyhedron]): Polyhedron = r(Minkowski(objs:_*))
+  def hull(objs: Seq[Polyhedron]): Polyhedron = r(Hull(objs:_*))
+
+  def polyhedron(p: Polyhedron): Polyhedron = p
+  def cube(width: Length, depth: Length, height: Length): Polyhedron = r(Cube(width, depth, height))
+  def sphere(radius: Length): Polyhedron = r(Sphere(radius))
+  def cylinder(radiusBot: Length, radiusTop: Length, height: Length): Polyhedron = r(Cylinder(radiusBot, radiusTop, height))
+  def fromFile(path: String, format: String): Polyhedron = r(FromFile(path,format))
+
+  def multiply(m: Matrix, obj: Polyhedron): Polyhedron = r(Multiply(m, obj))
+  
+  def toMesh(aux: Polyhedron): Polyhedron = aux
+}

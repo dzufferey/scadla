@@ -1,7 +1,8 @@
 package scadla.backends
 
 import scadla._
-import scadla.utils.simplify
+import squants.space.Length
+import squants.space.Angle
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ForkJoinTask
 
@@ -10,64 +11,179 @@ import java.util.concurrent.ForkJoinTask
  * (problem in parsing and feeding complex objects to openscad)
  * @param renderer the (serial) renderer to use for the simpler tasks
  */
-class ParallelRenderer(renderer: Renderer) extends Renderer {
+class ParallelRendererAux[A >: Null](renderer: RendererAux[A]) extends RendererAux[ForkJoinTask[A]] {
   
   //TODO optional preprocessing to make reduction tree or flatten
+    
+  protected val taskMap = new ConcurrentHashMap[Solid, ForkJoinTask[A]]
 
-  def apply(obj: Solid): Polyhedron = {
-    val taskMap = new ConcurrentHashMap[Solid, ForkJoinTask[Polyhedron]]
-
-    def makeTask(ref: Solid, s: Solid) = {
-      val t = new ForkJoinTask[Polyhedron]{
-        protected var res: Polyhedron = null
-        protected def exec = { res = renderer(s); true }
-        protected def setRawResult(p: Polyhedron) { res = p }
-        protected def getRawResult = res
+  def clear() = taskMap.clear()
+    
+  def empty = new ForkJoinTask[A]{
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.empty
+        true
       }
-      t.fork
-      val t2 = taskMap.putIfAbsent(ref, t)
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+
+  def union(objs: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.union(objs.map(_.join))
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  def intersection(objs: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.intersection(objs.map(_.join))
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  def difference(pos: ForkJoinTask[A], negs: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.difference(pos.join, negs.map(_.join))
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  def minkowski(objs: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.minkowski(objs.map(_.join))
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  def hull(objs: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.hull(objs.map(_.join))
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+
+  def polyhedron(p: Polyhedron) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.polyhedron(p)
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  def cube(width: Length, depth: Length, height: Length) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.cube(width, depth, height)
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  def sphere(radius: Length) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.sphere(radius)
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  def cylinder(radiusBot: Length, radiusTop: Length, height: Length) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.cylinder(radiusBot, radiusTop, height)
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  def fromFile(path: String, format: String) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.fromFile(path, format)
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+
+  def multiply(m: Matrix, obj: ForkJoinTask[A]) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.multiply(m, obj.join)
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+
+  override def scale(x: Double, y: Double, z: Double, obj: ForkJoinTask[A]) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.scale(x, y, z, obj.join)
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  override def rotate(x: Angle, y: Angle, z: Angle, obj: ForkJoinTask[A]) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.rotate(x, y, z, obj.join)
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  override def translate(x: Length, y: Length, z: Length, obj: ForkJoinTask[A]) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.translate(x, y, z, obj.join)
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+  override def mirror(x: Double, y: Double, z: Double, obj: ForkJoinTask[A]) = new ForkJoinTask[A] {
+      protected var res: A = null
+      protected def exec = {
+        res = renderer.mirror(x, y, z, obj.join)
+        true
+      }
+      protected def setRawResult(p: A) { res = p }
+      protected def getRawResult = res
+    }
+
+  def toMesh(t: ForkJoinTask[A]) = renderer.toMesh(t.join)
+
+  override def render(s: Solid): ForkJoinTask[A] = {
+    var task = taskMap.get(s) 
+    if (task == null) {
+      task = super.render(s)
+      val t2 = taskMap.putIfAbsent(s, task)
       if (t2 != null) {
-        t.tryUnfork
-        t2
+        task = t2
       } else {
-        t
+        task.fork
       }
     }
-
-    def process(s: Solid): Solid = {
-      if (taskMap containsKey s) {
-        taskMap.get(s).join
-      } else s match {
-        case Translate(x, y, z, s2) =>  Translate(x, y, z, process(s2))
-        case Rotate(x, y, z, s2) =>     Rotate(x, y, z, process(s2))
-        case Scale(x, y, z, s2) =>      Scale(x, y, z, process(s2))
-        case Mirror(x, y, z, s2) =>     Mirror(x, y, z, process(s2))
-        case Multiply(m, s2) =>         Multiply(m, process(s2))
-
-        case Union(lst @ _*) =>
-          val lst2 = lst.par.map(process).seq
-          makeTask(s, Union(lst2:_*)).join
-        case Intersection(lst @ _*) =>
-          val lst2 = lst.par.map(process).seq
-          makeTask(s, Intersection(lst2:_*)).join
-        case Difference(s2, lst @ _*) =>
-          val t1 = makeTask(s2, process(s2))
-          val lst2 = lst.par.map(process).seq
-          makeTask(s, Difference(t1.join, lst2:_*)).join
-        case Minkowski(lst @ _*) =>
-          val lst2 = lst.par.map(process).seq
-          makeTask(s, Minkowski(lst2:_*)).join
-        case Hull(lst @ _*) =>
-          val lst2 = lst.par.map(process).seq
-          makeTask(s, Hull(lst2:_*)).join
-
-        case other => other
-      }
-    }
-
-    val s = simplify(obj)
-    val p = process(s)
-    renderer(p)
+    task
   }
 
 }
+
+class ParallelRenderer(renderer: Renderer) extends ParallelRendererAux[Polyhedron](new RendererAuxAdapter(renderer))
