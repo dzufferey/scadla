@@ -80,6 +80,14 @@ object Matrix {
                     0, 1, 0, 0,
                     0, 0, 1, 0,
                     0, 0, 0, 1)
+
+  def translation(x: Length, y: Length, z: Length) = {
+    Matrix(1, 0, 0, x.toMillimeters,
+           0, 1, 0, y.toMillimeters,
+           0, 0, 1, z.toMillimeters,
+           0, 0, 0, 1)
+  }
+
   def rotation(x: Angle, y: Angle, z: Angle) = {
     val qx = Quaternion.mkRotation(x, Vector.x)
     val qy = Quaternion.mkRotation(y, Vector.y)
@@ -97,6 +105,13 @@ object Matrix {
             -2*x*y, 1-2*y*y,  -2*z*y, 0,
             -2*x*z,  -2*y*z, 1-2*z*z, 0,
                  0,       0,       0, 1)
+  }
+
+  def scale(x: Double, y: Double, z: Double) = {
+    Matrix(x, 0, 0, 0,
+           0, y, 0, 0,
+           0, 0, z, 0,
+           0, 0, 0, 1)
   }
 
 }
