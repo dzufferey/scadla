@@ -122,34 +122,20 @@ Features that may (or may not) be implemented, depending on time and motivation:
   - geometry shader (similar to computer graphics) to modify the surface of objects, e.g., adding a pattern to a flat surface.
   - implicit surfaces, e.g., bezier, nurbs, metaballs.
     * rendering using [marching cubes](https://en.wikipedia.org/wiki/Marching_cubes), http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7139, http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html, http://link.springer.com/article/10.1007%2FBF01900830
-    * It could be fun to try to implement that in OpenCL using [ScalaCL](https://github.com/nativelibs4java/ScalaCL)
-    * use adaptative sampling instead of a fix grid
     * an alternative to the marching cubes is "constrained elastic surface nets" see [JSurfaceNets](https://github.com/miho/JSurfaceNets)
   - more operations
     * chamfer
-    * making object smaller (negative minkowski sum): instead of adding some tolerance to all dimension, design your object at the right size, the make them a bit smaller so they fit together. The goal is to move the face parallel to their normal by some amount while keeping the mesh well-formed.
+    * offset
   - change FromFile to FromURL
-  - a `Solidifiable` trait that has an `implicit def solidify: Solid` method
-  - object cache:
-    * object
-      - normalized non-polyhedron AST (keep only bool-ops, other operations are cheap)
-      - scadla version
-      - renderer (name and version)
-      - created
-      - last accessed
-      - how many times accessed
-      - filename (points toward some stl.gz/bz2/xz)
-    * prefs in home as .scadla folder
-      - alternate file/folder locations
-      - cache size
-      - eviction policy (least recently used, oldest, least frequently used)
-      - index
-      - dir for the cached objects
-
+  - backend specific operations: implicit surfaes, chamfer, minkowski, etc. can be easier or harder to do depending on the backend.
+    We need to keep a core of operation which is supported by all backend and then other operations that may be backend specific.
+    The simplest is to "unseal" the `Solid` type.
+    Is it possible to do better
 * implementation
   - file format:
     * PLY parser (this format is evil!!!)
   - `InBox: Polyhedron`: multiply, hull
+  - object cache (speed-up recomputation)
   - try VTK as backend
     * [installation](http://www.vtk.org/Wiki/VTK/Configure_and_Build)
     * how to decide whether or not to compile VTK: it cannot be resolved as a MVN dependency but only a a local one ...
@@ -158,10 +144,6 @@ Features that may (or may not) be implemented, depending on time and motivation:
     * [transform](http://www.vtk.org/doc/nightly/html/classvtkTransform.html)
     * [convex hull](https://cmake.org/Wiki/VTK/Examples/Boneyard/Cxx/PolyData/ConvexHullDelaunay3D)
     * minkowski sum ???
-  - backend: decomposition as a DAG and to do the rendering in parallel.
-     generalize renderer into `Renderer[A]` with
-      * `render(s: Solid, renderedChildren: Seq[A]): A`
-      * `postprocess(s: A): Polyhedron`
   - built-in model viewer
     * choosing window size according to screen size, and allow resizing
     * moving the point of view
