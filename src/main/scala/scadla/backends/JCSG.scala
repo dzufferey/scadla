@@ -13,6 +13,18 @@ object JCSG extends JCSG(16)
 
 class JCSG(numSlices: Int) extends Renderer {
 
+  override def isSupported(s: Solid): Boolean = s match {
+    case s: Shape => super.isSupported(s)
+    case _: Multiply => false
+    case t: scadla.Transform => isSupported(t.child)
+    case u @ Union(_) => u.children.forall(isSupported)
+    case i @ Intersection(_) => i.children.forall(isSupported)
+    case d @ Difference(_,_) => d.children.forall(isSupported)
+    case c @ Hull(_) => c.children.forall(isSupported)
+    case m @ Minkowski(_) => m.children.forall(isSupported)
+    case _ => false
+  }
+
   protected def empty = new JPolyhedron(Array[Vector3d](), Array[Array[Integer]]()).toCSG
 
   protected def stupidMinkowski2(a: Polyhedron, b: Polyhedron): Polyhedron = {

@@ -12,50 +12,20 @@ package object utils {
   def polarCoordinates(x: Length, y: Length) = (Trig.hypot(x, y), Trig.atan2(y,x))
   
   def traverse(f: Solid => Unit, s: Solid): Unit = s match {
-    case Translate(x, y, z, s2) =>  traverse(f, s2); f(s)
-    case Rotate(x, y, z, s2) =>     traverse(f, s2); f(s)
-    case Scale(x, y, z, s2) =>      traverse(f, s2); f(s)
-    case Mirror(x, y, z, s2) =>     traverse(f, s2); f(s)
-    case Multiply(m, s2) =>         traverse(f, s2); f(s)
-
-    case Union(lst @ _*) =>         lst.foreach(traverse(f, _)); f(s)
-    case Intersection(lst @ _*) =>  lst.foreach(traverse(f, _)); f(s)
-    case Difference(s2, lst @ _*) => traverse(f, s2); lst.foreach(traverse(f, _)); f(s)
-    case Minkowski(lst @ _*) =>     lst.foreach(traverse(f, _)); f(s)
-    case Hull(lst @ _*) =>          lst.foreach(traverse(f, _)); f(s)
-
+    case t: Transform =>  traverse(f, t.child); f(t)
+    case o: Operation => o.children.foreach(traverse(f, _)); f(o)
     case other => f(other)
   }
   
   def map(f: Solid => Solid, s: Solid): Solid = s match {
-    case Translate(x, y, z, s2) => f(Translate(x, y, z, map(f, s2)))
-    case Rotate(x, y, z, s2) => f(Rotate(x, y, z, map(f, s2)))
-    case Scale(x, y, z, s2) => f(Scale(x, y, z, map(f, s2)))
-    case Mirror(x, y, z, s2) => f(Mirror(x, y, z, map(f, s2)))
-    case Multiply(m, s2) => f(Multiply(m, map(f, s2)))
-
-    case Union(lst @ _*) => f(Union(lst.map(map(f, _)):_*))
-    case Intersection(lst @ _*) => f(Intersection(lst.map(map(f, _)):_*))
-    case Difference(s2, lst @ _*) => f(Difference(map(f, s2), lst.map(map(f, _)):_*))
-    case Minkowski(lst @ _*) => f(Minkowski(lst.map(map(f, _)):_*))
-    case Hull(lst @ _*) => f(Hull(lst.map(map(f, _)):_*))
-
+    case o: Operation => f(o.setChildren(o.children.map(map(f, _))))
+    case t: Transform => f(t.setChild(map(f, t.child)))
     case other => f(other)
   }
 
   def fold[A](f: (A, Solid) => A, acc: A, s: Solid): A = s match {
-    case Translate(x, y, z, s2) =>  f(fold(f, acc, s2), s)
-    case Rotate(x, y, z, s2) =>     f(fold(f, acc, s2), s)
-    case Scale(x, y, z, s2) =>      f(fold(f, acc, s2), s)
-    case Mirror(x, y, z, s2) =>     f(fold(f, acc, s2), s)
-    case Multiply(m, s2) =>         f(fold(f, acc, s2), s)
-
-    case Union(lst @ _*) =>         f(lst.foldLeft(acc)( (acc, s2) => fold(f, acc, s2) ), s)
-    case Intersection(lst @ _*) =>  f(lst.foldLeft(acc)( (acc, s2) => fold(f, acc, s2) ), s)
-    case Difference(s2, lst @ _*) => f(lst.foldLeft(fold(f, acc, s2))( (acc, s3) => fold(f, acc, s3) ), s)
-    case Minkowski(lst @ _*) =>    f(lst.foldLeft(acc)( (acc, s2) => fold(f, acc, s2) ), s)
-    case Hull(lst @ _*) =>         f(lst.foldLeft(acc)( (acc, s2) => fold(f, acc, s2) ), s)
-
+    case t: Transform =>  f(fold(f, acc, t.child), t)
+    case o: Operation => f(o.children.foldLeft(acc)( (acc, s2) => fold(f, acc, s2) ), s)
     case other => f(acc, other)
   }
 
@@ -74,7 +44,7 @@ package object utils {
       case Rotate(Zero, Zero, z1, Rotate(Zero, Zero, z2, s2)) => Rotate(Zero, Zero, z1+z2, s2)
       case Scale(x1, y1, z1, Scale(x2, y2, z2, s2)) => Scale(x1*x2, y1*y2, z1*z2, s2)
       
-      //TODO flatten ops
+      //TODO flatten ops, reorganize according to com,assoc,...
       case Union(lst @ _*) =>
         val lst2 = lst.toSet - Empty
         if (lst2.isEmpty) Empty else Union(lst2.toSeq: _*)

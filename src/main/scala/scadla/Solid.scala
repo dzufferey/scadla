@@ -3,13 +3,15 @@ package scadla
 import squants.space.Length
 import squants.space.Angle
 
-sealed abstract class Solid 
+abstract class Solid 
 
 //basic shapes
-case class Cube(width: Length, depth: Length, height: Length) extends Solid
-case class Sphere(radius: Length) extends Solid
-case class Cylinder(radiusBot: Length, radiusTop: Length, height: Length) extends Solid
-case class FromFile(path: String, format: String = "stl") extends Solid {
+abstract class Shape extends Solid
+
+case class Cube(width: Length, depth: Length, height: Length) extends Shape
+case class Sphere(radius: Length) extends Shape
+case class Cylinder(radiusBot: Length, radiusTop: Length, height: Length) extends Shape
+case class FromFile(path: String, format: String = "stl") extends Shape {
   def load: Polyhedron = format match {
     case "stl" => backends.stl.Parser(path)
     case "obj" => backends.obj.Parser(path)
@@ -17,24 +19,77 @@ case class FromFile(path: String, format: String = "stl") extends Solid {
     case other => sys.error("parsing " + other + " not yet supported")
   }
 }
-case object Empty extends Solid
-case class Polyhedron(faces: Iterable[Face]) extends Solid {
+case object Empty extends Shape
+case class Polyhedron(faces: Iterable[Face]) extends Shape {
   def indexed = Polyhedron.indexed(this)
 }
 
 //operations
-case class Union(objs: Solid*) extends Solid
-case class Intersection(objs: Solid*) extends Solid
-case class Difference(pos: Solid, negs: Solid*) extends Solid
-case class Minkowski(objs: Solid*) extends Solid
-case class Hull(objs: Solid*) extends Solid
+abstract class Operation(val children: Seq[Solid]) extends Solid {
+  def isCommutative = false
+  def isLeftAssociative = false
+  def isRightAssociative = false
+  def isAssociative = isLeftAssociative && isRightAssociative
+  def setChildren(c: Seq[Solid]): Operation
+}
+
+case class Union(objs: Solid*) extends Operation(objs) {
+  override def isCommutative = true
+  override def isLeftAssociative = true
+  override def isRightAssociative = true
+  def setChildren(c: Seq[Solid]) = Union(c: _*)
+}
+case class Intersection(objs: Solid*) extends Operation(objs) {
+  override def isCommutative = true
+  override def isLeftAssociative = true
+  override def isRightAssociative = true
+  def setChildren(c: Seq[Solid]) = Intersection(c: _*)
+}
+case class Difference(pos: Solid, negs: Solid*) extends Operation(pos +: negs) {
+  override def isCommutative = false
+  override def isLeftAssociative = true
+  override def isRightAssociative = false
+  def setChildren(c: Seq[Solid]) = Difference(c.head, c.tail: _*)
+}
+case class Minkowski(objs: Solid*) extends Operation(objs) {
+  override def isCommutative = true
+  override def isLeftAssociative = true
+  override def isRightAssociative = true
+  def setChildren(c: Seq[Solid]) = Minkowski(c: _*)
+}
+case class Hull(objs: Solid*) extends Operation(objs) {
+  override def isCommutative = true
+  override def isLeftAssociative = true
+  override def isRightAssociative = true
+  def setChildren(c: Seq[Solid]) = Hull(c: _*)
+}
 
 //transforms
-case class Scale(x: Double, y: Double, z: Double, obj: Solid) extends Solid
-case class Rotate(x: Angle, y: Angle, z: Angle, obj: Solid) extends Solid
-case class Translate(x: Length, y: Length, z: Length, obj: Solid) extends Solid
-case class Mirror(x: Double, y: Double, z: Double, obj: Solid) extends Solid
-case class Multiply(m: Matrix, obj: Solid) extends Solid
+sealed abstract class Transform(val child: Solid) extends Solid {
+  def matrix: Matrix
+  def asMultiply = Multiply(matrix, child)
+  def setChild(c: Solid): Transform = if (c == child) this else Multiply(matrix, c)
+}
+
+case class Scale(x: Double, y: Double, z: Double, obj: Solid) extends Transform(obj) {
+  def matrix = Matrix.scale(x, y, z)
+  override def setChild(c: Solid) = if (c == obj) this else Scale(x, y, z, c)
+}
+case class Rotate(x: Angle, y: Angle, z: Angle, obj: Solid) extends Transform(obj) {
+  def matrix = Matrix.rotation(x, y, z)
+  override def setChild(c: Solid) = if (c == obj) this else Rotate(x, y, z, c)
+}
+case class Translate(x: Length, y: Length, z: Length, obj: Solid) extends Transform(obj) {
+  def matrix = Matrix.translation(x, y, z)
+  override def setChild(c: Solid) = if (c == obj) this else Translate(x, y, z, c)
+}
+case class Mirror(x: Double, y: Double, z: Double, obj: Solid) extends Transform(obj) {
+  def matrix = Matrix.mirror(x, y, z)
+  override def setChild(c: Solid) = if (c == obj) this else Mirror(x, y, z, c)
+}
+case class Multiply(m: Matrix, obj: Solid) extends Transform(obj) {
+  def matrix = m
+}
 
 //modifiers
 

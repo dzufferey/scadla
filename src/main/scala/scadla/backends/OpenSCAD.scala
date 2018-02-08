@@ -13,6 +13,16 @@ class OpenSCAD(header: List[String]) extends Renderer {
     try SysCmd(Array(command, "-v"))._1 == 0 
     catch { case _: Throwable => false }
 
+  override def isSupported(s: Solid): Boolean = s match {
+    case s: Shape => super.isSupported(s)
+    case t: Transform => isSupported(t.child)
+    case u @ Union(_) => u.children.forall(isSupported)
+    case i @ Intersection(_) => i.children.forall(isSupported)
+    case d @ Difference(_,_) => d.children.forall(isSupported)
+    case c @ Hull(_) => c.children.forall(isSupported)
+    case m @ Minkowski(_) => m.children.forall(isSupported)
+    case _ => false
+  }
   protected def getMultiplicity(s: Solid): Map[Solid, Int] = {
     def incr(map: Map[Solid, Int], s: Solid) = {
       val mult = map.getOrElse(s, 0) + 1

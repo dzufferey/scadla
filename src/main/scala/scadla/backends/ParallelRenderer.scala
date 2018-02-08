@@ -17,151 +17,34 @@ class ParallelRendererAux[A >: Null](renderer: RendererAux[A]) extends RendererA
     
   protected val taskMap = new ConcurrentHashMap[Solid, ForkJoinTask[A]]
 
+  override def isSupported(s: Solid) = renderer.isSupported(s)
+
   def clear() = taskMap.clear()
     
-  def empty = new ForkJoinTask[A]{
+  def shape(s: Shape) = new ForkJoinTask[A]{
       protected var res: A = null
       protected def exec = {
-        res = renderer.empty
+        res = renderer.shape(s)
         true
       }
       protected def setRawResult(p: A) { res = p }
       protected def getRawResult = res
     }
 
-  def union(objs: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
+  def operation(o: Operation, args: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
       protected var res: A = null
       protected def exec = {
-        res = renderer.union(objs.map(_.join))
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  def intersection(objs: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.intersection(objs.map(_.join))
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  def difference(pos: ForkJoinTask[A], negs: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.difference(pos.join, negs.map(_.join))
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  def minkowski(objs: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.minkowski(objs.map(_.join))
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  def hull(objs: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.hull(objs.map(_.join))
+        res = renderer.operation(o, args.map(_.join))
         true
       }
       protected def setRawResult(p: A) { res = p }
       protected def getRawResult = res
     }
 
-  def polyhedron(p: Polyhedron) = new ForkJoinTask[A] {
+  def transform(t: Transform, arg: ForkJoinTask[A]) = new ForkJoinTask[A] {
       protected var res: A = null
       protected def exec = {
-        res = renderer.polyhedron(p)
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  def cube(width: Length, depth: Length, height: Length) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.cube(width, depth, height)
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  def sphere(radius: Length) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.sphere(radius)
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  def cylinder(radiusBot: Length, radiusTop: Length, height: Length) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.cylinder(radiusBot, radiusTop, height)
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  def fromFile(path: String, format: String) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.fromFile(path, format)
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-
-  def multiply(m: Matrix, obj: ForkJoinTask[A]) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.multiply(m, obj.join)
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-
-  override def scale(x: Double, y: Double, z: Double, obj: ForkJoinTask[A]) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.scale(x, y, z, obj.join)
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  override def rotate(x: Angle, y: Angle, z: Angle, obj: ForkJoinTask[A]) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.rotate(x, y, z, obj.join)
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  override def translate(x: Length, y: Length, z: Length, obj: ForkJoinTask[A]) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.translate(x, y, z, obj.join)
-        true
-      }
-      protected def setRawResult(p: A) { res = p }
-      protected def getRawResult = res
-    }
-  override def mirror(x: Double, y: Double, z: Double, obj: ForkJoinTask[A]) = new ForkJoinTask[A] {
-      protected var res: A = null
-      protected def exec = {
-        res = renderer.mirror(x, y, z, obj.join)
+        res = renderer.transform(t, arg.join)
         true
       }
       protected def setRawResult(p: A) { res = p }

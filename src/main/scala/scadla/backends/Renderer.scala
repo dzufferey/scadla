@@ -7,6 +7,19 @@ trait Renderer {
 
   def apply(s: Solid): Polyhedron
 
+  /** Check if all the Operations are supported.
+   *  Not all backends support all the operations.
+   *  By default all the transforms and the CSG operations should be supported
+   */
+  def isSupported(s: Solid): Boolean = s match {
+    case Cube(_,_,_) | Sphere(_) | Cylinder(_, _, _) | FromFile(_, _) | Empty | Polyhedron(_) => true
+    case t: Transform => isSupported(t.child)
+    case u @ Union(_) => u.children.forall(isSupported)
+    case i @ Intersection(_) => i.children.forall(isSupported)
+    case d @ Difference(_,_) => d.children.forall(isSupported)
+    case _ => false
+  }
+
   def toSTL(s: Solid, fileName: String) {
     val p = apply(s)
     stl.Printer.storeBinary(p, fileName)
