@@ -120,6 +120,7 @@ case class Vector(private val _x: Double, private val _y: Double, private val _z
   def x = unit(_x)
   def y = unit(_y)
   def z = unit(_z)
+  def unary_- : Vector = Vector(-_x, -_y, -_z, unit)
   def +(v: Vector): Vector = Vector(_x+v._x, _y+v._y, _z+v._z, unit)
   def -(v: Vector): Vector = Vector(_x-v._x, _y-v._y, _z-v._z, unit)
   def *(c: Double): Vector = Vector(_x*c, _y*c, _z*c, unit)
