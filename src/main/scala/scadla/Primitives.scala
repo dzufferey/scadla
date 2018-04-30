@@ -16,6 +16,8 @@ case class Point(x: Length, y: Length, z: Length) {
       (p.z - z).in(unit).value, unit)
   def toVector = Vector(x.in(unit).value, y.in(unit).value, z.in(unit).value, unit)
   def toQuaternion = Quaternion(0, x.in(unit).value, y.in(unit).value, z.in(unit).value, unit)
+  def +(v: Vector): Point = Point(x + v.x, y + v.y, z + v.z)
+  def -(p: Point): Vector = p.to(this)
 }
 
 case class Face(p1: Point, p2: Point, p3: Point) {
