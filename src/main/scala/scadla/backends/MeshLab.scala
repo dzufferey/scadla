@@ -19,6 +19,10 @@ object MeshLab extends Viewer {
     tmpFile.delete
   }
   
-  lazy val isPresent = SysCmd(Array("command", "-v", "meshlab"))._1 == 0
+  lazy val isPresent = {
+    val isWindows = java.lang.System.getProperty("os.name").toLowerCase().contains("windows")
+    val cmd = if (isWindows) "where" else "which"
+    SysCmd(Array(cmd, "meshlab"))._1 == 0
+  }
   
 }

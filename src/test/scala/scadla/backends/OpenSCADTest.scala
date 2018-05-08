@@ -17,8 +17,8 @@ class OpenSCADTest extends FunSuite {
   }
 
 //test("rendering 1a") {
-//  val obj = OpenSCAD(Sphere(1.0))
-//  JfxViewer(obj)
+//  val obj = OpenSCADnightly(Sphere(1.0))
+//  x3d.X3DomViewer(obj)
 //}
 
 //test("rendering 1b") {
@@ -33,7 +33,8 @@ class OpenSCADTest extends FunSuite {
 //              ),
 //              Sphere(1.5)
 //            )
-//  OpenSCAD.view(obj)
+//  val mesh = OpenSCADnightly(obj)
+//  x3d.X3DomViewer(mesh)
 //}
 
 //test("rendering 2b") {
