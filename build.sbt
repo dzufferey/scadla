@@ -4,7 +4,7 @@ organization := "io.github.dzufferey"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.12.6"
 
 scalacOptions in Compile ++= Seq(
     //"-Xlog-implicits",
@@ -19,8 +19,6 @@ libraryDependencies ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
   "org.scalatest" %% "scalatest" % "3.0.1" % "test",
   "io.github.dzufferey" %% "misc-scala-utils" % "0.1-SNAPSHOT",
-  "com.twitter" %% "chill" % "0.9.2",
-  "org.scalafx" %% "scalafx" % "8.0.144-R12",
   "eu.mihosoft.vrl.jcsg" % "jcsg" % "0.5.6",
   "org.typelevel"  %% "squants"  % "1.3.0"
 )

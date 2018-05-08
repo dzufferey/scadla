@@ -14,7 +14,8 @@ object Viewer {
 
   def default: Viewer = {
     if (MeshLab.isPresent) MeshLab
-    else JfxViewer
+    else if (x3d.X3DomViewer.isPresent) x3d.X3DomViewer
+    else sys.error("No viewer available")
   }
 
 }

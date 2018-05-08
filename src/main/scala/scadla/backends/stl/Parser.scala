@@ -76,7 +76,7 @@ object BinaryParser {
       val p1 = point(buffer)
       val p2 = point(buffer)
       val p3 = point(buffer)
-      buffer.position(buffer.position + 2) //skip attributes
+      buffer.position(buffer.position() + 2) //skip attributes
       Parser.checkNormal(Face(p1, p2, p3), n)
     }
     Polyhedron(triangles)       
