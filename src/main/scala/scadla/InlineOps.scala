@@ -8,11 +8,11 @@ import squants.space.Degrees
 
 object InlineOps {
   
-  implicit class AngleConversions[A](n: A)(implicit num: Numeric[A]) {
+  implicit final class AngleConversions[A](n: A)(implicit num: Numeric[A]) {
     def ° = Degrees(n)
   }
 
-  implicit class Ops(lhs: Solid) {
+  implicit final class Ops(private val lhs: Solid) extends AnyVal {
     import squants.space.LengthConversions._
 
     def translate(x: Length, y: Length, z: Length) = Translate(x, y, z, lhs)
