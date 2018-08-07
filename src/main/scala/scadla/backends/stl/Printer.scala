@@ -6,8 +6,12 @@ import dzufferey.utils.LogLevel._
 import java.io._
 import java.nio.{ByteBuffer,ByteOrder}
 import java.nio.channels.FileChannel
+import squants.space.{LengthUnit, Millimeters}
 
-object Printer {
+object Printer extends Printer(Millimeters) {
+}
+
+class Printer(unit: LengthUnit = Millimeters) {
 
   def writeASCII(obj: Polyhedron, writer: BufferedWriter, name: String = "") {
     writer.write("solid " + name); writer.newLine
@@ -37,9 +41,9 @@ object Printer {
       out.order(ByteOrder.LITTLE_ENDIAN)
     }
     def outputPoint(p: Point) {
-      out.putFloat(p.x.toMillimeters.toFloat)
-      out.putFloat(p.y.toMillimeters.toFloat)
-      out.putFloat(p.z.toMillimeters.toFloat)
+      out.putFloat(p.x.to(unit).toFloat)
+      out.putFloat(p.y.to(unit).toFloat)
+      out.putFloat(p.z.to(unit).toFloat)
     }
     val header = Array.fill[Byte](80)(' '.toByte)
     "Generated with Scadla".getBytes.copyToArray(header)
@@ -47,9 +51,9 @@ object Printer {
     out.putInt(obj.faces.size)
     obj.faces.foreach{ case f @ Face(p1, p2, p3) =>
       val n = f.normal
-      out.putFloat(n.x.toMillimeters.toFloat)
-      out.putFloat(n.y.toMillimeters.toFloat)
-      out.putFloat(n.z.toMillimeters.toFloat)
+      out.putFloat(n.x.to(unit).toFloat)
+      out.putFloat(n.y.to(unit).toFloat)
+      out.putFloat(n.z.to(unit).toFloat)
       outputPoint(p1)
       outputPoint(p2)
       outputPoint(p3)

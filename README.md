@@ -123,9 +123,6 @@ Features that may (or may not) be implemented, depending on time and motivation:
   - implicit surfaces, e.g., bezier, nurbs, metaballs.
     * rendering using [marching cubes](https://en.wikipedia.org/wiki/Marching_cubes), http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.7139, http://users.polytech.unice.fr/~lingrand/MarchingCubes/algo.html, http://link.springer.com/article/10.1007%2FBF01900830
     * an alternative to the marching cubes is "constrained elastic surface nets" see [JSurfaceNets](https://github.com/miho/JSurfaceNets)
-  - more operations
-    * chamfer
-    * offset
   - change FromFile to FromURL
   - backend specific operations: implicit surfaes, chamfer, minkowski, etc. can be easier or harder to do depending on the backend.
     We need to keep a core of operation which is supported by all backend and then other operations that may be backend specific.
@@ -154,9 +151,12 @@ Features that may (or may not) be implemented, depending on time and motivation:
   - part: rendered part (visibility and serialization)
   - GUI: sliders for time and expansion
 
+* ongoing work in a rendering backend based on Open CASCADE Community edition: [https://github.com/dzufferey/scadla-oce-backend](https://github.com/dzufferey/scadla-oce-backend)
+  - support for different operations: chamfer, fillet, and offset, but no convex hull or Minkowski sum.
+  - much more ...
+
 * Documentation and tutorials
 
 * ...
 
 Also, pull requests are welcome.
-

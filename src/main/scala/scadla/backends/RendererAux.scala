@@ -1,10 +1,9 @@
 package scadla.backends
 
 import scadla._
-import squants.space.Length
-import squants.space.Angle
+import squants.space.{Length, Millimeters, LengthUnit}
 
-trait RendererAux[A] extends Renderer {
+abstract class RendererAux[A](unit: LengthUnit = Millimeters) extends Renderer(unit) {
 
   def shape(s: Shape): A
   def operation(o: Operation, args: Seq[A]): A

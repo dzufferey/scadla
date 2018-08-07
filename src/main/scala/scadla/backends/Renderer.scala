@@ -2,8 +2,11 @@ package scadla.backends
 
 import scadla._
 import java.io._
+import squants.space.{Millimeters, Length, LengthUnit}
 
-trait Renderer {
+abstract class Renderer(unit: LengthUnit = Millimeters) {
+
+  protected def length2Double(l: Length): Double = l to unit
 
   def apply(s: Solid): Polyhedron
 

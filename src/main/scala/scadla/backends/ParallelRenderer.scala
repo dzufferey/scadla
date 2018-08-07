@@ -1,17 +1,16 @@
 package scadla.backends
 
 import scadla._
-import squants.space.Length
-import squants.space.Angle
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ForkJoinTask
+import squants.space.{Length, Millimeters, LengthUnit}
 
 /** not quite stable yet
  *  A backend that decompose renders independent parts of a Solid in parallel.
  * (problem in parsing and feeding complex objects to openscad)
  * @param renderer the (serial) renderer to use for the simpler tasks
  */
-class ParallelRendererAux[A >: Null](renderer: RendererAux[A]) extends RendererAux[ForkJoinTask[A]] {
+class ParallelRendererAux[A >: Null](renderer: RendererAux[A], unit: LengthUnit = Millimeters) extends RendererAux[ForkJoinTask[A]](unit) {
   
   //TODO optional preprocessing to make reduction tree or flatten
     

@@ -5,13 +5,12 @@ import eu.mihosoft.vvecmath.{Vector3d, Transform, Plane}
 import scadla._
 import InlineOps._
 import java.util.ArrayList
-import squants.space.Length
-import squants.space.Millimeters
+import squants.space.{Length, Millimeters, LengthUnit}
 
 //backend using: https://github.com/miho/JCSG
-object JCSG extends JCSG(16)
+object JCSG extends JCSG(16, Millimeters)
 
-class JCSG(numSlices: Int) extends Renderer {
+class JCSG(numSlices: Int, unit: LengthUnit = Millimeters) extends Renderer(unit) {
 
   override def isSupported(s: Solid): Boolean = s match {
     case s: Shape => super.isSupported(s)
@@ -50,7 +49,7 @@ class JCSG(numSlices: Int) extends Renderer {
 
   protected def to(s: Solid): CSG = {
     import scala.language.implicitConversions
-    implicit def toDouble(l: Length): Double = l.toMillimeters // 1 unit = 1 mm. This is a quick code hack, make explicit later?
+    implicit def toDouble(l: Length): Double = length2Double(l)
     s match {  
     case Empty =>                                   empty
     case Cube(width, depth, height) =>              new JCube(Vector3d.xyz(width/2, depth/2, height/2), Vector3d.xyz(width, depth, height)).toCSG()
@@ -85,7 +84,7 @@ class JCSG(numSlices: Int) extends Renderer {
   
   protected def polyToFaces(p: Polygon): List[Face] = {
     val vs = p.vertices.toArray(Array.ofDim[Vertex](p.vertices.size))
-    val pts = vs.map( v => Point(Millimeters(v.pos.x), Millimeters(v.pos.y), Millimeters(v.pos.z)))
+    val pts = vs.map( v => Point(unit(v.pos.x), unit(v.pos.y), unit(v.pos.z)))
     //if more than 3 vertices if needs to be triangulated
     //assume that the vertices form a convex loop
     (0 until vs.size - 2).toList.map(i => Face(pts(0), pts(i+1), pts(i+2)) )

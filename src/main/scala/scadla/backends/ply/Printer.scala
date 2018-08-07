@@ -6,8 +6,12 @@ import dzufferey.utils.LogLevel._
 import java.io._
 import java.nio.{ByteBuffer,ByteOrder}
 import java.nio.channels.FileChannel
+import squants.space.{Length, Millimeters, LengthUnit}
 
-object Printer {
+object Printer extends Printer(Millimeters) {
+}
+
+class Printer(unit: LengthUnit = Millimeters) {
 
   def printHeader(writer: BufferedWriter, nbrVertex: Int, nbrFace: Int) {
     writer.write("ply"); writer.newLine
@@ -27,7 +31,7 @@ object Printer {
     try {
       printHeader(writer, points.length, faces.size)
       points.foreach{ p =>
-        writer.write(p.x.toMillimeters + " " + p.y.toMillimeters + " " + p.z.toMillimeters)
+        writer.write(p.x.to(unit) + " " + p.y.to(unit) + " " + p.z.to(unit))
         writer.newLine
       }
       faces.foreach{ case (a,b,c) =>

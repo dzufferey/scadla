@@ -5,12 +5,15 @@ import scala.util.parsing.combinator._
 import dzufferey.utils._
 import dzufferey.utils.LogLevel._
 import java.io._
-import squants.space.Millimeters
+import squants.space.{Length, Millimeters, LengthUnit}
 
 // https://en.wikipedia.org/wiki/Wavefront_.obj_file
 // We assume that the faces are oriented and only triangles
 
-object Parser extends JavaTokenParsers {
+object Parser extends Parser(Millimeters) {
+}
+
+class Parser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
 
   sealed abstract class ObjCmd
   case object Skip extends ObjCmd

@@ -317,7 +317,7 @@ We currently have two viewers:
 * A wrapper around [MeshLab](http://meshlab.sourceforge.net/).
   To use this viewer, MeshLab must be installed and the `meshlab` executable must be in the path.
 
-* A built-in viewer using JavaFX.
+* A minimal viewer using [X3Dom](https://www.x3dom.org/) and a web browser.
 
 
 ## Assembly

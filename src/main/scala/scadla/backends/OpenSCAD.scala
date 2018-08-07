@@ -4,8 +4,9 @@ import scadla._
 import scadla.utils.fold
 import dzufferey.utils.SysCmd
 import java.io._
+import squants.space.{Length, Millimeters, LengthUnit}
 
-class OpenSCAD(header: List[String]) extends Renderer {
+class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Renderer(unit) {
 
   protected val command = "openscad"
 
@@ -70,18 +71,18 @@ class OpenSCAD(header: List[String]) extends Renderer {
         case Empty =>
           writer.newLine
         case Cube(width, depth, height) =>
-          writer.write("cube([ " + width.toMillimeters + ", " + depth.toMillimeters + ", " + height.toMillimeters + "]);")
+          writer.write("cube([ " + length2Double(width) + ", " + length2Double(depth) + ", " + length2Double(height) + "]);")
           writer.newLine
         case Sphere(radius) =>
-          writer.write("sphere( " + radius.toMillimeters + ");")
+          writer.write("sphere( " + length2Double(radius) + ");")
           writer.newLine
         case Cylinder(radiusBot, radiusTop, height) =>
-          writer.write("cylinder( r1 = " + radiusBot.toMillimeters + ", r2 = " + radiusTop.toMillimeters + ", h = " + height.toMillimeters + ");")
+          writer.write("cylinder( r1 = " + length2Double(radiusBot) + ", r2 = " + length2Double(radiusTop) + ", h = " + length2Double(height) + ");")
           writer.newLine
         case p @ Polyhedron(_) =>
           val (indexedP,indexedF) = p.indexed
           writer.write("polyhedron( points=[ ")
-          writer.write(indexedP.map(p => "["+p.x.toMillimeters+","+p.y.toMillimeters+","+p.z.toMillimeters+"]").mkString(", "))
+          writer.write(indexedP.map(p => "["+ length2Double(p.x) +","+ length2Double(p.y) +","+ length2Double(p.z) +"]").mkString(", "))
           writer.write(" ], faces=[ ")
           writer.write(indexedF.map{ case (a,b,c) => "["+a+","+b+","+c+"]" }.mkString(", "))
           writer.write(" ]);")
@@ -138,7 +139,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
           writer.newLine
           prnt(obj, indent+2)
         case Translate(x, y, z, obj) =>
-          writer.write("translate(["+x.toMillimeters+","+y.toMillimeters+","+z.toMillimeters+"])")
+          writer.write("translate(["+length2Double(x)+","+length2Double(y)+","+length2Double(z)+"])")
           writer.newLine
           prnt(obj, indent+2)
         case Mirror(x, y, z, obj) =>
@@ -246,7 +247,7 @@ class OpenSCAD(header: List[String]) extends Renderer {
   def getResult(obj: Solid, options: Iterable[String] = Nil) = {
     val tmpFile = java.io.File.createTempFile("scadlaModel", ".stl")
     toSTL(obj, tmpFile.getPath, options)
-    val parsed = stl.Parser(tmpFile.getPath)
+    val parsed = stl.Parser(tmpFile.getPath) //TODO makes it parametric in the Length unit
     tmpFile.delete
     parsed
   }
@@ -258,11 +259,11 @@ class OpenSCAD(header: List[String]) extends Renderer {
 
 }
 
-object OpenSCAD extends OpenSCAD(List("$fa=4;", "$fs=0.5;")) {
+object OpenSCAD extends OpenSCAD(List("$fa=4;", "$fs=0.5;"), Millimeters) {
 
 }
 
-object OpenSCADnightly extends OpenSCAD(List("$fa=4;", "$fs=0.5;")) {
+object OpenSCADnightly extends OpenSCAD(List("$fa=4;", "$fs=0.5;"), Millimeters) {
 
   override protected val command = "openscad-nightly"
 

@@ -5,11 +5,7 @@ import scala.util.parsing.combinator._
 import dzufferey.utils._
 import dzufferey.utils.LogLevel._
 import scala.xml._
-import squants.space.LengthUnit
-import squants.space.Millimeters
-import squants.space.Microns
-import squants.space.Meters
-import squants.space.Inches
+import squants.space.{LengthUnit, Millimeters, Microns, Meters, Inches}
 
 object Parser {
   

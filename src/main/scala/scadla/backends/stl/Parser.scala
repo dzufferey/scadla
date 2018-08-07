@@ -5,21 +5,19 @@ import scala.util.parsing.combinator._
 import dzufferey.utils._
 import dzufferey.utils.LogLevel._
 import java.io._
-import squants.space.Millimeters
-import squants.space.SquareMeters
+import squants.space.{Length, Millimeters, LengthUnit, SquareMeters}
 
-
-object AsciiParser extends JavaTokenParsers {
+class AsciiParser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
   
   def parseVertex: Parser[Point] =
     "vertex" ~> repN(3, floatingPointNumber) ^^ {
-      case List(a, b,c) => Point(Millimeters(a.toDouble), Millimeters(b.toDouble), Millimeters(c.toDouble))
+      case List(a, b,c) => Point(unit(a.toDouble), unit(b.toDouble), unit(c.toDouble))
     }
 
   def parseFacet: Parser[Face] =
     ("facet" ~> "normal" ~> repN(3, floatingPointNumber)) ~ ("outer" ~> "loop" ~> repN(3, parseVertex) <~ "endloop" <~ "endfacet") ^^ {
       case List(nx, ny, nz) ~ List(a, b, c) =>
-        val n = Vector(nx.toDouble, ny.toDouble, nz.toDouble, Millimeters)
+        val n = Vector(nx.toDouble, ny.toDouble, nz.toDouble, unit)
         val f = Face(a, b, c)
         scadla.backends.stl.Parser.checkNormal(f, n)
     }
@@ -44,7 +42,7 @@ object AsciiParser extends JavaTokenParsers {
 
 }
 
-object BinaryParser {
+class BinaryParser(unit: LengthUnit = Millimeters) {
 
   import java.nio.file.FileSystems
   import java.nio.channels.FileChannel
@@ -54,14 +52,14 @@ object BinaryParser {
     val p1 = buffer.getFloat
     val p2 = buffer.getFloat
     val p3 = buffer.getFloat
-    Vector(p1, p2, p3, Millimeters)
+    Vector(p1, p2, p3, unit)
   }
 
   protected def point(buffer: ByteBuffer) = {
     val p1 = buffer.getFloat
     val p2 = buffer.getFloat
     val p3 = buffer.getFloat
-    Point(Millimeters(p1), Millimeters(p2), Millimeters(p3))
+    Point(unit(p1), unit(p2), unit(p3))
   }
 
   def apply(fileName: String) = {
@@ -102,11 +100,12 @@ object Parser {
     (0 until headerSize).forall( i => b(i) == bytesHeader(i) )
   }
 
-  def apply(fileName: String): Polyhedron = {
+
+  def apply(fileName: String, unit: LengthUnit = Millimeters): Polyhedron = {
     if (isTxt(fileName)) {
-      AsciiParser(fileName)
+      new AsciiParser(unit)(fileName)
     } else {
-      BinaryParser(fileName)
+      new BinaryParser(unit)(fileName)
     }
   }
 

@@ -4,8 +4,14 @@ import scadla._
 import dzufferey.utils._
 import dzufferey.utils.LogLevel._
 import java.io._
+import squants.space.{Length, Millimeters, LengthUnit}
 
-object Printer {
+//TODO make parametric in terms of unit
+
+object Printer extends Printer(Millimeters) {
+}
+
+class Printer(unit: LengthUnit = Millimeters) {
   
   def store(obj: Polyhedron, fileName: String) = {
     val writer = new BufferedWriter(new FileWriter(fileName))
@@ -14,7 +20,7 @@ object Printer {
       writer.write("g ScadlaObject")
       writer.newLine
       points.foreach{ p =>
-        writer.write("v " + p.x.toMillimeters + " " + p.y.toMillimeters + " " + p.z.toMillimeters)
+        writer.write("v " + p.x.to(unit) + " " + p.y.to(unit) + " " + p.z.to(unit))
         writer.newLine
       }
       writer.newLine

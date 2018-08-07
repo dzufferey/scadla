@@ -3,8 +3,14 @@ package scadla.backends.x3d
 import scadla._
 import java.io._
 import java.util.Date
+import squants.space.{Length, Millimeters, LengthUnit}
 
-object Printer {
+//TODO make parametric in terms of unit
+
+object Printer extends Printer(Millimeters) {
+}
+
+class Printer(unit: LengthUnit = Millimeters) {
 
   def write(obj: Polyhedron, writer: BufferedWriter, withHeader: Boolean = true, name: String = "scadla object") {
     def writeLine(s: String) {
@@ -40,11 +46,11 @@ object Printer {
       writeLine("'>")
       writer.write("        <Coordinate point='")
       points.foreach{ p =>
-        writer.write(p.x.toMillimeters.toString)
+        writer.write(p.x.to(unit).toString)
         writer.write(" ")
-        writer.write(p.y.toMillimeters.toString)
+        writer.write(p.y.to(unit).toString)
         writer.write(" ")
-        writer.write(p.z.toMillimeters.toString)
+        writer.write(p.z.to(unit).toString)
         writer.write(" ")
       }
       writeLine("'/>")
