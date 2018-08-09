@@ -30,6 +30,7 @@ case class Face(p1: Point, p2: Point, p3: Point) {
   def flipOrientation = Face(p1, p3, p2)
 }
 
+//TODO unit
 case class Matrix(m00: Double, m01: Double, m02: Double, m03:Double,
                   m10: Double, m11: Double, m12: Double, m13:Double,
                   m20: Double, m21: Double, m22: Double, m23:Double,
@@ -123,12 +124,21 @@ case class Vector(private val _x: Double, private val _y: Double, private val _z
   def y = unit(_y)
   def z = unit(_z)
   def unary_- : Vector = Vector(-_x, -_y, -_z, unit)
-  def +(v: Vector): Vector = Vector(_x+v._x, _y+v._y, _z+v._z, unit)
-  def -(v: Vector): Vector = Vector(_x-v._x, _y-v._y, _z-v._z, unit)
+  def +(v: Vector): Vector = {
+    val vu = v.to(unit)
+    Vector(_x+vu._x, _y+vu._y, _z+vu._z, unit)
+  }
+  def -(v: Vector): Vector = {
+    val vu = v.to(unit)
+    Vector(_x-vu._x, _y-vu._y, _z-vu._z, unit)
+  }
   def *(c: Double): Vector = Vector(_x*c, _y*c, _z*c, unit)
   def /(c: Double): Vector = Vector(_x/c, _y/c, _z/c, unit)
   def dot(v: Vector): Area = x*v.x + y*v.y + z*v.z
-  def cross(v: Vector) = Vector(_y*v._z - _z*v._y, _z*v._x - _x*v._z, _x*v._y - _y*v._x, unit)
+  def cross(v: Vector) = {
+    val vu = v.to(unit)
+    Vector(_y*vu._z - _z*vu._y, _z*vu._x - _x*vu._z, _x*vu._y - _y*vu._x, unit)
+  }
   private def _norm: Double = Math.sqrt(_x*_x + _y*_y + _z*_z)
   def norm: Length = unit(_norm)
   def toUnitVector: Vector = this / _norm
@@ -136,6 +146,10 @@ case class Vector(private val _x: Double, private val _y: Double, private val _z
   def toQuaternion(real: Double) = Quaternion(real, _x, _y, _z, unit)
   def toPoint = Point(x, y, z)
   def rotateBy(q: Quaternion) = q.rotate(this)
+  def to(newUnit: LengthUnit) = {
+    if (newUnit == unit) this
+    else Vector(x to newUnit, y to newUnit, z to newUnit, newUnit)
+  }
 }
 
 object Vector {
@@ -149,10 +163,13 @@ object Vector {
 
 case class Quaternion(a: Double, i: Double, j: Double, k: Double, unit: LengthUnit) {
   /** Hammilton product */
-  def *(q: Quaternion) = Quaternion(a*q.a - i*q.i - j*q.j - k*q.k,
-                                    a*q.i + i*q.a + j*q.k - k*q.j,
-                                    a*q.j - i*q.k + j*q.a + k*q.i,
-                                    a*q.k + i*q.j - j*q.i + k*q.a, unit)
+  def *(q: Quaternion) = {
+    val qu = q.to(unit)
+    Quaternion(a*qu.a - i*qu.i - j*qu.j - k*qu.k,
+               a*qu.i + i*qu.a + j*qu.k - k*qu.j,
+               a*qu.j - i*qu.k + j*qu.a + k*qu.i,
+               a*qu.k + i*qu.j - j*qu.i + k*qu.a, unit)
+  }
   def inverse = Quaternion(a, -i, -j, -k, unit)
   private def _norm: Double = math.sqrt(a*a + i*i + j*j + k*k) 
   def norm: Length = unit(_norm) 
@@ -184,6 +201,11 @@ case class Quaternion(a: Double, i: Double, j: Double, k: Double, unit: LengthUn
 
   def rotate(v: Vector): Vector = (this * v.toQuaternion * inverse).toVector
   def rotate(p: Point): Point = (this * p.toQuaternion * inverse).toPoint
+  
+  def to(newUnit: LengthUnit) = {
+    if (newUnit == unit) this
+    else Quaternion(unit(a) to newUnit, unit(i) to newUnit, unit(j) to newUnit, unit(k) to newUnit, newUnit)
+  }
 }
 
 case class RollPitchYaw(_roll: Double, _pitch: Double, _yaw: Double, unit: AngleUnit) {
