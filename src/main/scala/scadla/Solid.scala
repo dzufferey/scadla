@@ -3,7 +3,21 @@ package scadla
 import squants.space.Length
 import squants.space.Angle
 
-abstract class Solid 
+abstract class Solid {
+
+  /** Since we render in a second step, let's keep track of the stack trace so we can trace error to the source.
+   *
+   * The downside is that it might make this a bit slower and take much more memory...
+   *
+   * drop(4) to get rid of:
+   *  java.base/java.lang.Thread.getStackTrace
+   *  scadla.Solid.<init>
+   *  scadla.Shape.<init>
+   *  scadla.???.<init>
+   */
+  val trace = Thread.currentThread().getStackTrace().drop(4).toSeq
+
+}
 
 //basic shapes
 abstract class Shape extends Solid
