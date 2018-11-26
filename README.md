@@ -21,6 +21,14 @@ The main points on which we try to improve are:
 
 * a small caveat: OpenSCAD does has only floating points number but scala makes the distinction between integers and floating points. For instance, `1/2` is the integer division and returns `0`, not `0.5`. If you want floating point numbers write `1/2.0` or `1.0/2`.
 
+
+## Additional Backends and Operations
+
+Scadla core operations are based on CSG.
+However, most recent CAD systems uses boundary representation which offers a wider range of operations.
+There is new backend for scadla based on BREP in development at https://github.com/dzufferey/scadla-oce-backend/.
+
+
 ## Dependencies
 
 For the moment, scadla uses
@@ -108,6 +116,7 @@ To try some examples execute `sbt run` and select one example.
 
 Currently scadla is not yet published in an online maven repository.
 If you want to use it in another project, run `sbt publishLocal` to make it available to other projects on the same machine. You can include it in your projects by adding `libraryDependencies += "io.github.dzufferey" %% "scadla" % "0.1-SNAPSHOT"` in your `build.sbt`.
+
 
 ## Contributors
 

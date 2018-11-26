@@ -4,7 +4,7 @@ organization := "io.github.dzufferey"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.7"
 
 scalacOptions in Compile ++= Seq(
     //"-Xlog-implicits",
@@ -15,11 +15,11 @@ scalacOptions in Compile ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.6",
-  "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
-  "org.scalatest" %% "scalatest" % "3.0.1" % "test",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
+  "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
+  "org.scalatest" %% "scalatest" % "3.0.5" % "test",
   "io.github.dzufferey" %% "misc-scala-utils" % "0.1-SNAPSHOT",
-  "eu.mihosoft.vrl.jcsg" % "jcsg" % "0.5.6",
+  "eu.mihosoft.vrl.jcsg" % "jcsg" % "0.5.7",
   "org.typelevel"  %% "squants"  % "1.3.0"
 )
 
