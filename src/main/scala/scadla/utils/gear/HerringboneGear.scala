@@ -3,7 +3,7 @@ package scadla.utils.gear
 import scadla._
 import scadla.InlineOps._
 import scala.math._
-import squants.space.Length
+import squants.space.{Length, Angle, Radians}
 
 object HerringboneGear {
 
@@ -26,7 +26,7 @@ object HerringboneGear {
              height: Length,
              twist: Twist,
              backlash: Length,
-             skew: Double = 0.0) = {
+             skew: Angle = Radians(0.0)) = {
     val stepped = InvoluteGear.stepped(pitch, nbrTeeth, pressureAngle, addenum, dedenum, height, backlash, skew)
     def turnPoint(p: Point): Point = {
       val z = p.z

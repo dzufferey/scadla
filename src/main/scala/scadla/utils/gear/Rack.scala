@@ -4,9 +4,7 @@ import scadla._
 import scadla.InlineOps._
 import scadla.utils._
 import scala.math._
-import squants.space.Length
-import squants.space.Radians
-import squants.space.Millimeters
+import squants.space.{Length, Radians, Millimeters, Angle}
 
 object Rack {
 
@@ -17,13 +15,13 @@ object Rack {
              dedenum: Length,
              height: Length,
              backlash: Length,
-             skew: Double ) = {
+             skew: Angle ) = {
     assert(pressureAngle < Pi / 2 && pressureAngle >= 0, "pressureAngle must be between in [0;π/2)")
     val base = toothWidth + 2 * addenum * tan(pressureAngle) + backlash
     val tip  = toothWidth - 2 * dedenum * tan(pressureAngle) + backlash
     assert(tip.value > 0, "tip of the profile is negative ("+tip+"), try decreasing the pressureAngle, or addenum/dedenum.")
     val tHeight = addenum + dedenum + backlash
-    Trapezoid(tip, base, height, tHeight, skew).rotateX(Radians(Pi/2)).move(-base/2 + addenum*tan(skew), addenum, Millimeters(0)).rotateZ(Radians(-Pi/2))
+    Trapezoid(tip, base, height, tHeight, skew).rotateX(Radians(Pi/2)).move(-base/2 + addenum*tan(skew.toRadians), addenum, Millimeters(0)).rotateZ(Radians(-Pi/2))
   }
   
   /** Create an involute spur gear.
@@ -43,7 +41,7 @@ object Rack {
              dedenum: Length,
              height: Length,
              backlash: Length,
-             skew: Double = 0.0) = {
+             skew: Angle = Radians(0.0)) = {
 
     assert(addenum.value > 0, "addenum must be greater than 0")
     assert(dedenum.value > 0, "dedenum must be greater than 0")

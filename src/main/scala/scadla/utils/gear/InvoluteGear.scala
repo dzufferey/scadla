@@ -69,7 +69,7 @@ object InvoluteGear {
              dedenum: Length,
              height: Length,
              backlash: Length,
-             skew: Double = 0.0) = {
+             skew: Angle = Radians(0.0)) = {
 
     assert(addenum.value > 0, "addenum must be greater than 0")
     assert(dedenum.value > 0, "dedenum must be greater than 0")
@@ -105,7 +105,7 @@ object InvoluteGear {
                dedenum: Length,
                height: Length,
                backlash: Length,
-               skew: Double = 0.0) = {
+               skew: Angle = Radians(0.0)) = {
     val zStep = Gear.zResolution
     assert(zStep.value > 0.0, "zResolution must be greater than 0")
     val stepCount = ceil(height / zStep).toInt

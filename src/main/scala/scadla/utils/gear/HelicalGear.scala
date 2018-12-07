@@ -3,8 +3,7 @@ package scadla.utils.gear
 import scadla._
 import scadla.InlineOps._
 import scala.math._
-import squants.space.Angle
-import squants.space.Length
+import squants.space.{Angle, Radians, Length}
 
 object HelicalGear {
 
@@ -32,7 +31,7 @@ object HelicalGear {
              height: Length,
              twist: Twist,
              backlash: Length,
-             skew: Double = 0.0) = {
+             skew: Angle = Radians(0.0)) = {
     val stepped = InvoluteGear.stepped(pitch, nbrTeeth, pressureAngle, addenum, dedenum, height, backlash, skew)
     def turnPoint(p: Point): Point = {
       val z = p.z
