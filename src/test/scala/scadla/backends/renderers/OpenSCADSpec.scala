@@ -5,7 +5,7 @@ import java.io.{BufferedWriter, StringWriter}
 import org.scalatest.{Matchers, WordSpecLike}
 import scadla.examples.cnc.Spindle
 import scadla.examples.{BeltMold, ExtrusionDemo, WhiteboardMarkerHolder}
-import scadla.{InlineOps, Shape, Solid, backends}
+import scadla.{Solid, backends}
 import scadla.utils.Trig.Pi
 
 class OpenSCADSpec extends WordSpecLike with Matchers {
@@ -25,7 +25,7 @@ class OpenSCADSpec extends WordSpecLike with Matchers {
     }
 
     "work with WhiteboardMaker examples" in {
-      import InlineOps._
+      import scadla.InlineOps._
 
       val s = WhiteboardMarkerHolder.top.rotateX(Pi)
 
