@@ -12,7 +12,6 @@ object WhiteboardMarkerHolder {
   import backends.renderers.Renderable._
   import backends.renderers.BackwardCompatHelper._
   import backends.renderers.Solids._
-  object any2stringadd
 
   val penRadius = 10 mm
 

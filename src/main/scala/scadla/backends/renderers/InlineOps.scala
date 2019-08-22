@@ -8,6 +8,7 @@ import squants.{Angle, Length}
 import squants.space.Degrees
 
 object InlineOps {
+  object any2stringadd
 
   implicit final class AngleConversions[A](n: A)(implicit num: Numeric[A]) {
     def ° = Degrees(n)
