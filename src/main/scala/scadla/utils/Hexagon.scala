@@ -20,7 +20,7 @@ object Hexagon {
     val unit = minRadius.unit
     val height = _height.in(unit)
     if (minRadius.value <= 0.0 || height.value <= 0.0) {
-      Empty
+      Empty()
     } else {
       import scala.math._
       val rd0 = minRadius/sin(Pi/3)

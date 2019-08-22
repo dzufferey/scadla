@@ -11,6 +11,7 @@ import squants.space.LengthConversions._ // for mm notation
 
 /** A class for the small rollers in the mecanum wheel */
 class Roller(height: Length, maxOuterRadius: Length, minOuterRadius: Length, innerRadius: Length) {
+  import backends.renderers.OpenScad._
 
   val axis = 0.5 mm
   val h = height - 2*axis
@@ -43,7 +44,7 @@ class Roller(height: Length, maxOuterRadius: Length, minOuterRadius: Length, inn
     val angle = 22.5° // π / 8
     val grooveDepth = (maxOuterRadius - minOuterRadius) max 2
     val inner = (maxOuterRadius - grooveDepth) max ((minOuterRadius + innerRadius) / 2)
-    val slice = PieSlice(maxOuterRadius, inner, angle, h).moveZ(axis)
+    val slice = PieSlice(maxOuterRadius, inner, angle, h).toSolid.moveZ(axis)
     (0 until 8).foldLeft(base)( (acc, i) => acc - slice.rotateZ(i*2*angle) )
   }
 
@@ -148,7 +149,11 @@ class MecanumWheel(radius: Length, width: Length, angle: Angle, nbrRollers: Int)
   }
 
   def rim = {
-    val base = Tube(innerR-maxR-rollerRimGap, centerAxleRadius, width)
+    //TODO
+    import backends.renderers.OpenScad._
+    import backends.renderers.Renderable._
+
+    val base = Tube(innerR-maxR-rollerRimGap, centerAxleRadius, width).toSolid
     val shaft = Translate(centerAxleRadius - shaftFlat, -centerAxleRadius/2, 0, Cube(2*centerAxleRadius, centerAxleRadius, width))
 
     val op = width * tan(angle.abs) / 2
@@ -156,7 +161,7 @@ class MecanumWheel(radius: Length, width: Length, angle: Angle, nbrRollers: Int)
     val hyp = hypot(op, ad)
     val rth = minR*sin(angle.abs)*2 + mountThickness
 
-    val lowerRing = Tube(hyp + rollerAxleRadius1 + mountThickness, centerAxleRadius, rth) 
+    val lowerRing = Tube(hyp + rollerAxleRadius1 + mountThickness, centerAxleRadius, rth).toSolid
     val upperRing = lowerRing.moveZ(width - rth)
 
     base + shaft + lowerRing + upperRing

@@ -10,6 +10,8 @@ import scadla.EverythingIsIn.{millimeters, radians}
 
 // dX, dZ are given from the center of the extrusion
 class ActuatorFasterner(dX: Double, dZ: Double) {
+  import backends.renderers.Renderable._
+  import backends.renderers.OpenScad._
 
   assert(dX >= 20 || dZ >= 20, "too close")
   assert(dX >= 0 && dZ >= 0, "backward")
@@ -27,7 +29,7 @@ class ActuatorFasterner(dX: Double, dZ: Double) {
     val guide = Trapezoid(4.5, 6.5, supportLength, guideDepth, -0.2)
     val faceBlank = Union(
         Cube(20-beamConnectorRounding, thickness, supportLength).move(-thickness+beamConnectorRounding, -thickness, 0),
-        PieSlice(thickness, 0, Pi/2, supportLength).rotateZ(-Pi/2).move(20-thickness,0,0),
+        PieSlice(thickness, 0, Pi/2, supportLength).toSolid.rotateZ(-Pi/2).move(20-thickness,0,0),
         Cylinder(beamConnectorRounding, supportLength).move(-thickness+beamConnectorRounding, -thickness+beamConnectorRounding, 0),
         guide.rotateX(Pi/2).rotateZ(Pi).move(10+6.5/2, 0, 0)
     )

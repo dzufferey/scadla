@@ -22,6 +22,7 @@ class Gimbal(
         minThickness: Length,
         retainerThickness: Length,
         knobLength: Length) {
+  import backends.renderers.OpenScad._
 
   protected def carveBearing(shape: Solid) = {
     val b = Cylinder(11 + looseTolerance, maxThickness)
@@ -45,8 +46,8 @@ class Gimbal(
   }
 
   protected def halfCylinder(r1: Length, r2: Length, h: Length) = {
-    val c1 = if (r1 <= r2) Cylinder(r1, h) else PieSlice(r1, 0, Pi, h)
-    val c2 = if (r2 <= r1) Cylinder(r2, h) else PieSlice(r2, 0, Pi, h).rotateZ(Pi)
+    val c1 = if (r1 <= r2) Cylinder(r1, h) else PieSlice(r1, 0, Pi, h).toSolid
+    val c2 = if (r2 <= r1) Cylinder(r2, h) else PieSlice(r2, 0, Pi, h).toSolid.rotateZ(Pi)
     c1 + c2
   }
 

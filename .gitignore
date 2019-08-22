@@ -19,3 +19,6 @@ project/build.properties
 
 # others
 clean.sh
+
+# idea
+.idea/

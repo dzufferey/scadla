@@ -12,7 +12,7 @@ object InBox {
   def apply(s: Solid): Box = s match {
     case Cube(w, d, h) =>
       Box(O, O, O, w, d, h)
-    case Empty =>
+    case _: Empty =>
       Box.empty
     case Sphere(r) =>
       val s = r * sqrt(2)/2

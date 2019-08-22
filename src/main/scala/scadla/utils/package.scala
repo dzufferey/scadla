@@ -32,11 +32,11 @@ package object utils {
   private val Zero = 0°
   def simplify(s: Solid): Solid = {
     def rewrite(s: Solid): Solid = s match {
-      case Cube(width, depth, height) if width.value <= 0.0 || depth.value <= 0.0 || height.value <= 0.0 => Empty
-      case Sphere(radius) if radius.value <= 0.0 => Empty
-      case Cylinder(radiusBot, radiusTop, height) if height.value <= 0.0 => Empty
+      case Cube(width, depth, height) if width.value <= 0.0 || depth.value <= 0.0 || height.value <= 0.0 => Empty()
+      case Sphere(radius) if radius.value <= 0.0 => Empty()
+      case Cylinder(radiusBot, radiusTop, height) if height.value <= 0.0 => Empty()
       //TODO order the points/faces to get a normal form
-      case Polyhedron(triangles) if triangles.isEmpty => Empty
+      case Polyhedron(triangles) if triangles.isEmpty => Empty()
 
       case Translate(x1, y1, z1, Translate(x2, y2, z2, s2)) => Translate(x1+x2, y1+y2, z1+z2, s2)
       case Rotate(x1, Zero, Zero, Rotate(x2, Zero, Zero, s2)) => Rotate(x1+x2, Zero, Zero, s2)
@@ -46,22 +46,22 @@ package object utils {
       
       //TODO flatten ops, reorganize according to com,assoc,...
       case Union(lst @ _*) =>
-        val lst2 = lst.toSet - Empty
-        if (lst2.isEmpty) Empty else Union(lst2.toSeq: _*)
+        val lst2 = lst.toSet - Empty()
+        if (lst2.isEmpty) Empty() else Union(lst2.toSeq: _*)
       case Intersection(lst @ _*) =>
         val lst2 = lst.toSet
-        if (lst2.contains(Empty) || lst2.isEmpty) Empty else Intersection(lst2.toSeq: _*)
+        if (lst2.contains(Empty()) || lst2.isEmpty) Empty() else Intersection(lst2.toSeq: _*)
       case Difference(s2, lst @ _*) =>
-        val lst2 = lst.toSet - Empty
+        val lst2 = lst.toSet - Empty()
         if (lst2.isEmpty) s2
-        else if (lst2 contains s2) Empty
+        else if (lst2 contains s2) Empty()
         else Difference(s2, lst2.toSeq: _*)
       case Minkowski(lst @ _*) =>
-        val lst2 = lst.toSet - Empty
-        if (lst2.isEmpty) Empty else Minkowski(lst2.toSeq: _*)
+        val lst2 = lst.toSet - Empty()
+        if (lst2.isEmpty) Empty() else Minkowski(lst2.toSeq: _*)
       case Hull(lst @ _*) =>
-        val lst2 = lst.toSet - Empty
-        if (lst2.isEmpty) Empty else Hull(lst2.toSeq: _*)
+        val lst2 = lst.toSet - Empty()
+        if (lst2.isEmpty) Empty() else Hull(lst2.toSeq: _*)
 
       case s => s
     }

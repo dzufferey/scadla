@@ -90,10 +90,14 @@ class GearBearing(val outerRadius: Double,
   }
 
   def planetHelper(baseThickness: Double, tolerance: Double) = {
+    //TODO
+    import backends.renderers.OpenScad._
+    import backends.renderers.Renderable._
+
     val add = addenum(outerRadius, nbrTeethOuter) + tolerance
     val planet = Cylinder(planetRadius+add, height).moveZ(baseThickness)
     val planets = positionPlanet(planet)
-    Tube(outerRadius - add, sunRadius + add, height) -- planets
+    Tube(outerRadius - add, sunRadius + add, height).toSolid -- planets
   }
 
 }

@@ -30,6 +30,8 @@ class BeltMold(length: Double,
                tolerance: Double) {
 
   import scadla.EverythingIsIn.{millimeters, radians}
+  import backends.renderers.Renderable._
+  import backends.renderers.OpenScad._
   
   val innerRadius = length / 2 / Pi
   val outerRadius = innerRadius + threadDiameter + 2*jacket
@@ -53,21 +55,21 @@ class BeltMold(length: Double,
   def outerFst = {
     Union(
       outerSnd,
-      PieSlice(outerRadius+tolerance, innerRadius + jacket + threadDiameter/2 + tolerance, Pi, height).moveZ(1),
-      PieSlice(outerRadius+tolerance, innerRadius + jacket + tolerance, Pi, threadTurns*threadDiameter).moveZ(1+jacket)
+      PieSlice(outerRadius+tolerance, innerRadius + jacket + threadDiameter/2 + tolerance, Pi, height).toSolid.moveZ(1),
+      PieSlice(outerRadius+tolerance, innerRadius + jacket + tolerance, Pi, threadTurns*threadDiameter).toSolid.moveZ(1+jacket)
     )
   }
 
   def outerSnd = {
     val h = height + 2
-    val ring = PieSlice(outerRadius + 2, outerRadius, Pi, h)
+    val ring = PieSlice(outerRadius + 2, outerRadius, Pi, h).toSolid
     val block = Cube(10, 5, h) - Cylinder(screwRadius, 5).rotateX(-Pi/2).move( 7, 0, h/2)
     val blockPositionned = block.moveX(outerRadius)
     ring + blockPositionned + blockPositionned.mirror(1,0,0)
   }
 
   def spreader = {
-    val base = outerFst * PieSlice(outerRadius + 2, 0, Pi/6, height+2).rotateZ(Pi/2)
+    val base = outerFst * PieSlice(outerRadius + 2, 0, Pi/6, height+2).toSolid.rotateZ(Pi/2)
     base - Cube(innerRadius, innerRadius, height+2).moveX(-innerRadius)
   }
 

@@ -15,7 +15,7 @@ abstract class Renderer(unit: LengthUnit = Millimeters) {
    *  By default all the transforms and the CSG operations should be supported
    */
   def isSupported(s: Solid): Boolean = s match {
-    case Cube(_,_,_) | Sphere(_) | Cylinder(_, _, _) | FromFile(_, _) | Empty | Polyhedron(_) => true
+    case Cube(_,_,_) | Sphere(_) | Cylinder(_, _, _) | FromFile(_, _) | Empty() | Polyhedron(_) => true
     case t: Transform => isSupported(t.child)
     case u @ Union(_) => u.children.forall(isSupported)
     case i @ Intersection(_) => i.children.forall(isSupported)

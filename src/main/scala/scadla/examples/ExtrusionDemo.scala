@@ -7,8 +7,7 @@ import scadla.EverythingIsIn.millimeters
 
 object ExtrusionDemo {
 
-  def main(args: Array[String]) {
-    val r = scadla.backends.Renderer.default
+  def s = {
     val objects = List(
       _2020(100),
       C(20,20,10,4)(100),
@@ -19,7 +18,12 @@ object ExtrusionDemo {
       Z(20,20,4)(100)
     )
     val moved = objects.zipWithIndex.map{ case(o, i) => o.moveY(25 * i) }
-    r.view(Union(moved: _*))
+    Union(moved: _*)
+  }
+
+  def main(args: Array[String]) {
+    val r = scadla.backends.Renderer.default
+    r.view(s)
   }
 
 }

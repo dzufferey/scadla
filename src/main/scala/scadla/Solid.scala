@@ -33,7 +33,7 @@ case class FromFile(path: String, format: String = "stl") extends Shape {
     case other => sys.error("parsing " + other + " not yet supported")
   }
 }
-case object Empty extends Shape
+case class Empty() extends Shape
 case class Polyhedron(faces: Iterable[Face]) extends Shape {
   def indexed = Polyhedron.indexed(this)
 }
