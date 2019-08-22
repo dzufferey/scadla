@@ -1,5 +1,6 @@
 package scadla.backends.renderers
 
+import scadla.backends.renderers.BackwardCompatHelper.Solidable
 import scadla.backends.renderers.Renderable._
 import scadla.{Matrix, Point, Quaternion, Vector}
 import scadla.backends.renderers.Solids.{Difference, Hull, Intersection, Minkowski, Mirror, Multiply, Rotate, Scale, Translate, Union}
@@ -12,7 +13,7 @@ object InlineOps {
     def ° = Degrees(n)
   }
 
-  implicit final class Ops[A](val lhs: A)(implicit renderer: Renderable[A]) {
+  implicit final class Ops[A](val lhs: A)(implicit renderer: Renderable[A], ev2: Solidable[A]) {
 
     import squants.space.LengthConversions._
 

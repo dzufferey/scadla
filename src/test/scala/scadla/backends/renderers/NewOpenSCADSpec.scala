@@ -16,11 +16,12 @@ class NewOpenSCADSpec extends WordSpecLike with Matchers {
       import backends.renderers.OpenScad._
       import squants.space.LengthConversions._
       import backends.renderers.Renderable._
+      import backends.renderers.BackwardCompatHelper._
       object any2stringadd
 
       def top: Solids.Difference = {
         val mrt = magnetRadius + thickness
-        val beam1 = Cube( 90 mm, 10 mm, thickness).move(-45 mm, -mrt, thickness)
+        val beam1 = Ops(Cube( 90 mm, 10 mm, thickness)).move(-45 mm, -mrt, thickness)
         val beam2 = Cube( 50 mm, (10 mm) + thickness, 2*thickness).move(-25 mm, -mrt, 0 mm)
         val center = Hull(
           Cylinder(mrt, 2*thickness),
