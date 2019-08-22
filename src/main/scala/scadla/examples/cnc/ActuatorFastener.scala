@@ -11,6 +11,8 @@ import scadla.EverythingIsIn.{millimeters, radians}
 // dX, dZ are given from the center of the extrusion
 class ActuatorFasterner(dX: Double, dZ: Double) {
   import backends.renderers.Renderable._
+  import backends.renderers.OpenScad._
+
   assert(dX >= 20 || dZ >= 20, "too close")
   assert(dX >= 0 && dZ >= 0, "backward")
 

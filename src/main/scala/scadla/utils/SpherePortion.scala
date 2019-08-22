@@ -11,6 +11,7 @@ import squants.space.Radians
 /** same idea as PieSlice with with a sphere */
 object SpherePortion {
   import backends.renderers.Renderable._
+  import backends.renderers.OpenScad._
   //TODO check https://en.wikipedia.org/wiki/Spherical_coordinate_system for the conventions
 
   def apply(outerRadius: Length, innerRadius: Length,

@@ -22,6 +22,7 @@ class Gimbal(
         minThickness: Length,
         retainerThickness: Length,
         knobLength: Length) {
+  import backends.renderers.OpenScad._
 
   protected def carveBearing(shape: Solid) = {
     val b = Cylinder(11 + looseTolerance, maxThickness)

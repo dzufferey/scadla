@@ -11,6 +11,7 @@ import squants.space.LengthConversions._ // for mm notation
 
 /** A class for the small rollers in the mecanum wheel */
 class Roller(height: Length, maxOuterRadius: Length, minOuterRadius: Length, innerRadius: Length) {
+  import backends.renderers.OpenScad._
 
   val axis = 0.5 mm
   val h = height - 2*axis

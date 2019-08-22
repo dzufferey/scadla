@@ -31,6 +31,7 @@ class BeltMold(length: Double,
 
   import scadla.EverythingIsIn.{millimeters, radians}
   import backends.renderers.Renderable._
+  import backends.renderers.OpenScad._
   
   val innerRadius = length / 2 / Pi
   val outerRadius = innerRadius + threadDiameter + 2*jacket

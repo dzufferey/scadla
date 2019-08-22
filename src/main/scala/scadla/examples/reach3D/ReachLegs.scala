@@ -17,6 +17,7 @@ object ReachLegs {
   // base shape
   // t-nuts (M4)
   // springy thing
+  import backends.renderers.OpenScad._
 
   val thickness = 4.0 mm
   val padWidth = 12.5 mm

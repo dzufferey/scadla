@@ -22,6 +22,7 @@ import squants.space.Millimeters
 
 object Frame {
   import backends.renderers.Renderable._
+  import backends.renderers.OpenScad._
 
   val boltSize = thread.ISO.M5
 
