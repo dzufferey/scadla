@@ -10,13 +10,13 @@ import squants.space.Radians
 
 /** same idea as PieSlice with with a sphere */
 object SpherePortion {
-
+  import backends.renderers.Renderable._
   //TODO check https://en.wikipedia.org/wiki/Spherical_coordinate_system for the conventions
 
   def apply(outerRadius: Length, innerRadius: Length,
             inclinationStart: Angle, inclinationEnd: Angle,
             azimut: Angle) = {
-    val i = if (innerRadius.value > 0) Sphere(innerRadius) else Empty
+    val i = if (innerRadius.value > 0) Sphere(innerRadius) else Empty()
     val o1 = outerRadius + Millimeters(1)
     val carved = Difference(
       Sphere(outerRadius),
@@ -26,7 +26,7 @@ object SpherePortion {
     )
     val sliced = Intersection(
       carved,
-      PieSlice(o1, Millimeters(0), azimut, 2*o1).moveZ(-o1)
+      PieSlice(o1, Millimeters(0), azimut, 2*o1).toSolid.moveZ(-o1)
     )
     sliced
   }
@@ -41,7 +41,7 @@ object SpherePortion {
     val c = Cylinder(radius, 2*radius)
     val t = inclination.tan
     val h = radius / t
-    if (inclination <= Radians(0))           Empty
+    if (inclination <= Radians(0))           Empty()
     else if (inclination <= Radians(Pi/4))   Cylinder(Millimeters(0), radius * t, radius)
     else if (inclination <  Radians(Pi/2))   Cylinder(Millimeters(0), radius, h) + c.moveZ(h)
     else if (inclination == Radians(Pi/2))   c

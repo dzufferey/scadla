@@ -21,6 +21,7 @@ import squants.space.Millimeters
 //      -----
 
 object Frame {
+  import backends.renderers.Renderable._
 
   val boltSize = thread.ISO.M5
 
@@ -119,7 +120,7 @@ object Frame {
     val profileRadiusL = 4
     val c = {
       val x = Cube(100,18,100) // L are 2mm
-      val y = PieSlice(profileRadiusL + 10, profileRadiusL, Pi/2, 100).rotateZ(-Pi/2).rotateY(Pi/2).move(0, profileRadiusL, profileRadiusL)
+      val y = PieSlice(profileRadiusL + 10, profileRadiusL, Pi/2, 100).toSolid.rotateZ(-Pi/2).rotateY(Pi/2).move(0, profileRadiusL, profileRadiusL)
       (x - y)
     }
     val c2 = Cube(100,40,120)
@@ -128,7 +129,7 @@ object Frame {
       Union(
         c2.moveX(-100).rotateZ(-Pi/6).moveY(offsetY),
         c2.moveX(-100).rotateZ(5*Pi/6).moveY(offsetY),
-        PieSlice(profileRadiusT + 10, profileRadiusT, Pi/2, 120).move(-profileRadiusT, -profileRadiusT, 0).rotateZ(5*Pi/6).moveY(offsetY)
+        PieSlice(profileRadiusT + 10, profileRadiusT, Pi/2, 120).toSolid.move(-profileRadiusT, -profileRadiusT, 0).rotateZ(5*Pi/6).moveY(offsetY)
       )
     }
     val base = Difference(
@@ -141,7 +142,7 @@ object Frame {
     val diagonal = {
       val blank = CenteredCube.xz(125, thickness, 125).rotateY(Pi/4)  
       val x = blank - CenteredCube.xz(100, thickness, 100).rotateY(Pi/4) 
-      val p = PieSlice(50, 50 - thickness, Pi/4, thickness).rotateX(Pi/2)
+      val p = PieSlice(50, 50 - thickness, Pi/4, thickness).toSolid.rotateX(Pi/2)
       val y1 = p.rotateY(3*Pi/4).move(101,thickness,49)
       val y2 = p.rotateY(4*Pi/4).move(48, thickness, 104)
       val cy = Cylinder(5, 50)
@@ -196,7 +197,7 @@ object Frame {
       val cbt = Cylinder(bt, thickness)
       val x = cx.moveX(o) - cbt.move(tBeamScrewOffset, 10, 0)
       val y = cy.moveX(-l) - cbt.move(-tBeamScrewOffset, 10, 0)
-      val z = Bigger(PieSlice(20-d,0,Pi/3,thickness+3).rotateZ(-4*Pi/6), d)
+      val z = Bigger(PieSlice(20-d,0,Pi/3,thickness+3).toSolid.rotateZ(-4*Pi/6), d)
       val res = Union(
         x.rotateZ( Pi/6),
         y.rotateZ(-Pi/6),
@@ -326,7 +327,7 @@ object Frame {
         knob,
         knob.moveZ(thickness/2),
         (Cube(6, 6, thickness/2).move(-3, -6, 0) + Cylinder(3, thickness/2).moveY(-6)).moveX(3).rotateZ(Pi/4).moveX(-3),
-        PieSlice(3, 0, 3*Pi/4, 3*thickness/2).moveX(-3)
+        PieSlice(3, 0, 3*Pi/4, 3*thickness/2).toSolid.moveX(-3)
       ) - Cylinder(woodScrewRadius, 2 * thickness).moveY(2)
     val stopper2 = stopper1.mirror(1,0,0)
     Seq(body, stopper1, stopper2)
@@ -395,7 +396,7 @@ object Frame {
     Difference(
       Cube(30, 30, 20).move(-5, -5, 0),
       Bigger(l(20), 0.6),
-      PieSlice(5, 2.7, Pi/2, 20).rotateZ(Pi).move(5,5,0),
+      PieSlice(5, 2.7, Pi/2, 20).toSolid.rotateZ(Pi).move(5,5,0),
       hBeam.scaleY(100).move(0, -5, 5),
       Cube(5,30,15).move(-5, -5, 11.2),
       Cube(5,30,15).move(20, -5, 12.92)
@@ -407,7 +408,7 @@ object Frame {
       Cube(30, 30, 20).move(-5, -5, 0),
       hBeamJig1,
       Bigger(l(40), 0.6),
-      PieSlice(5, 2.7, Pi/2, 40).rotateZ(Pi).move(5,5,0)
+      PieSlice(5, 2.7, Pi/2, 40).toSolid.rotateZ(Pi).move(5,5,0)
     ).rotateY(Pi)
   }
 

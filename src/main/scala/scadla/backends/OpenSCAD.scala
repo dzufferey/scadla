@@ -68,7 +68,7 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
     def prnt2(obj: Solid, indent: Int): Unit = {
       spaces(indent)(writer)
       obj match {
-        case Empty =>
+        case Empty() =>
           writer.newLine
         case Cube(width, depth, height) =>
           writer.write("cube([ " + length2Double(width) + ", " + length2Double(depth) + ", " + length2Double(height) + "]);")

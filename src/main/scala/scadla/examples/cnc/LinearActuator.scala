@@ -84,7 +84,7 @@ object LinearActuator {
         } else {
           trimmed
         }
-      } else Empty
+      } else Empty()
     val base = Union(
         RoundedCubeH(width, length, plateThickness, 3).move(-n14s2, -(motorYOffset + n14s2), 0),
         gimbalMount
@@ -200,8 +200,8 @@ object LinearActuator {
     val block = Union(
       basePlate(true, false),
       supportPlate.rotateX(Pi).moveZ(pillarHeight),
-      if (withGears) motorGear(false).move(0, motorYOffset, bearingGapBase) else Empty,
-      if (withGears) rodGear(false).moveZ(bearingGapBase) else Empty,
+      if (withGears) motorGear(false).move(0, motorYOffset, bearingGapBase) else Empty(),
+      if (withGears) rodGear(false).moveZ(bearingGapBase) else Empty(),
       gimbal.model.rotateZ(-Pi/2).move(0,gimbalOffset,-plateThickness/2)
     ).moveZ(plateThickness/2)
     if (centered) {

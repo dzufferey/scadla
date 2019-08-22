@@ -2,9 +2,11 @@ package scadla.backends.renderers
 
 import org.scalatest.{Matchers, WordSpecLike}
 import scadla.backends.renderers.Solids.Hull
+import scadla.examples.WhiteboardMarkerHolder
 import scadla.{Cube, Cylinder, backends}
 import scadla.examples.WhiteboardMarkerHolder.{magnetHeight, magnetRadius, thickness, tolerance}
 import scadla.utils.Trig.Pi
+
 import scala.language.postfixOps
 
 class NewOpenSCADSpec extends WordSpecLike with Matchers {
@@ -19,18 +21,7 @@ class NewOpenSCADSpec extends WordSpecLike with Matchers {
       import backends.renderers.BackwardCompatHelper._
       object any2stringadd
 
-      def top: Solids.Difference = {
-        val mrt = magnetRadius + thickness
-        val beam1 = Ops(Cube( 90 mm, 10 mm, thickness)).move(-45 mm, -mrt, thickness)
-        val beam2 = Cube( 50 mm, (10 mm) + thickness, 2*thickness).move(-25 mm, -mrt, 0 mm)
-        val center = Hull(
-          Cylinder(mrt, 2*thickness),
-          Cube(2*mrt, 1 mm, 2*thickness).move(-mrt, -mrt, 0 mm)
-        )
-        val magnet = Cylinder(magnetRadius + tolerance, magnetHeight + tolerance)
-        beam1 + beam2 + center - magnet
-      }
-      val s = top.rotateX(Pi)
+      val s = WhiteboardMarkerHolder.top.rotateX(Pi)
 
       val original =
         """$fa=4;

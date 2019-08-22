@@ -90,9 +90,12 @@ object InvoluteGear {
       val base = Cube((nbrTeeth+1) * space, bt, height).move(-space/2, -bt, Millimeters(0))
       base ++ teeth
     } else {
+      //TODO
+      import backends.renderers.OpenScad._
+      import backends.renderers.Renderable._
       val base =
         if (pitch.value > 0) Cylinder(pitch + addenum, height)
-        else Tube(effectivePitch + addenum+Gear.baseThickness, effectivePitch - dedenum, height)
+        else Tube(effectivePitch + addenum+Gear.baseThickness, effectivePitch - dedenum, height).toSolid
       carve(base, pitch, nbrTeeth, rackTooth)
     }
   }

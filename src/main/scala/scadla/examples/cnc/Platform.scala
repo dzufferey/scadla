@@ -11,6 +11,9 @@ import scadla.EverythingIsIn.{millimeters, radians}
 
 //a platform to put hold the spindle
 object Platform {
+  //TODO
+  import backends.renderers.OpenScad._
+  import backends.renderers.Renderable._
 
   protected def bearings(space: Length) = {
     Union(
@@ -143,7 +146,7 @@ object Platform {
       Cylinder(ISO.M6 * 2, b2w).rotateX(-Pi/2).moveZ(h)
     )
     val innerDelta = wall - 0.5
-    val w = Tube(ISO.M6 * 2+ looseTolerance, washerM6Inner - tolerance, washerM6Thickness)
+    val w = Tube(ISO.M6 * 2+ looseTolerance, washerM6Inner - tolerance, washerM6Thickness).toSolid
     Difference(
       base,
       Cylinder(mountScrews + tightTolerance, wall).moveY(b2w/2),

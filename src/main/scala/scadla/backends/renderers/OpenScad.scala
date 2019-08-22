@@ -1,12 +1,16 @@
 package scadla.backends.renderers
 
 import scadla.backends.renderers.Solids._
-import scadla.{Cube, Cylinder, FromFile, Polyhedron, Sphere}
+import scadla.{Cube, Cylinder, FromFile, Polyhedron, Sphere, Empty}
 import squants.space.{Length, Millimeters}
 
 object OpenScad {
 
   protected def length2Double(l: Length): Double = l to Millimeters
+
+  implicit val emptyRenderer = new Renderable[Empty] {
+    override def render(s: Empty, indent: Int): String = ""
+  }
 
   implicit val cubeRenderer = new Renderable[Cube] {
     override def render(s: Cube, indent: Int): String = {

@@ -13,6 +13,12 @@ object InlineOps {
     def ° = Degrees(n)
   }
 
+  implicit def renderableOps[A](a: RenderableForOps[A]): Ops[A] = {
+    implicit val fa = a.fa
+    implicit val fb = a.fb
+    a.a
+  }
+
   implicit final class Ops[A](val lhs: A)(implicit renderer: Renderable[A], ev2: Solidable[A]) {
 
     import squants.space.LengthConversions._

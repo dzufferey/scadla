@@ -51,7 +51,7 @@ class JCSG(numSlices: Int, unit: LengthUnit = Millimeters) extends Renderer(unit
     import scala.language.implicitConversions
     implicit def toDouble(l: Length): Double = length2Double(l)
     s match {  
-    case Empty =>                                   empty
+    case Empty() =>                                 empty
     case Cube(width, depth, height) =>              new JCube(Vector3d.xyz(width/2, depth/2, height/2), Vector3d.xyz(width, depth, height)).toCSG()
     case Sphere(radius) =>                          new JSphere(radius, numSlices, numSlices/2).toCSG()
     case Cylinder(radiusBot, radiusTop, height) =>  new JCylinder(radiusBot, radiusTop, height, numSlices).toCSG()

@@ -12,7 +12,8 @@ scalacOptions in Compile ++= Seq(
     "-deprecation",
     "-feature",
     "-Xmax-classfile-name", "110",
-    "-language:implicitConversions"
+    "-language:implicitConversions",
+    "-language:postfixOps"
 )
 
 libraryDependencies ++= Seq(

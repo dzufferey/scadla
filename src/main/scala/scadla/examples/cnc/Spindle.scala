@@ -171,11 +171,15 @@ object Spindle {
                                 slits, 0.5, 1, 20, ISO.M2)
   val colletWrench = Collet.wrench(innerHole, UTS._1_8, slits, ISO.M2)
 
+  //TODO
+  import backends.renderers.OpenScad._
+  import backends.renderers.Renderable._
+
   def objects = Map(
     "gear_bolt" -> gearBolt,
     "gear_motor" -> gearMotor,
-    "bolt_washer_top" -> Tube(6, (4 mm) + 2*tolerance, topBoltWasher),
-    "bolt_washer_bot" -> Tube(6, (4 mm) + 2*tolerance, bottomBoltWasher),
+    "bolt_washer_top" -> Tube(6, (4 mm) + 2*tolerance, topBoltWasher).toSolid,
+    "bolt_washer_bot" -> Tube(6, (4 mm) + 2*tolerance, bottomBoltWasher).toSolid,
     "spindle_body" -> spindle,
     "chuck_wrench" -> Chuck.wrench(13),
     "chuck" -> chuck.rotateX(Pi),

@@ -3,12 +3,16 @@ package scadla.examples
 import scadla._
 import utils._
 import Trig._
-import InlineOps._
-import squants.space.{Length, Angle}
 import scala.language.postfixOps
-import squants.space.LengthConversions._
 
 object WhiteboardMarkerHolder {
+  import backends.renderers.InlineOps._
+  import backends.renderers.OpenScad._
+  import squants.space.LengthConversions._
+  import backends.renderers.Renderable._
+  import backends.renderers.BackwardCompatHelper._
+  import backends.renderers.Solids._
+  object any2stringadd
 
   val penRadius = 10 mm
 
@@ -47,8 +51,8 @@ object WhiteboardMarkerHolder {
 
   def main(args: Array[String]) {
     val r = backends.Renderer.default
-    r.toSTL(top.rotateX(Pi), "wbh_top.stl") // 1x
-    r.toSTL(side, "wbh_side.stl")           // 2x
+    r.toSTL(top.rotateX(Pi).toSolid, "wbh_top.stl") // 1x
+    r.toSTL(side.toSolid, "wbh_side.stl")           // 2x
   }
 
 }

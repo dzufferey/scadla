@@ -26,8 +26,11 @@ class OpenSCADSpec extends WordSpecLike with Matchers {
 
     "work with WhiteboardMaker examples" in {
       import scadla.InlineOps._
+      import scadla.backends.renderers.Renderable._
+      import scadla.backends.renderers.OpenScad._
+      import scadla.backends.renderers.BackwardCompatHelper._
 
-      val s = WhiteboardMarkerHolder.top.rotateX(Pi)
+      val s = WhiteboardMarkerHolder.top.toSolid.rotateX(Pi)
 
       val original =
         """$fa=4;
