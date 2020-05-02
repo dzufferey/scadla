@@ -1,7 +1,7 @@
 package scadla.backends
 
 import scadla._
-import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 import squants.space.Millimeters
 
 object ParserTest {
@@ -14,7 +14,7 @@ object ParserTest {
   val path = "src/test/resources/"
 }
 
-class StlParserTest extends FunSuite {
+class StlParserTest extends AnyFunSuite {
 
   import ParserTest._
 

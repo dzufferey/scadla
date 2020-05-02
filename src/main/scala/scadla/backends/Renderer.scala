@@ -23,7 +23,7 @@ abstract class Renderer(unit: LengthUnit = Millimeters) {
     case _ => false
   }
 
-  def toSTL(s: Solid, fileName: String) {
+  def toSTL(s: Solid, fileName: String): Unit = {
     val p = apply(s)
     stl.Printer.storeBinary(p, fileName)
     //stl.Printer.storeText(p, fileName)

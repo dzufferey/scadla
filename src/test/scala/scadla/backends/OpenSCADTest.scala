@@ -1,11 +1,11 @@
 package scadla.backends
 
 import scadla._
-import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 import scadla.EverythingIsIn.{millimeters, radians}
 
 
-class OpenSCADTest extends FunSuite {
+class OpenSCADTest extends AnyFunSuite {
 
   test("rendering a cube") {
     if (OpenSCAD.isPresent) {

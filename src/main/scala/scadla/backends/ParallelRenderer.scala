@@ -26,7 +26,7 @@ class ParallelRendererAux[A >: Null](renderer: RendererAux[A], unit: LengthUnit 
         res = renderer.shape(s)
         true
       }
-      protected def setRawResult(p: A) { res = p }
+      protected def setRawResult(p: A): Unit = { res = p }
       protected def getRawResult = res
     }
 
@@ -36,7 +36,7 @@ class ParallelRendererAux[A >: Null](renderer: RendererAux[A], unit: LengthUnit 
         res = renderer.operation(o, args.map(_.join))
         true
       }
-      protected def setRawResult(p: A) { res = p }
+      protected def setRawResult(p: A): Unit = { res = p }
       protected def getRawResult = res
     }
 
@@ -46,7 +46,7 @@ class ParallelRendererAux[A >: Null](renderer: RendererAux[A], unit: LengthUnit 
         res = renderer.transform(t, arg.join)
         true
       }
-      protected def setRawResult(p: A) { res = p }
+      protected def setRawResult(p: A): Unit = { res = p }
       protected def getRawResult = res
     }
 

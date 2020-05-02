@@ -147,7 +147,7 @@ class Gimbal(
     }
   }
   
-  def printDimensions {
+  def printDimensions: Unit = {
     Console.println(
       "outer length: " + length + "\n" +
       "outer width: " + width + "\n" +

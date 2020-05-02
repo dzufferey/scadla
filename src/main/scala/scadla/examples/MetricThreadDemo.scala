@@ -51,7 +51,7 @@ object MetricThreadDemo {
     //m.screwThreadIsoInner( 8, 6)
   }
   
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     //val obj = test
     val obj = demo
     //render and display the wheel

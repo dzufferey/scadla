@@ -1,9 +1,9 @@
 package scadla
 
-import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 import EverythingIsIn.millimeters
 
-class SolidTest extends FunSuite {
+class SolidTest extends AnyFunSuite {
 
   test("trace test") {
     val c = Cube(1,1,1)

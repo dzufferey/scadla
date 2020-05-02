@@ -45,7 +45,7 @@ object WhiteboardMarkerHolder {
     base ++ hooks + lip + lip.moveX((10 mm) + thickness + tolerance)
   }
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     val r = backends.Renderer.default
     r.toSTL(top.rotateX(Pi), "wbh_top.stl") // 1x
     r.toSTL(side, "wbh_side.stl")           // 2x

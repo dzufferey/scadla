@@ -11,7 +11,7 @@ object Main{
   //val r = backends.JCSG
   //val r = new backends.ParallelRenderer(backends.JCSG)
   
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
 
   //Spindle.objects.par.foreach{ case (name, obj) => 
   //  r.toSTL(obj, "spdl-" + name + ".stl")

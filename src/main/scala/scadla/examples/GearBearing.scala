@@ -25,7 +25,7 @@ object GearBearing {
                     helixAngleOuter, pressureAngle, centerHexagonMinRadius, backlash)
   }
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     //val gears = apply(35, 10, 5, 10, 15, 0.02, toRadians(40), 5, 0.1)
     val gears = apply(35, 10, 5, 6, 10, radiansPerMm(0.02), toRadians(60), 5, 0.1)
     backends.Renderer.default.view(gears.all)

@@ -61,7 +61,7 @@ sealed abstract class Assembly(name: String, children: List[(Frame,Joint,Assembl
   def expand(t: Length): Seq[(Frame,Polyhedron)] = expandAt(t, Seconds(0))
   
   //TODO immutable
-  def preRender(r: Renderer) {
+  def preRender(r: Renderer): Unit = {
     children.foreach( _._3.preRender(r) )
   }
     
@@ -117,7 +117,7 @@ case class SingletonAssembly(part: Part, children: List[(Frame,Joint,Assembly,Fr
 
   override def expandAt(e: Length, t: Time): Seq[(Frame,Polyhedron)] = super.expandAt(e, t) :+ (Frame() -> part.mesh)
 
-  override def preRender(r: Renderer) {
+  override def preRender(r: Renderer): Unit = {
     super.preRender(r)
     part.preRender(r)
   }

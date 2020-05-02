@@ -7,6 +7,7 @@ import InlineOps._
 import squants.space.{Length, Angle}
 import scala.language.postfixOps
 import squants.space.LengthConversions._
+import scala.collection.parallel.CollectionConverters._
 
 /** Some legs for the Reach3D printer */
 object ReachLegs {
@@ -106,7 +107,7 @@ object ReachLegs {
     base2 + vibrationDamper(20 mm).move(0 mm, beamLength - padWidth - 2*damperThickness, - padSpace)
   }
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     import scadla.EverythingIsIn.{millimeters, radians}
     Seq(
       leg1.rotateY(-Pi/2) -> "leg1a.stl",

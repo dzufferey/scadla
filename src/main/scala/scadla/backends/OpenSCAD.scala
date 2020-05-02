@@ -42,7 +42,7 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
     fold(decr, map, s)
   }
 
-  protected def printWithModules(obj: Solid, writer: BufferedWriter) {
+  protected def printWithModules(obj: Solid, writer: BufferedWriter): Unit = {
     var mult = getMultiplicity(obj)
     //println(mult.mkString("\n"))
     //utils.traverse( s => mult(s) > 0, obj)
@@ -154,7 +154,7 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
     }
     assert(mult(obj) == 1)
     prnt(obj, 0)
-    def printModules(printed: Set[String]) {
+    def printModules(printed: Set[String]): Unit = {
       modules.find{ case (_, name) => !printed(name) } match {
         case Some((obj, name)) =>
           writer.newLine // linter:ignore IdenticalStatements
@@ -186,7 +186,7 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
     spaces(n - 8)
   }
 
-  def print(obj: Solid, writer: BufferedWriter) {
+  def print(obj: Solid, writer: BufferedWriter): Unit = {
     for (h <- header) {
       writer.write(h)
       writer.newLine
@@ -212,7 +212,7 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
     writeInFile(file, obj)
   }
 
-  override def toSTL(obj: Solid, outputFile: String) {
+  override def toSTL(obj: Solid, outputFile: String): Unit = {
     toSTL(obj, outputFile, Nil)
   }
 

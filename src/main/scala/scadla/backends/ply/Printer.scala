@@ -13,7 +13,7 @@ object Printer extends Printer(Millimeters) {
 
 class Printer(unit: LengthUnit = Millimeters) {
 
-  def printHeader(writer: BufferedWriter, nbrVertex: Int, nbrFace: Int) {
+  def printHeader(writer: BufferedWriter, nbrVertex: Int, nbrFace: Int): Unit = {
     writer.write("ply"); writer.newLine
     writer.write("format ascii 1.0"); writer.newLine
     writer.write("element vertex " + nbrVertex); writer.newLine
@@ -31,7 +31,10 @@ class Printer(unit: LengthUnit = Millimeters) {
     try {
       printHeader(writer, points.length, faces.size)
       points.foreach{ p =>
-        writer.write(p.x.to(unit) + " " + p.y.to(unit) + " " + p.z.to(unit))
+        val x = p.x.to(unit)
+        val y = p.y.to(unit)
+        val z = p.z.to(unit)
+        writer.write(s"$x $y $z")
         writer.newLine
       }
       faces.foreach{ case (a,b,c) =>

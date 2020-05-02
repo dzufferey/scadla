@@ -1,10 +1,10 @@
 package scadla.utils
 
 import scadla._
-import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 import scadla.EverythingIsIn.{millimeters, radians}  
 
-class PackageTest extends FunSuite {
+class PackageTest extends AnyFunSuite {
 
   def incr(map: Map[Solid, Int], s: Solid) = {
     val mult = map.getOrElse(s, 0) + 1

@@ -16,7 +16,7 @@ final class Part(val name: String, val model: Solid, val printableModel: Option[
   var poly: Polyhedron = null
   var polyPrint: Polyhedron = null
 
-  def preRender(r: Renderer) {
+  def preRender(r: Renderer): Unit = {
     if (poly == null) {
       poly = r(model)
       polyPrint = printableModel.map(r(_)).getOrElse(poly)

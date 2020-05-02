@@ -7,6 +7,7 @@ import InlineOps._
 import squants.space.{Length, Angle}
 import scala.language.postfixOps
 import squants.space.LengthConversions._
+import scala.collection.parallel.CollectionConverters._
 
 class ComponentStorageBox(
     width: Length,

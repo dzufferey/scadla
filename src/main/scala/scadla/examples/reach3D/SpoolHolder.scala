@@ -8,6 +8,7 @@ import thread.{ISO, StructuralNutPlaceHolder}
 import squants.space.{Length, Angle}
 import scala.language.postfixOps
 import squants.space.LengthConversions._
+import scala.collection.parallel.CollectionConverters._
 
 object SpoolHolder {
 
@@ -109,7 +110,7 @@ object SpoolHolder {
   val conePart2 = cone * Cylinder(coneMaxRadius, radialBearingPos2 - radialBearingPos1 - (0.01 mm)).moveZ(radialBearingPos1 + (0.005 mm))
   val conePart3 = cone * Cylinder(coneMaxRadius, radialBearingPos1).moveZ(radialBearingPos2 + (0.005 mm))
   
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     //backends.Renderer.default.view(stem)
     Seq(
       stem -> "stem.stl",

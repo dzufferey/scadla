@@ -4,26 +4,25 @@ organization := "io.github.dzufferey"
 
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.12.7"
+scalaVersion := "2.13.1"
 
 scalacOptions in Compile ++= Seq(
-    //"-Xlog-implicits",
     "-unchecked",
     "-deprecation",
-    "-feature",
-    "-Xmax-classfile-name", "110"
+    "-feature"
 )
 
 libraryDependencies ++= Seq(
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.1",
-  "org.scala-lang.modules" %% "scala-xml" % "1.1.1",
-  "org.scalatest" %% "scalatest" % "3.0.5" % "test",
+  "org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
+  "org.scala-lang.modules" %% "scala-xml" % "1.2.0",
+  "org.scalatest" %% "scalatest" % "3.1.1" % "test",
   "io.github.dzufferey" %% "misc-scala-utils" % "0.1-SNAPSHOT",
   "eu.mihosoft.vrl.jcsg" % "jcsg" % "0.5.7",
-  "org.typelevel"  %% "squants"  % "1.3.0"
+  "org.typelevel"  %% "squants"  % "1.6.0"
 )
 
-addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.17")
+//addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.17")
 
 fork := true
 

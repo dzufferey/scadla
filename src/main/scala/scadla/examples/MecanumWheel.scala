@@ -105,7 +105,7 @@ class MecanumWheel(radius: Length, width: Length, angle: Angle, nbrRollers: Int)
   //  width == cos(angle)*rollerHeight + 2*sin(angle) * minR + 2*cos(angle)*mountThickness
   def rollerHeight = (width - 2*sin(angle.abs) * minR - 2*cos(angle.abs)*mountThickness) / cos(angle.abs)
 
-  def printParameters {
+  def printParameters: Unit = {
     Console.println("base parameters:")
     Console.println("  radius: " + radius)
     Console.println("  width: " + width)
@@ -227,7 +227,7 @@ class MecanumWheel(radius: Length, width: Length, angle: Angle, nbrRollers: Int)
 
 object MecanumWheel {
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     //a small version
     val r = 25 mm
     val w = 18 mm

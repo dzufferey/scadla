@@ -12,7 +12,7 @@ object MeshLab extends Viewer {
   
   def apply(file: File): SysCmd.ExecResult = apply(file.getPath)
   
-  def apply(obj: Polyhedron) {
+  def apply(obj: Polyhedron): Unit = {
     val tmpFile = java.io.File.createTempFile("scadlaModel", ".stl")
     stl.Printer.storeBinary(obj, tmpFile.getPath)
     apply(tmpFile)

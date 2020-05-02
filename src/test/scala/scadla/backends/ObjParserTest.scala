@@ -1,9 +1,9 @@
 package scadla.backends
 
 import scadla._
-import org.scalatest._
+import org.scalatest.funsuite.AnyFunSuite
 
-class ObjParserTest extends FunSuite {
+class ObjParserTest extends AnyFunSuite {
   
   import ParserTest._
 

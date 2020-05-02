@@ -7,7 +7,7 @@ import scadla.EverythingIsIn.millimeters
 
 object ExtrusionDemo {
 
-  def main(args: Array[String]) {
+  def main(args: Array[String]): Unit = {
     val r = scadla.backends.Renderer.default
     val objects = List(
       _2020(100),
