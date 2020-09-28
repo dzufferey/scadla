@@ -213,12 +213,10 @@ class MecanumWheel(radius: Length, width: Length, angle: Angle, nbrRollers: Int)
       (0 until nbrRollers).foldLeft(as)( (acc, i) => {
         val f1 = Frame(Vector(0,0,0,Millimeters), Quaternion.mkRotation(i * 2 * π / nbrRollers, Vector(0,0,1,Millimeters)))
         val frame = f0.compose(f1)
-        acc + (frame, jt, c, w)
+        acc.+(frame, jt, c, w)
       })
     }
-    val asmbl1 = asmbl0 +
-                (Joint.fixed(0,0,-1,Millimeters), lowerP) +
-                (Joint.fixed(0,0, 1,Millimeters), upperP)
+    val asmbl1 = asmbl0.+(Joint.fixed(0,0,-1,Millimeters), lowerP).+(Joint.fixed(0,0, 1,Millimeters), upperP)
     val asmbl2 = place(asmbl1, rollerP, Vector(0,0,-rollerHeight/2,Millimeters))
     place(asmbl2, axle, Vector(0,0, -axleHeight.toMillimeters, Millimeters))
   }

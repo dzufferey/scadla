@@ -16,37 +16,37 @@ sealed abstract class Assembly(name: String, children: List[(Frame,Joint,Assembl
   }
 
   protected def addChild(where: Frame, joint: Joint, child: Assembly, whereChild: Frame): Assembly
-  
+
 
   def +(where: Frame, joint: Joint, child: Assembly, whereChild: Frame): Assembly = {
     assert(child.checkNotInChildren(Set(this)))
     addChild(where, joint, child, whereChild.inverse)
   }
-  
+
   def +(where: Vector, joint: Joint, child: Assembly, whereChild: Frame): Assembly =
-    this + (Frame(where), joint, child, whereChild)
+    this.+(Frame(where), joint, child, whereChild)
 
   def +(joint: Joint, child: Assembly, whereChild: Frame): Assembly =
-    this + (Frame(), joint, child, whereChild)
-  
+    this.+(Frame(), joint, child, whereChild)
+
   def +(where: Frame, joint: Joint, child: Assembly, whereChild: Vector): Assembly =
-    this + (where, joint, child, Frame(whereChild))
-  
+    this.+(where, joint, child, Frame(whereChild))
+
   def +(where: Vector, joint: Joint, child: Assembly, whereChild: Vector): Assembly =
-    this + (Frame(where), joint, child, Frame(whereChild))
+    this.+(Frame(where), joint, child, Frame(whereChild))
 
   def +(joint: Joint, child: Assembly, whereChild: Vector): Assembly =
-    this + (Frame(), joint, child, Frame(whereChild))
+    this.+(Frame(), joint, child, Frame(whereChild))
 
   def +(where: Frame, joint: Joint, child: Assembly): Assembly =
-    this + (where, joint, child, Frame())
+    this.+(where, joint, child, Frame())
 
   def +(where: Vector, joint: Joint, child: Assembly): Assembly =
-    this + (Frame(where), joint, child, Frame())
+    this.+(Frame(where), joint, child, Frame())
 
   def +(joint: Joint, child: Assembly): Assembly =
-    this + (Frame(), joint, child, Frame())
-  
+    this.+(Frame(), joint, child, Frame())
+
   def expandAt(expansion: Length, time: Time): Seq[(Frame,Polyhedron)] = {
     children.flatMap{ case (f1, j, c, f3) =>
       val f2 = j.expandAt(expansion, time)
@@ -59,12 +59,12 @@ sealed abstract class Assembly(name: String, children: List[(Frame,Joint,Assembl
   def at(t: Time): Seq[(Frame,Polyhedron)] = expandAt(Millimeters(0), t)
 
   def expand(t: Length): Seq[(Frame,Polyhedron)] = expandAt(t, Seconds(0))
-  
+
   //TODO immutable
   def preRender(r: Renderer): Unit = {
     children.foreach( _._3.preRender(r) )
   }
-    
+
   def parts: Set[Part] = {
     children.foldLeft(Set[Part]())( _ ++ _._3.parts )
   }
@@ -110,7 +110,7 @@ case class EmptyAssembly(name: String, children: List[(Frame,Joint,Assembly,Fram
 }
 
 case class SingletonAssembly(part: Part, children: List[(Frame,Joint,Assembly,Frame)]) extends Assembly(part.name, children) {
-  
+
   protected def addChild(where: Frame, joint: Joint, child: Assembly, whereChild: Frame): Assembly = {
     SingletonAssembly(part, (where, joint, child, whereChild) :: children)
   }
@@ -126,7 +126,7 @@ case class SingletonAssembly(part: Part, children: List[(Frame,Joint,Assembly,Fr
 
   override def bom = {
     val b = super.bom
-    b + (part -> (b.getOrElse(part, 0) + 1))
+    b.+(part -> (b.getOrElse(part, 0) + 1))
   }
 
 }
