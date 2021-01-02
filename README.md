@@ -40,11 +40,11 @@ For the moment, scadla uses
 
 ## Examples
 
-For examples, please look in the [example](src/main/scala/dzufferey/scadla/examples) folder.
+For examples, please look in the [example](src/main/scala/scadla/examples) folder.
 
-For a complete example, you can head to [MecanumWheel.scala](src/main/scala/dzufferey/scadla/examples/MecanumWheel.scala) for a parametric design of an omnidirectional wheel.
+For a complete example, you can head to [MecanumWheel.scala](src/main/scala/scadla/examples/MecanumWheel.scala) for a parametric design of an omnidirectional wheel.
 
-The primitives and CSG operations are defined in [Solid.scala](src/main/scala/dzufferey/scadla/Solid.scala).
+The primitives and CSG operations are defined in [Solid.scala](src/main/scala/scadla/Solid.scala).
 This gives you a basic verbose syntax.
 For instance, a cube written `cube([1,2,1])` in OpenSCAD is written `Cube(1 mm, 2 mm, 1 mm)` in scadla.
 Scadla has explicits units.
@@ -87,7 +87,7 @@ Beware, when using the implicit conversions as it can be unpredictable.
 
 Once, we have the description of the object we want to make, we need to evaluate the CSG tree to get a 3D model.
 We currently use OpenSCAD for that.
-See [OpenSCAD.scala](src/main/scala/dzufferey/scadla/backends/OpenSCAD.scala) for the details.
+See [OpenSCAD.scala](src/main/scala/scadla/backends/OpenSCAD.scala) for the details.
 
 Assuming that we the object we are interested in is stored in the `obj` variable.
 We can do a few things:
@@ -98,7 +98,7 @@ We can do a few things:
 By default, scadla will run openscad with `$fa=4; $fs=0.5;`, so complex designs can take a while to render.
 You can change that by giving the appropriate arguments to the different methods (see `OpenSCAD.scala` for the details)
 
-To run this example execute `sbt run` and select `dzufferey.scadla.examples.MecanumWheel`.
+To run this example execute `sbt run` and select `scadla.examples.MecanumWheel`.
 
 
 ## Compiling and Using it
@@ -114,8 +114,12 @@ $ sbt
 
 To try some examples execute `sbt run` and select one example.
 
-Currently scadla is not yet published in an online maven repository.
-If you want to use it in another project, run `sbt publishLocal` to make it available to other projects on the same machine. You can include it in your projects by adding `libraryDependencies += "io.github.dzufferey" %% "scadla" % "0.1-SNAPSHOT"` in your `build.sbt`.
+If you want to use it in another project, you need to add to your `build.sbt`:
+```
+resolvers += "jitpack" at "https://jitpack.io"
+
+libraryDependencies += "com.github.dzufferey" %% "scadla" % "0.1.0"
+```
 
 
 ## Contributors
