@@ -73,7 +73,7 @@ object BoundingBox {
     apply(newCorners)
   }
 
-  protected def remove(a: Box, b: Box) =
+  protected def remove(a: Box, b: Box) = {
     if (a.isEmpty || b.isEmpty) a
     else {
       val overlapX = a.x overlaps b.x
@@ -91,7 +91,7 @@ object BoundingBox {
       } else {
         a
       }
-
     }
+  }
 
 }

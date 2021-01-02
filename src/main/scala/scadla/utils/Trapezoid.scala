@@ -1,5 +1,5 @@
 package scadla.utils
-  
+
 import scadla._
 import squants.space.{Length, Angle, Millimeters, Radians}
 
@@ -46,7 +46,7 @@ object Trapezoid {
     )
     Polyhedron(faces)
   }
-  
+
   def apply(xTop: Length, xBottom: Length, y: Length, z: Length, skew: Angle = Radians(0.0)): Polyhedron = {
     val _x = (xTop, xBottom, skew)
     val _y = (y, y, Radians(0.0))

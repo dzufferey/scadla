@@ -21,7 +21,7 @@ class ComponentStorageBox(
   ) {
 
   val height = numberOfDrawers * (drawerHeight + gap) + 2 * wallThickness
-  
+
   val w2 = wallThickness * 2
   val w2g = w2 + gap
 

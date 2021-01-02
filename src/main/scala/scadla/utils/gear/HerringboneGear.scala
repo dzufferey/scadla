@@ -38,5 +38,5 @@ object HerringboneGear {
     }
     Polyhedron(stepped.faces.map( f => Face(turnPoint(f.p1), turnPoint(f.p2), turnPoint(f.p3)) ))
   }
-  
+
 }

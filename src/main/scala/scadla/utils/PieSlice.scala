@@ -1,5 +1,5 @@
 package scadla.utils
-  
+
 import scadla._
 import scadla.InlineOps._
 import scadla.utils.Trig._

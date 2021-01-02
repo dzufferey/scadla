@@ -37,7 +37,7 @@ object _2020 {
     )
     withInner - centerHole(length)
   }
-  
+
   def placeHolder(length: Length) = CenteredCube.xy(20, 20, length)
 
   def connector(plateThicknesss: Length,

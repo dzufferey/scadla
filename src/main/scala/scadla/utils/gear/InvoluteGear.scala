@@ -29,7 +29,7 @@ object InvoluteGear {
     val hulled = trajectory.sliding(2).map( l => if (l.size > 1) Hull(l:_*) else l.head ).toSeq
     Union(hulled:_*)
   }
-  
+
   /** Create a gear by carving the tooths along an involute curve.
    * The method to generate spur gear inspired by
    *  http://lcamtuf.coredump.cx/gcnc/ and
@@ -45,7 +45,7 @@ object InvoluteGear {
              nbrTeeth: Int,
              rackToothProfile: Solid) = {
     val negative = makeToothCarvingProfile(pitch, rackToothProfile)
-    
+
     val angle = Radians(Pi) / nbrTeeth //between tooths
     val negatives = for (i <- 0 until nbrTeeth) yield negative.rotateZ((2 * i) * angle)
 
@@ -75,12 +75,12 @@ object InvoluteGear {
     assert(dedenum.value > 0, "dedenum must be greater than 0")
     assert(nbrTeeth > 0, "number of tooths must be greater than 0")
     assert(pitch != 0.0, "pitch must be different from 0")
-    
+
     val angle = Pi / nbrTeeth //between tooths
     val effectivePitch = pitch.abs
     val toothWidth = effectivePitch * 2 * sin(angle/2) //TODO is that right or should we use the cordal value ?
-    val ad = if (pitch.value >= 0) addenum else dedenum 
-    val de = if (pitch.value >= 0) dedenum else addenum 
+    val ad = if (pitch.value >= 0) addenum else dedenum
+    val de = if (pitch.value >= 0) dedenum else addenum
     val rackTooth = Rack.tooth(toothWidth, pressureAngle, ad, de, height, backlash, skew)
 
     if (pitch == Millimeters(0)) {

@@ -1,5 +1,5 @@
 package scadla.utils
-  
+
 import scadla._
 import squants.space.Millimeters
 import squants.space.Length

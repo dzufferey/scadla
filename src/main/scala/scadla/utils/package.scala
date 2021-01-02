@@ -8,15 +8,15 @@ import scadla.InlineOps._
 package object utils {
 
   import scadla._
-  
+
   def polarCoordinates(x: Length, y: Length) = (Trig.hypot(x, y), Trig.atan2(y,x))
-  
+
   def traverse(f: Solid => Unit, s: Solid): Unit = s match {
     case t: Transform =>  traverse(f, t.child); f(t)
     case o: Operation => o.children.foreach(traverse(f, _)); f(o)
     case other => f(other)
   }
-  
+
   def map(f: Solid => Solid, s: Solid): Solid = s match {
     case o: Operation => f(o.setChildren(o.children.map(map(f, _))))
     case t: Transform => f(t.setChild(map(f, t.child)))
@@ -43,7 +43,7 @@ package object utils {
       case Rotate(Zero, y1, Zero, Rotate(Zero, y2, Zero, s2)) => Rotate(Zero, y1+y2, Zero, s2)
       case Rotate(Zero, Zero, z1, Rotate(Zero, Zero, z2, s2)) => Rotate(Zero, Zero, z1+z2, s2)
       case Scale(x1, y1, z1, Scale(x2, y2, z2, s2)) => Scale(x1*x2, y1*y2, z1*z2, s2)
-      
+
       //TODO flatten ops, reorganize according to com,assoc,...
       case Union(lst @ _*) =>
         val lst2 = lst.toSet - Empty

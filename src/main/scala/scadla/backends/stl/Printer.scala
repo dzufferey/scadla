@@ -66,13 +66,13 @@ class Printer(unit: LengthUnit = Millimeters) {
     try writeASCII(obj, writer)
     finally writer.close
   }
-  
+
   /*
   def storeBinary(obj: Polyhedron, fileName: String) = {
     val stream = new FileOutputStream(fileName)
     val chan = stream.getChannel
     val size = 84 + 50 * obj.faces.size
-    assert(size.toLong == 84l + 50l * obj.faces.size, "checking for overflow")
+    assert(size.toLong == 84L + 50L * obj.faces.size, "checking for overflow")
     val buffer = ByteBuffer.allocate(size)
     writeBinary(obj, buffer)
     buffer.flip

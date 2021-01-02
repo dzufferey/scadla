@@ -53,7 +53,7 @@ class NutPlaceHolder(tolerance: Length = 0.1 mm) {
   def apply(radius: Length) = {
     Hexagon(radius * factor + tolerance, factor * radius + tolerance)
   }
-  
+
   def minOuterRadius(innerRadius: Length) = factor * innerRadius + tolerance
   def maxOuterRadius(innerRadius: Length) = Hexagon.maxRadius(minOuterRadius(innerRadius)).toMillimeters
   def height(innerRadius: Length) = factor * innerRadius + tolerance

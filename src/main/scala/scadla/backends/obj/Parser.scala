@@ -59,7 +59,7 @@ class Parser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
   | "s" ~> (wholeNumber | ident) ^^^ Skip
   | comment ^^^ Skip
   )
-  
+
   def parseCmds: Parser[List[ObjCmd]] = rep(parseCmd)
 
   def apply(reader: java.io.Reader): Polyhedron = {
@@ -74,7 +74,7 @@ class Parser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
       Logger.logAndThrow("obj.Parser", dzufferey.utils.LogLevel.Error, "parsing error: " + result.toString)
     }
   }
-  
+
   def apply(fileName: String): Polyhedron = {
     val reader = new BufferedReader(new FileReader(fileName))
     apply(reader)

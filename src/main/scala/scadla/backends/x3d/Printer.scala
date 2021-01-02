@@ -67,7 +67,7 @@ class Printer(unit: LengthUnit = Millimeters) {
       writeLine("</X3D>")
     }
   }
-  
+
   def store(obj: Polyhedron, fileName: String) = {
     val writer = new BufferedWriter(new FileWriter(fileName))
     try write(obj, writer)

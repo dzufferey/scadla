@@ -7,7 +7,6 @@ import squants.space.{Angle, Radians, Length}
 
 object HelicalGear {
 
-  
   /** Create an helical gear by twisting an spur gear.
    * the following tranform is applied:
    *   x′ = x * cos(helixAngle * z) - y * sin(helixAngle * z)
@@ -42,5 +41,5 @@ object HelicalGear {
     }
     Polyhedron(stepped.faces.map( f => Face(turnPoint(f.p1), turnPoint(f.p2), turnPoint(f.p3)) ))
   }
-  
+
 }

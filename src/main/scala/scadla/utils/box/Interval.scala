@@ -21,7 +21,7 @@ case class Interval(min: Length, max: Length) {
   def overlaps(i: Interval) =
     isEmpty || i.isEmpty ||
     (min <= i.max && i.min <= max)
-  
+
   def center = (max - min) / 2
 
   def move(x: Length) =
@@ -40,7 +40,7 @@ case class Interval(min: Length, max: Length) {
 
   def hull(b: Interval) =
     if (isEmpty) b
-    else if (b.isEmpty) this 
+    else if (b.isEmpty) this
     else Interval(min.min(b.min), max.max(b.max))
 
   // hull(this \ b)

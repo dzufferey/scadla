@@ -20,7 +20,7 @@ object Trig {
   def atan(d: Double) = Radians(math.atan(d))
 
   def atan2(y: Length, x: Length) = Radians(math.atan2(y.toMillimeters, x.toMillimeters))
-  
+
   def hypot(x: Length, y: Length) = Millimeters(math.hypot(y.toMillimeters, x.toMillimeters))
 
 }

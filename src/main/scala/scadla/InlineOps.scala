@@ -7,7 +7,7 @@ import squants.space.Angle
 import squants.space.Degrees
 
 object InlineOps {
-  
+
   implicit final class AngleConversions[A](n: A)(implicit num: Numeric[A]) {
     def ° = Degrees(n)
   }
@@ -55,4 +55,5 @@ object InlineOps {
     def toPolyhedron = backends.Renderer.default(lhs) //TODO a way of being lazy
 
   }
+
 }

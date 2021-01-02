@@ -1,5 +1,5 @@
 package scadla.utils.gear
-  
+
 import scadla._
 import scadla.InlineOps._
 import scala.math._
@@ -30,10 +30,10 @@ object Gear {
 
   /** default value for the addenum given the pitch and the number of teeth */
   def addenum(pitch: Length, nbrTeeth: Int) = pitch.abs * 2 / nbrTeeth
-  
+
   /** suggested value for the pitch given the number of teeth and the addenum */
   def pitch(nbrTeeth: Int, addenum: Length) = addenum / 2 * nbrTeeth
-  
+
   /** aprroximative value for the number of teeth given the pitch and the addenum */
   def approxNbrTeeth(pitch: Length, addenum: Length) = pitch / addenum * 2
 
@@ -44,7 +44,7 @@ object Gear {
     val add = addenum( pitch, nbrTeeth)
     InvoluteGear(pitch, nbrTeeth, toRadians(25), add, add, height, backlash)
   }
-  
+
   /** Simplified interface for helical gear (try to guess some parameters)
    *  Typical helix is 0.05
    *  To mesh gears of different sizes, the pitch/nbrTeeth and pitch/helix ratio must be the same for all the gears.
@@ -53,7 +53,7 @@ object Gear {
     val add = addenum( pitch, nbrTeeth)
     HelicalGear(pitch, nbrTeeth, toRadians(25), add, add, height, helix, backlash)
   }
-  
+
   /** simplified interface for herringbone gear (try to guess some parameters)
    *  To mesh gears of different sizes, the pitch/nbrTeeth and pitch/helix ratio must be the same for all the gears.
    */
@@ -61,16 +61,16 @@ object Gear {
     val add = addenum( pitch, nbrTeeth)
     HerringboneGear(pitch, nbrTeeth, toRadians(25), add, add, height, helix, backlash)
   }
-  
+
   /** Simplified interface for rack (try to guess some parameters).
    * TODO what needs to match for gears to mesh
    */
   def rack(toothWidth: Length, nbrTeeth: Int, height: Length, backlash: Length) = {
-    val add = toothWidth / 2 
+    val add = toothWidth / 2
     Rack(toothWidth, nbrTeeth, toRadians(25), add, add, height, backlash)
   }
-  
-  
+
+
   /* some examples
   def main(args: Array[String]) {
     val obj = spur(10, 12, 2, 0.1)

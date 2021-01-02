@@ -8,7 +8,7 @@ import scala.xml._
 import squants.space.{LengthUnit, Millimeters, Microns, Meters, Inches}
 
 object Parser {
-  
+
   def apply(fileName: String): Polyhedron = {
     val amf = XML.loadFile(fileName)
     val unit: LengthUnit = amf \@ "unit" match {

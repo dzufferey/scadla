@@ -3,7 +3,6 @@ package scadla.utils.extrusion
 import scadla._
 import scadla.InlineOps._
 import scadla.utils._
-import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.Length
 
 object U {

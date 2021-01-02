@@ -11,7 +11,7 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
   protected val command = "openscad"
 
   lazy val isPresent =
-    try SysCmd(Array(command, "-v"))._1 == 0 
+    try SysCmd(Array(command, "-v"))._1 == 0
     catch { case _: Throwable => false }
 
   override def isSupported(s: Solid): Boolean = s match {
@@ -31,7 +31,7 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
     }
     fold(incr, Map[Solid, Int](), s)
   }
-  
+
   protected def decreaseMultiplicity(map: Map[Solid, Int], s: Solid, n: Int): Map[Solid, Int] = {
     def decr(map: Map[Solid, Int], s2: Solid) = {
       val mult = map(s2) - n
@@ -170,7 +170,7 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
     }
     printModules(Set[String]())
   }
-  
+
   protected def spaces(n: Int)(implicit writer: BufferedWriter): Unit = n match {
     case 0 => ()
     case 1 => writer write " ";
@@ -193,7 +193,6 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
     }
     printWithModules(obj, writer)
   }
-  
 
   protected def writeInFile(file: java.io.File, obj: Solid) = {
     val writer = new BufferedWriter(new PrintWriter(file))

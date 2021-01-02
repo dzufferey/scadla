@@ -25,10 +25,10 @@ abstract class RendererAux[A](unit: LengthUnit = Millimeters) extends Renderer(u
 }
 
 class RendererAuxAdapter(r: Renderer) extends RendererAux[Polyhedron] {
-  
+
   def shape(s: Shape): Polyhedron = r(s)
   def operation(o: Operation, args: Seq[Polyhedron]) = r(o.setChildren(args))
   def transform(t: Transform, arg: Polyhedron) = r(t.setChild(arg))
-  
+
   def toMesh(aux: Polyhedron): Polyhedron = aux
 }

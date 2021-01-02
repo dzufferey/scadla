@@ -50,7 +50,7 @@ class JCSG(numSlices: Int, unit: LengthUnit = Millimeters) extends Renderer(unit
   protected def to(s: Solid): CSG = {
     import scala.language.implicitConversions
     implicit def toDouble(l: Length): Double = length2Double(l)
-    s match {  
+    s match {
     case Empty =>                                   empty
     case Cube(width, depth, height) =>              new JCube(Vector3d.xyz(width/2, depth/2, height/2), Vector3d.xyz(width, depth, height)).toCSG()
     case Sphere(radius) =>                          new JSphere(radius, numSlices, numSlices/2).toCSG()
@@ -81,7 +81,7 @@ class JCSG(numSlices: Int, unit: LengthUnit = Millimeters) extends Renderer(unit
     case Multiply(m, obj) =>            sys.error("JCSG does not support arbitrary matrix transform")
     }
   }
-  
+
   protected def polyToFaces(p: Polygon): List[Face] = {
     val vs = p.vertices.toArray(Array.ofDim[Vertex](p.vertices.size))
     val pts = vs.map( v => Point(unit(v.pos.x), unit(v.pos.y), unit(v.pos.z)))
@@ -98,7 +98,7 @@ class JCSG(numSlices: Int, unit: LengthUnit = Millimeters) extends Renderer(unit
     }
     Polyhedron(faces)
   }
-  
+
   def apply(obj: Solid): Polyhedron = obj match {
     case p @ Polyhedron(_) => p
     case other => from(to(other))

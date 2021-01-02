@@ -1,5 +1,5 @@
 package scadla.utils
-  
+
 import scadla._
 import scadla.InlineOps._
 import math._
@@ -30,7 +30,7 @@ object SpherePortion {
     )
     sliced
   }
-  
+
   def elevation(outerRadius: Length, innerRadius: Length,
                 elevationStart: Angle, elevationEnd: Angle,
                 azimut: Angle) = {

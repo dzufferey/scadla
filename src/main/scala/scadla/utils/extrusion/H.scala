@@ -9,7 +9,7 @@ import squants.space.LengthConversions._
 
 //actually: more like a double T
 object H {
-  
+
   /*
    *  ─ ┌───────┐
    *    └──┐ ┌──┘

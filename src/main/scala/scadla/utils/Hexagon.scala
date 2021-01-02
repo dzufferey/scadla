@@ -1,5 +1,5 @@
 package scadla.utils
-  
+
 import scadla._
 import InlineOps._
 import scala.math._
@@ -24,11 +24,11 @@ object Hexagon {
     } else {
       import scala.math._
       val rd0 = minRadius/sin(Pi/3)
-      
+
       val pts = for (i <- 0 until 6; j <- 0 to 1) yield
         Point(rd0 * cos(i * Pi/3), rd0 * sin(i * Pi/3), height * j) //linter:ignore ZeroDivideBy
       def face(a: Int, b: Int, c: Int) = Face(pts(a % 12), pts(b % 12), pts(c % 12))
-     
+
       val side1 = for (i <- 0 until 6) yield face(  2*i, 2*i+2, 2*i+3) //linter:ignore ZeroDivideBy
       val side2 = for (i <- 0 until 6) yield face(2*i+1,   2*i, 2*i+3) //linter:ignore ZeroDivideBy
       val bottom = Array(
@@ -47,7 +47,7 @@ object Hexagon {
       Polyhedron(faces)
     }
   }
-  
+
   /* Extrude vertically a semi-regular hexagon (centered at 0,0 with z from 0 to height)
    * @param radius1 the radius of the circle inscribed in the hexagon even faces
    * @param radius2 the radius of the circle inscribed in the hexagon odd faces

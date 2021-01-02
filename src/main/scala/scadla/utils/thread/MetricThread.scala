@@ -16,10 +16,10 @@ import squants.space.LengthConversions._
  * CC Public Domain
  */
 class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
-  
+
   /** Creates a thread with one rotation below z = 0 and one rotation above the number of rotations
    * a cylinder fills the thread, if icut &gt; 0, the valleys are stump
-   * 
+   *
    * @param ttn  number of rotations between 0 and ttn*st
    * @param st   thread pitch
    * @param sn   number of shapes per revolution ($fn)
@@ -120,13 +120,13 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
 
           if ( cs == -1 || cs == 2 ) Cylinder(ir, or, st/2)
           else Cylinder(or, st/2),
-          
+
           Translate(0 mm, 0 mm, lt-st/2,
             if ( cs == 1 || cs == 2 ) Cylinder(or, ir, st/2)
             else Cylinder(or, st/2)
           )
         ),
-        
+
         Cylinder(or-ocut, lt+st).moveZ(-st/2.0)
       )
     }
@@ -162,7 +162,7 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
     val ir = or - st/2*cos(lf0)/sin(lf0)
     // number of revolutions
     val ttn = math.ceil(lt/st).toInt + 1
-    
+
     assert(od > (0 mm), "outer diameter (od = "+od+") <= 0")
     assert(st > (0 mm), "thread pitch (st = "+st+") <= 0")
     assert(lf0 > (0°) && lf0 < (90°), "thread angle (fl0 = "+lf0+") not between 0 and π/2 (non-inclusive), try π/6!")
@@ -181,7 +181,7 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
   }
 
   /** Creates a hexagon head for a screw or a nut
-   * 
+   *
    * @param hg   height of the head
    * @param df   width across flat (take 0.1 less!)
    *
@@ -196,7 +196,7 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
   }
 
   /** Creates cones to cut from thread ends of a nut (for easier handling)
-   * 
+   *
    * @param chg  height of the cone
    * @param od   outer diameter of the thread
    * @param lf0  angle of the thread to cut (uses same angle for cones)
@@ -222,7 +222,7 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
   }
 
   /** Creates a nut
-   * 
+   *
    * @param df   width across flat (take 0.1 less!)
    * @param hg   height of the nut,
    * @param st   thread pitch
@@ -273,7 +273,7 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
 
     Union(
       hexHead(hg, df),
-         
+
       Translate(0 mm, 0 mm, hg,
         if ( ntl == (0 mm) ) Cylinder(ntr, 0.01 mm)
         else if ( ntd == (-1 mm) ) Cylinder(ntr, ntl+ (0.01 mm))
@@ -315,8 +315,8 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
     (64.0 mm) -> (6.0  mm)
   )
 
-  /** returns the width across flat (tool size) for an ISO M-Number (take 0.1 less!) */ 
-  val getIsoWaf = Map[Length, Length]( 
+  /** returns the width across flat (tool size) for an ISO M-Number (take 0.1 less!) */
+  val getIsoWaf = Map[Length, Length](
     ( 1.0 mm) -> ( 2.0 mm),
     ( 1.2 mm) -> ( 2.5 mm),
     ( 1.6 mm) -> ( 3.2 mm),
@@ -360,11 +360,11 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
     val st = getIsoPitch(d)
     // thread peak to thread peak (without cuts)
     val t = st*cos(Pi/6)
-    
+
     // ratio of (height of the 120 degree circle segment) and (its radius)
     // h/r = 2 sin(120°/4)^2 = 0.5
     // hfree_div_r = 0.5;
-    
+
     screwThread(
       d + t/8 - tolerance,
       st,
@@ -381,7 +381,7 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
   /** Creates an inner (nut) iso screw thread and it's filling according to the mode in parameter cs
    * the fillet in the valleys is not round but a flat.
    * it has the same depht as the lowest part of the round would have.
-   * 
+   *
    * it must be cut out of a solid
    *
    * @param d    ISO diameter M[od] (not radius!)
@@ -392,14 +392,14 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
   def screwThreadIsoInner(d: Length, lt: Length) = {
     // pitch
     val st = getIsoPitch(d)
-    
+
     // thread peak to thread peak (without cuts)
     val t = st*cos(Pi/6)
-    
+
     // ratio of (height of the 120 degree circle segment) and (its radius)
     // h/r = 2 sin(120°/4)^2 = 0.5
     // hfree_div_r = 0.5;
-    
+
     screwThread(
       d + t/8 + tolerance,
       st,
@@ -438,14 +438,14 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
   def hexScrewIso(d: Length, lt: Length, cs: Int, ntl: Length, ntd: Length, hg: Length) = {
     // pitch
     val st = getIsoPitch(d)
-    
+
     // thread peak to thread peak (without cuts)
     val t = st*cos(Pi/6)
-    
+
     // ratio of (height of the 120 degree circle segment) and (its radius)
     // h/r = 2 sin(120°/4)^2 = 0.5
     // hfree_div_r = 0.5;
-    
+
     hexScrew(
       d + t/8,
       st,
@@ -477,14 +477,14 @@ class MetricThread(tolerance: Length = 0.05 mm, fn: Int = 30) {
   def hexNutIso(d: Length, hg: Length) = {
     // pitch
     val st = getIsoPitch(d)
-    
+
     // thread peak to thread peak (without cuts)
     val t = st*cos(Pi/6)
-    
+
     // ratio of (height of the 120 degree circle segment) and (its radius)
     // h/r = 2 sin(120°/4)^2 = 0.5
     // hfree_div_r = 0.5;
-    
+
     hexNut(
       getIsoWaf(d) - (0.1 mm),
       hg,

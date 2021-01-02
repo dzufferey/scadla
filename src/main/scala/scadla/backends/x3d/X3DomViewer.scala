@@ -273,9 +273,9 @@ object X3DomViewer extends Viewer {
     Desktop.getDesktop().open(tmpFile)
     Thread.sleep(sleepTime * 1000)
   }
-  
+
   lazy val isPresent = {
     Desktop.isDesktopSupported && Desktop.getDesktop.isSupported(Desktop.Action.OPEN)
   }
-  
+
 }

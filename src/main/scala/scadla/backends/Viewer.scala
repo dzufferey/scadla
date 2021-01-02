@@ -7,7 +7,7 @@ import java.io._
 trait Viewer {
 
   def apply(obj: Polyhedron): Unit
-  
+
 }
 
 object Viewer {

@@ -1,12 +1,12 @@
 package scadla.utils.gear
-  
+
 import scadla._
 import scala.math._
 import squants.space.Length
 import squants.space.Millimeters
 
 object Involute {
-  
+
   // https://en.wikipedia.org/wiki/Involute
   // in cartesian form:
   //  x = r (cos(a) + a * sin(a))
@@ -22,7 +22,7 @@ object Involute {
   def y(radius: Length, phase: Double, theta: Double): Length = {
     radius * (sin(theta) - (theta - phase) * cos(theta))
   }
-  
+
   def x(radius: Length, theta: Double): Length = x(radius, 0, theta)
   def y(radius: Length, theta: Double): Length = y(radius, 0, theta)
 
@@ -70,9 +70,9 @@ object Involute {
     val faces = topBot ++ ext
     Polyhedron(faces)
   }
-  
+
   def apply(radius: Length, start: Double, end: Double, height: Length): Polyhedron = {
     apply(radius, 0, start, end, height, 0.1)
   }
-    
+
 }

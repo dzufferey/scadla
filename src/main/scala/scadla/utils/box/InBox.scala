@@ -55,12 +55,12 @@ object InBox {
       Logger("InBox", Warning, "TODO improve InBox(Hull)")
       apply(Union(lst:_*))
   }
-  
+
   protected def multiply(b: Box, m: Matrix) = {
     Logger("InBox", Warning, "TODO InBox.multiply")
     Box.empty
   }
-  
+
   protected def remove(a: Interval, b: Interval): Interval =
     if (a.isEmpty || b.isEmpty || a.max <= b.min || a.min >= b.max) a
     else if (b contains a) Interval.empty

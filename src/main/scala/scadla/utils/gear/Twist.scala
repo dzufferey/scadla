@@ -12,11 +12,10 @@ import squants.space.Millimeters
 case class Twist(angle: Angle, increment: Length) {
   def * (d: Double) = Twist(angle * d, increment)
   def / (d: Double) = Twist(angle / d, increment)
-  def unary_-() = Twist(-angle, increment)
+  def unary_- = Twist(-angle, increment)
 }
 
 object Twist {
   def apply(pitch: Length): Twist = Twist(Degrees(360), pitch)
-  
   def radiansPerMm(value: Double): Twist = Twist(Radians(value), Millimeters(1))
 }

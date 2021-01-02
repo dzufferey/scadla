@@ -23,7 +23,7 @@ object Rack {
     val tHeight = addenum + dedenum + backlash
     Trapezoid(tip, base, height, tHeight, skew).rotateX(Radians(Pi/2)).move(-base/2 + addenum*tan(skew.toRadians), addenum, Millimeters(0)).rotateZ(Radians(-Pi/2))
   }
-  
+
   /** Create an involute spur gear.
    * @param toothWidth the width of a tooth
    * @param nbrTeeth the number of tooth in the gear

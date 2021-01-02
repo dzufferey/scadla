@@ -11,7 +11,7 @@ case class Box(x: Interval, y: Interval, z: Interval) {
     x.contains(p.x) &&
     y.contains(p.y) &&
     z.contains(p.z)
-  
+
   def contains(b: Box) =
     x.contains(b.x) &&
     y.contains(b.y) &&

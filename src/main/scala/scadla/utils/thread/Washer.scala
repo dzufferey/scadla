@@ -11,11 +11,11 @@ object Washer {
   def apply(innerDiameter: Length, outerDiameter: Length, thickness: Length) = {
     Tube(outerDiameter/2, innerDiameter/2, thickness)
   }
-  
+
   def metric(innerDiameter: Double, outerDiameter: Double, thickness: Double) = {
     apply(innerDiameter mm, outerDiameter mm, thickness mm)
   }
-  
+
   def imperial(innerDiameter: Double, outerDiameter: Double, thickness: Double) = {
     apply(innerDiameter inches, outerDiameter inches, thickness inches)
   }
