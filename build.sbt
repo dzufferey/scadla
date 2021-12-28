@@ -2,11 +2,11 @@ name := "scadla"
 
 organization := "com.github.dzufferey"
 
-version := "0.1.0"
+version := "0.1.1"
 
-scalaVersion := "2.13.4"
+scalaVersion := "2.13.6"
 
-scalacOptions in Compile ++= Seq(
+scalacOptions ++= Seq(
     "-unchecked",
     "-deprecation",
     "-feature"
@@ -15,13 +15,14 @@ scalacOptions in Compile ++= Seq(
 resolvers += "jitpack" at "https://jitpack.io"
 
 libraryDependencies ++= Seq(
-  "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.0",
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2",
-  "org.scala-lang.modules" %% "scala-xml" % "1.3.0",
-  "org.scalatest" %% "scalatest" % "3.2.2" % "test",
+  "org.scala-lang.modules" %% "scala-parallel-collections" % "1.0.3",
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "2.0.0",
+  "org.scala-lang.modules" %% "scala-xml" % "2.0.1",
+  "org.scalatest" %% "scalatest" % "3.2.5" % "test",
   "com.github.dzufferey" %% "misc-scala-utils" % "1.0.0",
+  "com.github.dzufferey" %% "almond-x3dom-model-viewer" % "0.2.3",
   "eu.mihosoft.vrl.jcsg" % "jcsg" % "0.5.7",
-  "org.typelevel"  %% "squants"  % "1.7.0"
+  "org.typelevel"  %% "squants"  % "1.8.1"
 )
 
 fork := true

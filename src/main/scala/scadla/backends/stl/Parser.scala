@@ -8,7 +8,7 @@ import java.io._
 import squants.space.{Length, Millimeters, LengthUnit, SquareMeters}
 
 class AsciiParser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
-  
+
   def parseVertex: Parser[Point] =
     "vertex" ~> repN(3, floatingPointNumber) ^^ {
       case List(a, b,c) => Point(unit(a.toDouble), unit(b.toDouble), unit(c.toDouble))
@@ -77,7 +77,7 @@ class BinaryParser(unit: LengthUnit = Millimeters) {
       buffer.position(buffer.position() + 2) //skip attributes
       Parser.checkNormal(Face(p1, p2, p3), n)
     }
-    Polyhedron(triangles)       
+    Polyhedron(triangles)
   }
 
 }

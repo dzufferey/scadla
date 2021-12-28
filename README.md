@@ -118,8 +118,14 @@ If you want to use it in another project, you need to add to your `build.sbt`:
 ```
 resolvers += "jitpack" at "https://jitpack.io"
 
-libraryDependencies += "com.github.dzufferey" %% "scadla" % "0.1.0"
+libraryDependencies += "com.github.dzufferey" %% "scadla" % "0.1.1"
 ```
+
+## JupyterLab
+
+It is possible to use scadla with [JupyterLab](https://jupyter.org/index.html).
+First you need to install [Almond](https://almond.sh/).
+Then, look in [sample.ipynb](doc/sample.ipynb) to see how it work.
 
 
 ## Contributors

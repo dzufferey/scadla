@@ -27,7 +27,7 @@ class ParallelRendererAux[A >: Null](renderer: RendererAux[A], unit: LengthUnit 
         true
       }
       protected def setRawResult(p: A): Unit = { res = p }
-      protected def getRawResult = res
+      def getRawResult = res
     }
 
   def operation(o: Operation, args: Seq[ForkJoinTask[A]]) = new ForkJoinTask[A] {
@@ -37,7 +37,7 @@ class ParallelRendererAux[A >: Null](renderer: RendererAux[A], unit: LengthUnit 
         true
       }
       protected def setRawResult(p: A): Unit = { res = p }
-      protected def getRawResult = res
+      def getRawResult = res
     }
 
   def transform(t: Transform, arg: ForkJoinTask[A]) = new ForkJoinTask[A] {
@@ -47,7 +47,7 @@ class ParallelRendererAux[A >: Null](renderer: RendererAux[A], unit: LengthUnit 
         true
       }
       protected def setRawResult(p: A): Unit = { res = p }
-      protected def getRawResult = res
+      def getRawResult = res
     }
 
   def toMesh(t: ForkJoinTask[A]) = renderer.toMesh(t.join)

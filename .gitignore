@@ -20,3 +20,4 @@ project/build.properties
 
 # others
 clean.sh
+doc/.ipynb_checkpoints/

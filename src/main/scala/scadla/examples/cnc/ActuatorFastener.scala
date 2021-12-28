@@ -6,7 +6,7 @@ import utils._
 import InlineOps._
 import thread._
 import Common._
-import scadla.EverythingIsIn.{millimeters, radians}  
+import scadla.EverythingIsIn.{millimeters, radians}
 
 // dX, dZ are given from the center of the extrusion
 class ActuatorFasterner(dX: Double, dZ: Double) {
@@ -22,7 +22,7 @@ class ActuatorFasterner(dX: Double, dZ: Double) {
   var thread = ISO.M3
   var beamConnectorRounding = 2
   var nbrScrewsPerSide = 2
-  
+
   def beamConnector = {
     val guide = Trapezoid(4.5, 6.5, supportLength, guideDepth, -0.2)
     val faceBlank = Union(

@@ -192,12 +192,15 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
       writer.newLine
     }
     printWithModules(obj, writer)
+    writer.flush
   }
 
   protected def writeInFile(file: java.io.File, obj: Solid) = {
-    val writer = new BufferedWriter(new PrintWriter(file))
+    val fw = new PrintWriter(file)
+    val writer = new BufferedWriter(fw)
     print(obj, writer)
     writer.close
+    fw.close
   }
 
   protected def toTmpFile(obj: Solid) = {
