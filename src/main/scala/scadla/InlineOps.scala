@@ -1,10 +1,10 @@
 package scadla
 
-import squants.space.Length
 import scala.language.postfixOps
-import squants.space.Millimeters
 import squants.space.Angle
 import squants.space.Degrees
+import squants.space.Length
+import squants.space.Millimeters
 
 object InlineOps {
 

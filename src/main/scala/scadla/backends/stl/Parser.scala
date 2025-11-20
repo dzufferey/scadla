@@ -11,7 +11,7 @@ class AsciiParser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
 
   def parseVertex: Parser[Point] =
     "vertex" ~> repN(3, floatingPointNumber) ^^ {
-      case List(a, b,c) => Point(unit(a.toDouble), unit(b.toDouble), unit(c.toDouble))
+      case List(a, b, c) => Point(unit(a.toDouble), unit(b.toDouble), unit(c.toDouble))
     }
 
   def parseFacet: Parser[Face] =

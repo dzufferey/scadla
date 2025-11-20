@@ -14,8 +14,9 @@ abstract class Solid {
    *  scadla.Solid.<init>
    *  scadla.Shape.<init>
    *  scadla.???.<init>
+   *  scadla.ABC.apply  (ABC is the case class)
    */
-  val trace = Thread.currentThread().getStackTrace().drop(4).toSeq
+  val trace = Thread.currentThread().getStackTrace().drop(5).toSeq
 
 }
 
