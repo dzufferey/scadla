@@ -29,8 +29,8 @@ class Parser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
 
   def parseVertex: Parser[Point] =
     "v" ~> repN(3, floatingPointNumber) ~ opt(floatingPointNumber) ^^ {
-      case List(a, b,c) ~ None => Point(Millimeters(a.toDouble), Millimeters(b.toDouble), Millimeters(c.toDouble))
-      case List(a, b,c) ~ Some(w) => Point(Millimeters(a.toDouble / w.toDouble), Millimeters(b.toDouble / w.toDouble), Millimeters(c.toDouble / w.toDouble))
+      case List(a, b, c) ~ None => Point(Millimeters(a.toDouble), Millimeters(b.toDouble), Millimeters(c.toDouble))
+      case List(a, b, c) ~ Some(w) => Point(Millimeters(a.toDouble / w.toDouble), Millimeters(b.toDouble / w.toDouble), Millimeters(c.toDouble / w.toDouble))
     }
 
 

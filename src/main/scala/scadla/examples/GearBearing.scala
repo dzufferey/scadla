@@ -46,7 +46,7 @@ class GearBearing(val outerRadius: Double,
   //play with addenum to allow pressureAngle > 45 degree
   protected def addenum(pitch: Double, nbrTeeth: Int) = {
     val default = Gear.addenum( pitch, nbrTeeth)
-    val toothWidth = pitch.abs * 2 * sin(Pi/nbrTeeth/2)
+    val toothWidth = abs(pitch) * 2 * sin(Pi/nbrTeeth/2)
     val coeff = min(1.0, toothWidth / 2 / default / tan(pressureAngle))
     //println("coeff " + coeff)
     default * coeff

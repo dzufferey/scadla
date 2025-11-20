@@ -74,7 +74,7 @@ object InvoluteGear {
     assert(addenum.value > 0, "addenum must be greater than 0")
     assert(dedenum.value > 0, "dedenum must be greater than 0")
     assert(nbrTeeth > 0, "number of tooths must be greater than 0")
-    assert(pitch != 0.0, "pitch must be different from 0")
+    assert(pitch.value != 0.0, "pitch must be different from 0")
 
     val angle = Pi / nbrTeeth //between tooths
     val effectivePitch = pitch.abs
