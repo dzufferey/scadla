@@ -1,9 +1,9 @@
 package scadla.utils.box
 
-import scadla._
-import scala.math._
+import scadla.*
+import scala.math.*
 import dzufferey.utils.Logger
-import dzufferey.utils.LogLevel._
+import dzufferey.utils.LogLevel.*
 import squants.space.Millimeters
 
 object InBox {

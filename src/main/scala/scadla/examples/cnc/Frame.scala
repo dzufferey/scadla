@@ -1,11 +1,11 @@
 package scadla.examples.cnc
 
-import scadla._
-import scadla.InlineOps._
-import scadla.utils._
-import scala.math._
-import scadla.utils.extrusion._
-import Common._
+import scadla.*
+import scadla.InlineOps.*
+import scadla.utils.*
+import scala.math.*
+import scadla.utils.extrusion.*
+import Common.*
 import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.Millimeters
 

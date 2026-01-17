@@ -1,10 +1,10 @@
 package scadla.backends.stl
 
-import scadla._
-import scala.util.parsing.combinator._
-import dzufferey.utils._
-import dzufferey.utils.LogLevel._
-import java.io._
+import scadla.*
+import scala.util.parsing.combinator.*
+import dzufferey.utils.*
+import dzufferey.utils.LogLevel.*
+import java.io.*
 import squants.space.{Length, Millimeters, LengthUnit, SquareMeters}
 
 class AsciiParser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
@@ -12,6 +12,7 @@ class AsciiParser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
   def parseVertex: Parser[Point] =
     "vertex" ~> repN(3, floatingPointNumber) ^^ {
       case List(a, b, c) => Point(unit(a.toDouble), unit(b.toDouble), unit(c.toDouble))
+      case _ => sys.error("unreachable")
     }
 
   def parseFacet: Parser[Face] =
@@ -20,6 +21,7 @@ class AsciiParser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
         val n = Vector(nx.toDouble, ny.toDouble, nz.toDouble, unit)
         val f = Face(a, b, c)
         scadla.backends.stl.Parser.checkNormal(f, n)
+      case _ => sys.error("unreachable")
     }
 
   def parseSolid: Parser[Polyhedron] =

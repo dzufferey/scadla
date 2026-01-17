@@ -1,11 +1,11 @@
 package scadla.examples.cnc
 
-import math._
-import scadla._
-import utils._
-import InlineOps._
-import thread._
-import Common._
+import math.*
+import scadla.*
+import utils.*
+import InlineOps.*
+import thread.*
+import Common.*
 import scadla.EverythingIsIn.{millimeters, radians}
 
 // dX, dZ are given from the center of the extrusion

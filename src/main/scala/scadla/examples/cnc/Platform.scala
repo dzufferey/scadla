@@ -1,10 +1,10 @@
 package scadla.examples.cnc
 
-import scadla._
-import utils._
-import Trig._
-import InlineOps._
-import Common._
+import scadla.*
+import utils.*
+import Trig.*
+import InlineOps.*
+import Common.*
 import thread.ISO
 import squants.space.Length
 import scadla.EverythingIsIn.{millimeters, radians}  

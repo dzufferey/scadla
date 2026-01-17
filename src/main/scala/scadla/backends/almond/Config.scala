@@ -1,7 +1,7 @@
 package scadla.backends.almond
 
 import com.github.dzufferey.x3DomViewer.X3D
-import scalatags.Text.all._
+import scalatags.Text.all.*
 import squants.space.{Millimeters, LengthUnit}
 
 class Config extends com.github.dzufferey.x3DomViewer.Config {

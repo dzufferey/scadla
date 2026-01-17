@@ -1,8 +1,8 @@
 package scadla.examples
 
-import scadla._
-import scadla.InlineOps._
-import scadla.utils.extrusion._
+import scadla.*
+import scadla.InlineOps.*
+import scadla.utils.extrusion.*
 import scadla.EverythingIsIn.millimeters
 
 object ExtrusionDemo {

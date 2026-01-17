@@ -1,14 +1,14 @@
 package scadla.utils.extrusion
 
-import scadla._
-import scadla.InlineOps._
-import scadla.utils._
-import scadla.utils.thread._
-import scadla.utils.Trig._
+import scadla.*
+import scadla.InlineOps.*
+import scadla.utils.*
+import scadla.utils.thread.*
+import scadla.utils.Trig.*
 import scadla.EverythingIsIn.{millimeters, radians}
 import squants.space.Length
 import scala.language.postfixOps // for mm notation
-import squants.space.LengthConversions._ // for mm notation
+import squants.space.LengthConversions.* // for mm notation
 
 //place holder for 20x20mm aluminium extrusions
 object _2020 {

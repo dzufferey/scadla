@@ -1,9 +1,9 @@
 package scadla.backends.x3d
 
-import scadla._
+import scadla.*
 import scadla.backends.Viewer
 import dzufferey.utils.SysCmd
-import java.io._
+import java.io.*
 import java.awt.Desktop
 
 object X3DomViewer extends Viewer {

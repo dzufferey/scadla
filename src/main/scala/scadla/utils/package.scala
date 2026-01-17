@@ -1,13 +1,13 @@
 package scadla
 
-import scadla.utils.Trig._
+import scadla.utils.Trig.*
 import squants.space.{Length, Angle}
 import scala.language.postfixOps
-import scadla.InlineOps._
+import scadla.InlineOps.*
 
 package object utils {
 
-  import scadla._
+  import scadla.*
 
   def polarCoordinates(x: Length, y: Length) = (Trig.hypot(x, y), Trig.atan2(y,x))
 

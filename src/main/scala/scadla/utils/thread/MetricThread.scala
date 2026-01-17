@@ -1,12 +1,12 @@
 package scadla.utils.thread
 
-import scadla._
-import scadla.utils._
-import InlineOps._
-import Trig._
+import scadla.*
+import scadla.utils.*
+import InlineOps.*
+import Trig.*
 import squants.space.{Length, Angle}
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 /** Generate threaded rods, screws and nuts.
  * based on metric_iso_screw.scad by stth

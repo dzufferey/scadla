@@ -1,8 +1,8 @@
 package scadla.examples.cnc
 
-import scadla._
-import scadla.InlineOps._
-import scala.math._
+import scadla.*
+import scadla.InlineOps.*
+import scala.math.*
 
 object Main{
     

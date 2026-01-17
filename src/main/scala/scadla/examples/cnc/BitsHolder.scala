@@ -1,9 +1,9 @@
 package scadla.examples.cnc
 
-import math._
-import scadla._
-import utils._
-import InlineOps._
+import math.*
+import scadla.*
+import utils.*
+import InlineOps.*
 import scadla.EverythingIsIn.{millimeters, radians}  
 
 object BitsHolder {

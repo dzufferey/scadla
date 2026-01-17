@@ -1,9 +1,9 @@
 package scadla.utils.gear
 
-import scadla._
-import scadla.InlineOps._
-import scadla.utils._
-import scala.math._
+import scadla.*
+import scadla.InlineOps.*
+import scadla.utils.*
+import scala.math.*
 import squants.space.{Length, Radians, Millimeters, Angle}
 
 object Rack {

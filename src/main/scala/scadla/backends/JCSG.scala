@@ -1,9 +1,9 @@
 package scadla.backends
 
-import eu.mihosoft.jcsg.{Cube => JCube, Sphere => JSphere, Cylinder => JCylinder, Polyhedron => JPolyhedron, _}
+import eu.mihosoft.jcsg.{Cube as JCube, Sphere as JSphere, Cylinder as JCylinder, Polyhedron as JPolyhedron, *}
 import eu.mihosoft.vvecmath.{Vector3d, Transform, Plane}
-import scadla._
-import InlineOps._
+import scadla.*
+import InlineOps.*
 import java.util.ArrayList
 import squants.space.{Length, Millimeters, LengthUnit}
 

@@ -1,9 +1,9 @@
 package scadla.backends.obj
 
-import scadla._
-import dzufferey.utils._
-import dzufferey.utils.LogLevel._
-import java.io._
+import scadla.*
+import dzufferey.utils.*
+import dzufferey.utils.LogLevel.*
+import java.io.*
 import squants.space.{Length, Millimeters, LengthUnit}
 
 //TODO make parametric in terms of unit

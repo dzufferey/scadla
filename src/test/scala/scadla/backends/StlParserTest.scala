@@ -1,6 +1,6 @@
 package scadla.backends
 
-import scadla._
+import scadla.*
 import org.scalatest.funsuite.AnyFunSuite
 import squants.space.Millimeters
 
@@ -16,7 +16,7 @@ object ParserTest {
 
 class StlParserTest extends AnyFunSuite {
 
-  import ParserTest._
+  import ParserTest.*
 
   test("ascii stl") {
     checkCube(stl.Parser(path + "unit_cube_ascii.stl"))

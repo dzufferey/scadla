@@ -1,6 +1,6 @@
 package scadla.backends
 
-import scadla._
+import scadla.*
 import org.scalatest.funsuite.AnyFunSuite
 import scadla.EverythingIsIn.{millimeters, radians}
 
@@ -46,7 +46,7 @@ class OpenSCADTest extends AnyFunSuite {
 //}
 
 //test("rendering 2c") {
-//  import InlineOps._
+//  import InlineOps.*
 //  val c = Cube(1,1,1)
 //  val s = Sphere(1.5)
 //  val obj = (c + c.move( -0.5, -0.5, 0)) * s

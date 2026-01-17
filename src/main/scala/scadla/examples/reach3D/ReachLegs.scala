@@ -1,13 +1,13 @@
 package scadla.examples.reach3D
 
-import scadla._
-import utils._
-import Trig._
-import InlineOps._
+import scadla.*
+import utils.*
+import Trig.*
+import InlineOps.*
 import squants.space.{Length, Angle}
 import scala.language.postfixOps
-import squants.space.LengthConversions._
-import scala.collection.parallel.CollectionConverters._
+import squants.space.LengthConversions.*
+import scala.collection.parallel.CollectionConverters.*
 
 /** Some legs for the Reach3D printer */
 object ReachLegs {

@@ -1,9 +1,9 @@
 package scadla.examples
 
-import math._
-import scadla._
-import utils._
-import InlineOps._
+import math.*
+import scadla.*
+import utils.*
+import InlineOps.*
 
 /** An experiment to make belts with silicone and thread / small ropes.
  * @param length

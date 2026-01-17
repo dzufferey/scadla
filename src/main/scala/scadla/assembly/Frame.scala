@@ -1,6 +1,6 @@
 package scadla.assembly
 
-import scadla._
+import scadla.*
 import squants.space.Millimeters
 
 

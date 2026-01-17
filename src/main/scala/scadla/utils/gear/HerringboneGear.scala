@@ -1,8 +1,8 @@
 package scadla.utils.gear
 
-import scadla._
-import scadla.InlineOps._
-import scala.math._
+import scadla.*
+import scadla.InlineOps.*
+import scala.math.*
 import squants.space.{Length, Angle, Radians}
 
 object HerringboneGear {

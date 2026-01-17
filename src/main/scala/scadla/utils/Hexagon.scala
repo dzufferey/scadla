@@ -1,8 +1,8 @@
 package scadla.utils
 
-import scadla._
-import InlineOps._
-import scala.math._
+import scadla.*
+import InlineOps.*
+import scala.math.*
 import squants.space.Length
 import squants.space.Radians
 
@@ -22,7 +22,7 @@ object Hexagon {
     if (minRadius.value <= 0.0 || height.value <= 0.0) {
       Empty
     } else {
-      import scala.math._
+      import scala.math.*
       val rd0 = minRadius/sin(Pi/3)
 
       val pts = for (i <- 0 until 6; j <- 0 to 1) yield

@@ -69,7 +69,7 @@ val s = Sphere(1.5 mm)
 val u = Union(c, Translate(-0.5 mm, -0.5 mm, 0 mm, c))
 Intersection(u, s)
 ```
-Next, we can replace the operation with a less verbose syntax using `import InlineOps._`
+Next, we can replace the operation with a less verbose syntax using `import InlineOps.*`
 ```scala
 val c = Cube(1 mm, 1 mm, 1 mm)
 val s = Sphere(1.5 mm)
@@ -114,12 +114,14 @@ $ sbt
 
 To try some examples execute `sbt run` and select one example.
 
-If you want to use it in another project, you need to add to your `build.sbt`:
-```
-resolvers += "jitpack" at "https://jitpack.io"
+If you want to use it in another project, you need to either
+* add to your `build.sbt`:
+  ```
+  resolvers += "jitpack" at "https://jitpack.io"
 
-libraryDependencies += "com.github.dzufferey" %% "scadla" % "0.1.1"
-```
+  libraryDependencies += "com.github.dzufferey" %% "scadla" % "master-SNAPSHOT"
+  ```
+* run `sbt publishLocal` in this folder on the same machine you are building your project.
 
 ## JupyterLab
 
@@ -148,18 +150,8 @@ Features that may (or may not) be implemented, depending on time and motivation:
     The simplest is to "unseal" the `Solid` type.
     Is it possible to do better
 * implementation
-  - file format:
-    * PLY parser (this format is evil!!!)
   - `InBox: Polyhedron`: multiply, hull
   - object cache (speed-up recomputation)
-  - try VTK as backend
-    * [installation](http://www.vtk.org/Wiki/VTK/Configure_and_Build)
-    * how to decide whether or not to compile VTK: it cannot be resolved as a MVN dependency but only a a local one ...
-      - split the project into (1) core, (2) renderers, (3) examples
-    * [boolean operation](http://hdl.handle.net/10380/3262)
-    * [transform](http://www.vtk.org/doc/nightly/html/classvtkTransform.html)
-    * [convex hull](https://cmake.org/Wiki/VTK/Examples/Boneyard/Cxx/PolyData/ConvexHullDelaunay3D)
-    * minkowski sum ???
   - built-in model viewer
     * choosing window size according to screen size, and allow resizing
     * moving the point of view

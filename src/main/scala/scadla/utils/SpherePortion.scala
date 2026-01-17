@@ -1,8 +1,8 @@
 package scadla.utils
 
-import scadla._
-import scadla.InlineOps._
-import math._
+import scadla.*
+import scadla.InlineOps.*
+import math.*
 import squants.space.Length
 import squants.space.Millimeters
 import squants.space.Angle

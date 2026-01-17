@@ -1,11 +1,11 @@
 package scadla.examples.cnc
 
-import scadla._
-import utils._
-import InlineOps._
-import thread._
+import scadla.*
+import utils.*
+import InlineOps.*
+import thread.*
 import scala.language.postfixOps // for mm notation
-import squants.space.LengthConversions._ // for mm notation
+import squants.space.LengthConversions.* // for mm notation
 
 object Common {
   

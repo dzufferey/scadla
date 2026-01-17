@@ -1,11 +1,11 @@
 package scadla.utils
 
-import scadla._
-import scadla.InlineOps._
-import scadla.utils.Trig._
+import scadla.*
+import scadla.InlineOps.*
+import scadla.utils.Trig.*
 import squants.space.{Length, Angle}
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 object PieSlice {
 

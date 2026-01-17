@@ -1,12 +1,12 @@
 package scadla.examples.cnc
 
-import scadla._
-import scadla.InlineOps._
-import scadla.utils._
-import scala.math._
+import scadla.*
+import scadla.InlineOps.*
+import scadla.utils.*
+import scala.math.*
 import squants.space.Length
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 //TODO move that to the lib
 //place holder for NEMA stepper motors

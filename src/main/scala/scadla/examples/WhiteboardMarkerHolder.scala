@@ -1,12 +1,12 @@
 package scadla.examples
 
-import scadla._
-import utils._
-import Trig._
-import InlineOps._
+import scadla.*
+import utils.*
+import Trig.*
+import InlineOps.*
 import squants.space.{Length, Angle}
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 object WhiteboardMarkerHolder {
 

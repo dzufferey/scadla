@@ -1,7 +1,7 @@
 package scadla.utils.box
 
-import scadla._
-import scala.math._
+import scadla.*
+import scala.math.*
 import squants.space.Length
 import squants.space.Millimeters
 

@@ -1,6 +1,6 @@
 package scadla.utils
 
-import scadla._
+import scadla.*
 import squants.space.{Length, Angle, Millimeters, Radians}
 
 object Trapezoid {

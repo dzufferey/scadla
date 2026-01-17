@@ -1,6 +1,6 @@
 package scadla.utils.box
 
-import scadla._
+import scadla.*
 import squants.space.Length
 import squants.space.Millimeters
 

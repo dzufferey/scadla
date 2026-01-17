@@ -1,6 +1,6 @@
 package scadla.assembly
 
-import scadla._
+import scadla.*
 import scadla.backends.Renderer
 import scala.language.implicitConversions
 import squants.space.Length
