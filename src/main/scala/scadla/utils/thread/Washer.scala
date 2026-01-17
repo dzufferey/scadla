@@ -1,10 +1,10 @@
 package scadla.utils.thread
 
-import scadla._
-import scadla.utils._
+import scadla.*
+import scadla.utils.*
 import squants.space.Length
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 object Washer {
 

@@ -1,9 +1,9 @@
 package scadla.backends.amf
 
-import scadla._
-import dzufferey.utils._
-import dzufferey.utils.LogLevel._
-import scala.xml._
+import scadla.*
+import dzufferey.utils.*
+import dzufferey.utils.LogLevel.*
+import scala.xml.*
 import squants.space.{LengthUnit, Millimeters, Microns, Meters, Inches}
 
 object Printer extends Printer(Millimeters) {

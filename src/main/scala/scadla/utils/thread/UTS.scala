@@ -1,7 +1,7 @@
 package scadla.utils.thread
 
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 /* Radius of UTS imperial sizes. _x_y stands of x/y inches.*/
 object UTS {

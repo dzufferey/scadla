@@ -1,9 +1,9 @@
 package scadla.utils
 
-import scadla._
+import scadla.*
 import squants.space.Length
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 object RoundedCube {
 

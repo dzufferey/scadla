@@ -1,10 +1,10 @@
 package scadla.examples.cnc
 
-import math._
-import scadla._
-import utils._
-import InlineOps._
-import Common._
+import math.*
+import scadla.*
+import utils.*
+import InlineOps.*
+import Common.*
 import scadla.EverythingIsIn.{millimeters, radians}  
 
 object Pulley {

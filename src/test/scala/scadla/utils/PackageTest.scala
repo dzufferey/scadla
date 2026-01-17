@@ -1,6 +1,6 @@
 package scadla.utils
 
-import scadla._
+import scadla.*
 import org.scalatest.funsuite.AnyFunSuite
 import scadla.EverythingIsIn.{millimeters, radians}  
 

@@ -15,10 +15,10 @@ target/
 lib_managed/
 src_managed/
 project/boot/
-project/plugins/project/
-project/build.properties
+project/
+.metals/
+.bloop/
 
 # others
 clean.sh
 doc/.ipynb_checkpoints/
-.metals/

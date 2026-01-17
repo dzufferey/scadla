@@ -1,11 +1,11 @@
 package scadla.backends
 
-import scadla._
+import scadla.*
 import org.scalatest.funsuite.AnyFunSuite
 
 class ObjParserTest extends AnyFunSuite {
   
-  import ParserTest._
+  import ParserTest.*
 
   test("unit cube") {
     val cube = obj.Parser(path + "unit_cube.obj")

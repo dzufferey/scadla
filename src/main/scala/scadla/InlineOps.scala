@@ -13,7 +13,7 @@ object InlineOps {
   }
 
   implicit final class Ops(private val lhs: Solid) extends AnyVal {
-    import squants.space.LengthConversions._
+    import squants.space.LengthConversions.*
 
     def translate(x: Length, y: Length, z: Length) = Translate(x, y, z, lhs)
     def move(x: Length, y: Length, z: Length) = Translate(x, y, z, lhs)

@@ -1,8 +1,8 @@
 package scadla.backends
 
-import scadla._
+import scadla.*
 import dzufferey.utils.SysCmd
-import java.io._
+import java.io.*
 
 trait Viewer {
 

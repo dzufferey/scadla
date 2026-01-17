@@ -1,6 +1,6 @@
 package scadla.backends
 
-import scadla._
+import scadla.*
 import squants.space.{Length, Millimeters, LengthUnit}
 
 abstract class RendererAux[A](unit: LengthUnit = Millimeters) extends Renderer(unit) {

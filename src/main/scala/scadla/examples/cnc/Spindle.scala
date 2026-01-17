@@ -1,16 +1,16 @@
 package scadla.examples.cnc
 
-import scadla._
-import utils._
-import Trig._
-import utils.gear._
-import InlineOps._
-import thread._
-import Common._
+import scadla.*
+import utils.*
+import Trig.*
+import utils.gear.*
+import InlineOps.*
+import thread.*
+import Common.*
 import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.{Length, Angle, Degrees, Millimeters}
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 //parameters:
 //- thickness of structure

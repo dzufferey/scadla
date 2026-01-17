@@ -1,9 +1,9 @@
 package scadla.utils.gear
 
-import scadla._
-import scadla.InlineOps._
-import scadla.utils._
-import scala.math._
+import scadla.*
+import scadla.InlineOps.*
+import scadla.utils.*
+import scala.math.*
 import squants.space.Length
 import squants.space.Millimeters
 import squants.space.Angle

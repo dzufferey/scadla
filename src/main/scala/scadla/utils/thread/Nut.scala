@@ -1,12 +1,12 @@
 package scadla.utils.thread
 
-import scadla._
-import scadla.utils._
-import math._
-import InlineOps._
+import scadla.*
+import scadla.utils.*
+import math.*
+import InlineOps.*
 import squants.space.Length
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 object Nut {
 

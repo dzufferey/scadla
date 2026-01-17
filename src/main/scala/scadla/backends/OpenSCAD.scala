@@ -1,9 +1,9 @@
 package scadla.backends
 
-import scadla._
+import scadla.*
 import scadla.utils.fold
 import dzufferey.utils.SysCmd
-import java.io._
+import java.io.*
 import squants.space.{Length, Millimeters, LengthUnit}
 
 class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Renderer(unit) {

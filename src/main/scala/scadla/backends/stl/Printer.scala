@@ -1,9 +1,9 @@
 package scadla.backends.stl
 
-import scadla._
-import dzufferey.utils._
-import dzufferey.utils.LogLevel._
-import java.io._
+import scadla.*
+import dzufferey.utils.*
+import dzufferey.utils.LogLevel.*
+import java.io.*
 import java.nio.{ByteBuffer,ByteOrder}
 import java.nio.channels.FileChannel
 import squants.space.{LengthUnit, Millimeters}

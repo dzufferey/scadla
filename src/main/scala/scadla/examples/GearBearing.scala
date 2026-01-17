@@ -1,10 +1,10 @@
 package scadla.examples
 
-import math._
-import scadla._
-import utils._
-import utils.gear._
-import InlineOps._
+import math.*
+import scadla.*
+import utils.*
+import utils.gear.*
+import InlineOps.*
 import scadla.utils.gear.Twist.radiansPerMm
 import scadla.EverythingIsIn.{millimeters, radians}  
 

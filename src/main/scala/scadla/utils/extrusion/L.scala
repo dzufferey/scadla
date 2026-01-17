@@ -1,8 +1,8 @@
 package scadla.utils.extrusion
 
-import scadla._
-import scadla.InlineOps._
-import scadla.utils._
+import scadla.*
+import scadla.InlineOps.*
+import scadla.utils.*
 import squants.space.Length
 
 object L {

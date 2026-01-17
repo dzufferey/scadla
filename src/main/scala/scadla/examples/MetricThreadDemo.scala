@@ -1,11 +1,11 @@
 package scadla.example
 
-import scadla._
-import scadla.utils._
-import InlineOps._
-import scadla.utils.thread._
+import scadla.*
+import scadla.utils.*
+import InlineOps.*
+import scadla.utils.thread.*
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 object MetricThreadDemo {
 

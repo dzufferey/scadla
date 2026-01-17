@@ -1,7 +1,7 @@
 package scadla.backends
 
-import scadla._
-import java.io._
+import scadla.*
+import java.io.*
 import squants.space.{Millimeters, Length, LengthUnit}
 
 abstract class Renderer(unit: LengthUnit = Millimeters) {

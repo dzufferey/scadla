@@ -1,7 +1,7 @@
 package scadla.backends.x3d
 
-import scadla._
-import java.io._
+import scadla.*
+import java.io.*
 import java.util.Date
 import squants.space.{Length, Millimeters, LengthUnit}
 

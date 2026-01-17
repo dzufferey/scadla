@@ -1,6 +1,6 @@
 package scadla.backends
 
-import scadla._
+import scadla.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ForkJoinTask
 import squants.space.{Length, Millimeters, LengthUnit}

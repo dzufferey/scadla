@@ -1,10 +1,10 @@
 package scadla.backends.obj
 
-import scadla._
-import scala.util.parsing.combinator._
-import dzufferey.utils._
-import dzufferey.utils.LogLevel._
-import java.io._
+import scadla.*
+import scala.util.parsing.combinator.*
+import dzufferey.utils.*
+import dzufferey.utils.LogLevel.*
+import java.io.*
 import squants.space.{Length, Millimeters, LengthUnit}
 
 // https://en.wikipedia.org/wiki/Wavefront_.obj_file
@@ -31,6 +31,7 @@ class Parser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
     "v" ~> repN(3, floatingPointNumber) ~ opt(floatingPointNumber) ^^ {
       case List(a, b, c) ~ None => Point(Millimeters(a.toDouble), Millimeters(b.toDouble), Millimeters(c.toDouble))
       case List(a, b, c) ~ Some(w) => Point(Millimeters(a.toDouble / w.toDouble), Millimeters(b.toDouble / w.toDouble), Millimeters(c.toDouble / w.toDouble))
+      case _ => sys.error("unreachable")
     }
 
 
@@ -45,6 +46,7 @@ class Parser(unit: LengthUnit = Millimeters) extends JavaTokenParsers {
       case List(a, b,c) =>
         assert(a >= 0 && b >= 0 && c >= 0, "obj parser only supports absolute indices")
         FaceDef(a, b, c)
+      case _ => sys.error("unreachable")
     }
 
   def parseCmd: Parser[ObjCmd] = (

@@ -1,13 +1,13 @@
 package scadla.examples
 
-import scadla._
-import utils._
-import Trig._
-import InlineOps._
+import scadla.*
+import utils.*
+import Trig.*
+import InlineOps.*
 import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.{Length, Angle, Degrees, Millimeters}
 import scala.language.postfixOps // for mm notation
-import squants.space.LengthConversions._ // for mm notation
+import squants.space.LengthConversions.* // for mm notation
 
 /** A class for the small rollers in the mecanum wheel */
 class Roller(height: Length, maxOuterRadius: Length, minOuterRadius: Length, innerRadius: Length) {
@@ -198,7 +198,7 @@ class MecanumWheel(radius: Length, width: Length, angle: Angle, nbrRollers: Int)
   def assembled = Union(hub, rollers)
 
   def assembly = {
-    import scadla.assembly._
+    import scadla.assembly.*
     val rollerP = new Part("roller", roller.solid)
     val axleHeight = width / cos(angle)
     val axle = new Part("filament, 1.75mm", Cylinder(rollerAxleRadius2, axleHeight))

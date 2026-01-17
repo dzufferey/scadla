@@ -1,8 +1,8 @@
 package scadla.backends.almond
 
-import scadla._
-import com.github.dzufferey.x3DomViewer.X3D._
-import scalatags.Text.all._
+import scadla.*
+import com.github.dzufferey.x3DomViewer.X3D.*
+import scalatags.Text.all.*
 
 object Viewer { // does not extend the normal Viewer class as it needs to return a value
 

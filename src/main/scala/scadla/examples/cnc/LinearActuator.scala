@@ -1,18 +1,18 @@
 package scadla.examples.cnc
 
-import scadla._
-import utils._
-import utils.gear._
-import Trig._
-import InlineOps._
-import thread._
+import scadla.*
+import utils.*
+import utils.gear.*
+import Trig.*
+import InlineOps.*
+import thread.*
 import scadla.examples.GearBearing
-import Common._
+import Common.*
 import scadla.examples.reach3D.SpoolHolder
 import scadla.EverythingIsIn.{millimeters, radians}  
 import squants.space.{Length, Angle, Degrees, Millimeters}
 import scala.language.postfixOps
-import squants.space.LengthConversions._
+import squants.space.LengthConversions.*
 
 
 //TODO need to add some springy thing on one nut to reduce the backlash (preload)
