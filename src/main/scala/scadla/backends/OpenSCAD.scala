@@ -15,14 +15,14 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
     catch { case _: Throwable => false }
 
   override def isSupported(s: Solid): Boolean = s match {
-    case s: Shape => super.isSupported(s)
-    case t: Transform => isSupported(t.child)
-    case u @ Union(_) => u.children.forall(isSupported)
-    case i @ Intersection(_) => i.children.forall(isSupported)
-    case d @ Difference(_,_) => d.children.forall(isSupported)
-    case c @ Hull(_) => c.children.forall(isSupported)
-    case m @ Minkowski(_) => m.children.forall(isSupported)
-    case _ => false
+    case s: Shape             => super.isSupported(s)
+    case t: Transform         => isSupported(t.child)
+    case u @ Union(_)         => u.children.forall(isSupported)
+    case i @ Intersection(_)  => i.children.forall(isSupported)
+    case d @ Difference(_, _) => d.children.forall(isSupported)
+    case c @ Hull(_)          => c.children.forall(isSupported)
+    case m @ Minkowski(_)     => m.children.forall(isSupported)
+    case _                    => false
   }
   protected def getMultiplicity(s: Solid): Map[Solid, Int] = {
     def incr(map: Map[Solid, Int], s: Solid) = {
@@ -35,8 +35,8 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
   protected def decreaseMultiplicity(map: Map[Solid, Int], s: Solid, n: Int): Map[Solid, Int] = {
     def decr(map: Map[Solid, Int], s2: Solid) = {
       val mult = map(s2) - n
-      //TODO get to -1, something funny is going on ...
-      //assert(mult >= 0, "new mult = " + mult + " should be ≥ 0\nn = " + n + "\ns2 = "+s2+"\ns = "+s+").")
+      // TODO get to -1, something funny is going on ...
+      // assert(mult >= 0, "new mult = " + mult + " should be ≥ 0\nn = " + n + "\ns2 = "+s2+"\ns = "+s+").")
       map + (s2 -> mult)
     }
     fold(decr, map, s)
@@ -44,10 +44,10 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
 
   protected def printWithModules(obj: Solid, writer: BufferedWriter): Unit = {
     var mult = getMultiplicity(obj)
-    //println(mult.mkString("\n"))
-    //utils.traverse( s => mult(s) > 0, obj)
+    // println(mult.mkString("\n"))
+    // utils.traverse( s => mult(s) > 0, obj)
     var modules = Map[Solid, String]()
-    var cnt = 0
+    var cnt     = 0
     def prnt(obj: Solid, indent: Int): Unit = {
       if (modules.contains(obj)) {
         spaces(indent)(writer)
@@ -71,20 +71,26 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
         case Empty =>
           writer.newLine
         case Cube(width, depth, height) =>
-          writer.write("cube([ " + length2Double(width) + ", " + length2Double(depth) + ", " + length2Double(height) + "]);")
+          writer.write(f"cube([${length2Double(width)}, ${length2Double(depth)}, ${length2Double(height)}]);")
           writer.newLine
         case Sphere(radius) =>
-          writer.write("sphere( " + length2Double(radius) + ");")
+          writer.write(f"sphere(${length2Double(radius)});")
           writer.newLine
         case Cylinder(radiusBot, radiusTop, height) =>
-          writer.write("cylinder( r1 = " + length2Double(radiusBot) + ", r2 = " + length2Double(radiusTop) + ", h = " + length2Double(height) + ");")
+          writer.write(
+            f"cylinder(r1 = ${length2Double(radiusBot)}, r2 = ${length2Double(radiusTop)}, h = ${length2Double(height)});"
+          )
           writer.newLine
         case p @ Polyhedron(_) =>
-          val (indexedP,indexedF) = p.indexed
+          val (indexedP, indexedF) = p.indexed
           writer.write("polyhedron( points=[ ")
-          writer.write(indexedP.map(p => "["+ length2Double(p.x) +","+ length2Double(p.y) +","+ length2Double(p.z) +"]").mkString(", "))
+          writer.write(
+            indexedP
+              .map(p => f"[${length2Double(p.x)},${length2Double(p.y)},${length2Double(p.z)}]")
+              .mkString(", ")
+          )
           writer.write(" ], faces=[ ")
-          writer.write(indexedF.map{ case (a,b,c) => "["+a+","+b+","+c+"]" }.mkString(", "))
+          writer.write(indexedF.map { case (a, b, c) => f"[${a},${b},${c}]" }.mkString(", "))
           writer.write(" ]);")
           writer.newLine
         case FromFile(path, format) =>
@@ -92,74 +98,76 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
           writer.write(path)
           writer.write("\");")
           writer.newLine
-        //operations
+        // operations
         case Union(objs @ _*) =>
           writer.write("union(){")
           writer.newLine
-          objs.foreach(prnt(_, indent+2))
+          objs.foreach(prnt(_, indent + 2))
           spaces(indent)(writer)
           writer.write("}")
           writer.newLine
         case Intersection(objs @ _*) =>
           writer.write("intersection(){")
           writer.newLine
-          objs.foreach(prnt(_, indent+2))
+          objs.foreach(prnt(_, indent + 2))
           spaces(indent)(writer)
           writer.write("}")
           writer.newLine
         case Difference(pos, negs @ _*) =>
           writer.write("difference(){")
           writer.newLine
-          prnt(pos, indent+2)
-          negs.foreach(prnt(_, indent+2))
+          prnt(pos, indent + 2)
+          negs.foreach(prnt(_, indent + 2))
           spaces(indent)(writer)
           writer.write("}")
           writer.newLine
         case Minkowski(objs @ _*) =>
           writer.write("minkowski(){")
           writer.newLine
-          objs.foreach(prnt(_, indent+2))
+          objs.foreach(prnt(_, indent + 2))
           spaces(indent)(writer)
           writer.write("}")
           writer.newLine
         case Hull(objs @ _*) =>
           writer.write("hull(){")
           writer.newLine
-          objs.foreach(prnt(_, indent+2))
+          objs.foreach(prnt(_, indent + 2))
           spaces(indent)(writer)
           writer.write("}")
           writer.newLine
-        //transforms
+        // transforms
         case Scale(x, y, z, obj) =>
-          writer.write("scale(["+x+","+y+","+z+"])")
+          writer.write(f"scale([${x}, ${y}, ${z}])")
           writer.newLine
-          prnt(obj, indent+2)
+          prnt(obj, indent + 2)
         case Rotate(x, y, z, obj) =>
-          writer.write("rotate(["+x.toDegrees+","+y.toDegrees+","+z.toDegrees+"])")
+          writer.write(f"rotate([${x.toDegrees}, ${y.toDegrees}, ${z.toDegrees}])")
           writer.newLine
-          prnt(obj, indent+2)
+          prnt(obj, indent + 2)
         case Translate(x, y, z, obj) =>
-          writer.write("translate(["+length2Double(x)+","+length2Double(y)+","+length2Double(z)+"])")
+          writer.write(f"translate([${length2Double(x)}, ${length2Double(y)}, ${length2Double(z)}])")
           writer.newLine
-          prnt(obj, indent+2)
+          prnt(obj, indent + 2)
         case Mirror(x, y, z, obj) =>
-          writer.write("mirror(["+x+","+y+","+z+"])")
+          writer.write(f"mirror([${x}, ${y}, ${z}])")
           writer.newLine
-          prnt(obj, indent+2)
+          prnt(obj, indent + 2)
         case Multiply(m, obj) =>
-          writer.write("multmatrix([["+m.m00+","+m.m01+","+m.m02+","+m.m03+"],["+m.m10+","+m.m11+","+m.m12+","+m.m13+"],["+m.m20+","+m.m21+","+m.m22+","+m.m23+"],["+m.m30+","+m.m31+","+m.m32+","+m.m33+"],])")
+          writer.write(
+            f"multmatrix([[${m.m00},${m.m01},${m.m02},${m.m03}],[${m.m10},${m.m11},${m.m12},${m.m13}],[${m.m20},${m.m21},${m.m22},${m.m23}],[${m.m30},${m.m31},${m.m32},${m.m33}]])"
+          )
           writer.newLine
-          prnt(obj, indent+2)
+          prnt(obj, indent + 2)
       }
     }
     assert(mult(obj) == 1)
     prnt(obj, 0)
     def printModules(printed: Set[String]): Unit = {
-      modules.find{ case (_, name) => !printed(name) } match {
+      modules.find { case (_, name) => !printed(name) } match {
         case Some((obj, name)) =>
           writer.newLine // linter:ignore IdenticalStatements
           writer.newLine
-          writer.write("module " + name + "() {")
+          writer.write(f"module ${name}() {")
           writer.newLine
           prnt2(obj, 2)
           writer.write("}")
@@ -181,9 +189,9 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
     case 6 => writer write "      ";
     case 7 => writer write "       ";
     case _ =>
-    assert(n >= 8)
-    writer write "        ";
-    spaces(n - 8)
+      assert(n >= 8)
+      writer write "        ";
+      spaces(n - 8)
   }
 
   def print(obj: Solid, writer: BufferedWriter): Unit = {
@@ -196,7 +204,7 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
   }
 
   protected def writeInFile(file: java.io.File, obj: Solid) = {
-    val fw = new PrintWriter(file)
+    val fw     = new PrintWriter(file)
     val writer = new BufferedWriter(fw)
     print(obj, writer)
     writer.close
@@ -220,9 +228,10 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
 
   def toSTL(obj: Solid, outputFile: String, options: Iterable[String]) = {
     val tmpFile = toTmpFile(obj)
-    val cmd = Array(command, tmpFile.getPath, "-o", outputFile) ++ options
-    val res = SysCmd(cmd)
+    val cmd     = Array(command, tmpFile.getPath, "-o", outputFile) ++ options
+    val res     = SysCmd(cmd)
     tmpFile.delete
+    if res._1 != 0 then sys.error(f"OpenSCAD failed (${res._1}): ${res._3}")
     res
   }
 
@@ -240,8 +249,8 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
 
   def runOpenSCAD(obj: Solid, options: Iterable[String] = Nil) = {
     val tmpFile = toTmpFile(obj)
-    val cmd = Array(command, tmpFile.getPath) ++ options
-    val res = SysCmd(cmd)
+    val cmd     = Array(command, tmpFile.getPath) ++ options
+    val res     = SysCmd(cmd)
     tmpFile.delete
     res
   }
@@ -249,21 +258,19 @@ class OpenSCAD(header: List[String], unit: LengthUnit = Millimeters) extends Ren
   def getResult(obj: Solid, options: Iterable[String] = Nil) = {
     val tmpFile = java.io.File.createTempFile("scadlaModel", ".stl")
     toSTL(obj, tmpFile.getPath, options)
-    val parsed = stl.Parser(tmpFile.getPath) //TODO makes it parametric in the Length unit
+    val parsed = stl.Parser(tmpFile.getPath) // TODO makes it parametric in the Length unit
     tmpFile.delete
     parsed
   }
 
   def apply(obj: Solid): Polyhedron = obj match {
     case p @ Polyhedron(_) => p
-    case other => getResult(other)
+    case other             => getResult(other)
   }
 
 }
 
-object OpenSCAD extends OpenSCAD(List("$fa=4;", "$fs=0.5;"), Millimeters) {
-
-}
+object OpenSCAD extends OpenSCAD(List("$fa=4;", "$fs=0.5;"), Millimeters) {}
 
 object OpenSCADnightly extends OpenSCAD(List("$fa=4;", "$fs=0.5;"), Millimeters) {
 
