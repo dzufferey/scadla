@@ -32,9 +32,9 @@ There is new backend for scadla based on BREP in development at https://github.c
 ## Dependencies
 
 For the moment, scadla uses
-* required: Java 8 or above
+* required: Java 17 or above
 * recommended: [OpenSCAD](http://www.openscad.org/) for the CSG operations
-* optional: [Meshlab](http://meshlab.sourceforge.net/) to display the models.
+* optional: [Meshlab](https://www.meshlab.net/) to display the models.
   Scadla can try to display the model using [X3Dom](https://www.x3dom.org/) but it is currently quite limited and requires an internet connection.
 
 
@@ -91,7 +91,7 @@ See [OpenSCAD.scala](src/main/scala/scadla/backends/OpenSCAD.scala) for the deta
 
 Assuming that we the object we are interested in is stored in the `obj` variable.
 We can do a few things:
-* evaluate the tree and save the result in a .stl file with `OpenSCAD.toSTL(obj, file_name)`
+* evaluate the tree and save the result in a `.stl` file with `OpenSCAD.toSTL(obj, file_name)`
 * view the result `OpenSCAD.view(obj)` (this requires meshlab)
 * evaluate the tree and get back a Polyhedron with `OpenSCAD.getResult(obj)`
 
@@ -104,13 +104,17 @@ To run this example execute `sbt run` and select `scadla.examples.MecanumWheel`.
 ## Compiling and Using it
 
 You can build scadla using [sbt](http://www.scala-sbt.org/).
-To install sbt follow the instructions at [http://www.scala-sbt.org/release/tutorial/Setup.html](http://www.scala-sbt.org/release/tutorial/Setup.html).
+To install sbt follow the instructions at [https://www.scala-sbt.org/download/](https://www.scala-sbt.org/download/).
 
 Then, in a console, execute:
 ```
 $ sbt
 > compile
 ```
+
+If sbt fails to resolve some dependencies, you may need to clone and run `sbt publishLocal` on these repositories:
+* [https://github.com/dzufferey/misc-scala-utils](https://github.com/dzufferey/misc-scala-utils)
+* [https://github.com/dzufferey/almond-x3dom-model-viewer](https://github.com/dzufferey/almond-x3dom-model-viewer)
 
 To try some examples execute `sbt run` and select one example.
 
@@ -121,7 +125,7 @@ If you want to use it in another project, you need to either
 
   libraryDependencies += "com.github.dzufferey" %% "scadla" % "master-SNAPSHOT"
   ```
-* run `sbt publishLocal` in this folder on the same machine you are building your project.
+* run `sbt publishLocal` in this folder.
 
 ## JupyterLab
 
